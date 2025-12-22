@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chaos Dynamics | The Strange Attractor Suite</title>
+    <style>
+        html,
+        body {
+            background: #000 !important;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -34,7 +40,7 @@
             bottom: 40px;
             left: 40px;
             font-family: 'JetBrains Mono';
-            font-size: 0.7rem;
+            font-size: 0.66rem;
             color: #cc00ff;
             text-transform: uppercase;
             letter-spacing: 0.15em;
@@ -53,11 +59,12 @@
             left: 20px;
             color: rgba(204, 0, 255, 0.4);
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             letter-spacing: 0.15em;
             pointer-events: none;
             z-index: 100;
-            max-width: 150px;
+            max-width: 140px;
+            line-height: 1.4;
         }
 
         .system-status {
@@ -66,7 +73,7 @@
             right: 20px;
             text-align: right;
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             color: rgba(204, 0, 255, 0.5);
             line-height: 1.4;
             pointer-events: none;
@@ -175,60 +182,59 @@
 
         const theories = {
             'sensitivity': {
-                name: 'Sensitivity to Initial Conditions', year: 'The Butterfly Effect',
+                name: 'Initial Sensitivity', year: 'Butterfly Effect',
                 equation: 'δx(t) ≈ e^(λt)δx(0)',
-                facts: [{ text: 'Exponential Divergence', status: 'yes' }, { text: 'Structural Collapse', status: 'yes' }],
-                description: 'A perfect crystalline structure representing a "Linear" system. However, it is fundamentally unstable. A single touch (perturbation) introduces micro-errors that amplify exponentially, collapsing the order into entropy.',
+                facts: [{ text: 'Exponential Drift', status: 'yes' }, { text: 'Ordered Collapse', status: 'yes' }],
+                description: 'A crystalline "Linear" system. Fundamentally unstable: a single perturbation introduces micro-errors that amplify exponentially into total entropy.',
                 concepts: [
-                    { term: 'Lyapunov Exponent (λ)', definition: 'The rate at which two initially close trajectories diverge over time.' },
-                    { term: 'Perturbation', definition: 'A slight deviation in the starting state of a system.' }
+                    { term: 'Lyapunov Exponent', definition: 'The rate of trajectory divergence over time.' },
+                    { term: 'Perturbation', definition: 'A slight deviation in the starting state.' }
                 ],
-                physics: 'This installation demonstrates how fragile "Order" is. In Waveism, reality is a balancing act; a single decoherent wave can shatter the standing-wave manifold of an entire object.'
+                physics: 'Waveism: Reality is a balancing act. A single decoherent ripple can shatter the standing-wave manifold.'
             },
             'lorenz': {
-                name: 'Lorenz Strange Attractor', year: 'Edward Lorenz, 1963',
+                name: 'Strange Attractor', year: 'Edward Lorenz',
                 equation: 'dx/dt = σ(y - x)',
                 facts: [{ text: 'Deterministic', status: 'yes' }, { text: 'Non-Periodic', status: 'yes' }],
-                description: 'The foundation of modern chaos theory. It demonstrates that a deterministic universe is not a predictable one. The "Strange Attractor" is a fractal manifold that traps trajectories in an infinite loop that never intersects itself.',
+                description: 'Deterministic unpredictability. The Attractor is a fractal manifold trapping trajectories in an infinite loop.',
                 concepts: [
                     { term: 'Butterfly Effect', definition: 'Infinitesimal perturbations cause macroscopic divergence.' },
-                    { term: 'Fractal Dimension', definition: 'The attractor has a non-integer dimension, filling phase space with infinite detail.' },
-                    { term: 'Lyapunov Horizon', definition: 'The temporal limit of predictability for any non-linear system.' }
+                    { term: 'Fractal Dimension', definition: 'The non-integer geometry of chaotic sets.' }
                 ],
-                physics: 'In Waveism, Chaos is the emergent interference pattern of high-frequency wave-packet collisions. It represents the limit where the phase-drift of the cosmos exceeds the coherence length of the observer.'
+                physics: 'Waveism: Chaos is the emergent interference of high-frequency wave-packet collisions.'
             },
             'three-body': {
-                name: 'Restricted 3-Body Problem', year: 'Poincaré / Euler',
+                name: '3-Body Problem', year: 'Orbital Chaos',
                 equation: '∇²Φ = -4πGρ',
-                facts: [{ text: 'Sensitive', status: 'high' }, { text: 'Non-Integrable', status: 'yes' }],
-                description: 'The most famous unsolved problem in astrodynamics. While a 2-body system is perfectly integrable, a 3rd body introduces non-linearities that lead to orbital chaos and inevitable system ejection.',
+                facts: [{ text: 'Non-Integrable', status: 'yes' }, { text: 'Unstable', status: 'yes' }],
+                description: 'Unsolved astrodynamics. A 3rd body introduces non-linearities that lead to orbital ejection and system divergence.',
                 concepts: [
-                    { term: 'KAM Theory', definition: 'Explains how near-integrable systems remain stable under small perturbations.' },
-                    { term: 'Symplectic Integration', definition: 'Energy-conserving numerical methods required to simulate orbital chaos.' }
+                    { term: 'KAM Theory', definition: 'The physics of near-integrable stability.' },
+                    { term: 'Symplectic Flow', definition: 'Energy-conserving paths in phase space.' }
                 ],
-                physics: 'Gravitational chaos is a manifestation of waves interacting in a non-linear gravitational substrate. The bodies are resonant spikes whose worldlines become tangled in the spacetime manifold.'
+                physics: 'Waveism: Gravitational bodies are resonant spikes whose worldlines tangle in the manifold.'
             },
             'pendulum': {
-                name: 'The Double Pendulum', year: 'Lagrangian Chaos',
+                name: 'Double Pendulum', year: 'Lagrangian Chaos',
                 equation: 'L = T - V',
-                facts: [{ text: 'Highly Unstable', status: 'yes' }, { text: 'Fractal Basins', status: 'yes' }],
-                description: 'The quintessential mechanical chaos. Two weights, connected in series, form a system of coupled differential equations. The result is a movement that defies human intuition and repeats only after statistical aeons.',
+                facts: [{ text: 'Highly Unstable', status: 'yes' }, { text: 'Coupled Modes', status: 'yes' }],
+                description: 'Mechanical unpredictability. Coupled weights form non-linear feedback loops, creating motion that defies intuition.',
                 concepts: [
-                    { term: 'Coupled Oscillators', definition: 'Energy transfer between modes creates non-linear feedback loops.' },
-                    { term: 'Bifurcation', definition: 'A critical threshold where a stable orbit splits into chaotic turbulence.' }
+                    { term: 'Bifurcation', definition: 'The threshold where stable orbits split into chaos.' },
+                    { term: 'Feedback Loops', definition: 'Energy transfer between coupled oscillatory modes.' }
                 ],
-                physics: 'The double pendulum is a mechanical computer solving the local gravitational gradient. Its chaos is the result of the wave-function of the system decohering into thermal noise.'
+                physics: 'Waveism: Mechanical manifestation of multi-modal wave interference.'
             },
             'logistic': {
-                name: 'Logistic Bifurcation Map', year: 'Mitchell Feigenbaum, 1978',
+                name: 'Logistic Map', year: 'Universal Chaos',
                 equation: 'x_(n+1) = r x_n(1 - x_n)',
                 facts: [{ text: 'Feigenbaum δ', status: '4.669' }, { text: 'Universality', status: 'yes' }],
-                description: 'A mathematical proof that chaos is universal. Whether it is population growth, heartbeats, or fluid flow, the path to chaos follows a precise "Period Doubling" geometric ratio.',
+                description: 'Mathematical proof of universal chaos. The path to turbulence follows a precise "Period Doubling" geometric ratio in all systems.',
                 concepts: [
-                    { term: 'Feigenbaum Constant', definition: 'The universal ratio (4.669...) governing the onset of chaos in all systems.' },
-                    { term: 'Self-Similarity', definition: 'The chaotic map contains infinite nested copies of its own structure.' }
+                    { term: 'Feigenbaum Constant', definition: 'The universal ratio governing the onset of chaos.' },
+                    { term: 'Self-Similarity', definition: 'Infinite nested copies of the system structure.' }
                 ],
-                physics: 'This map represents the folding of wave-packets in a discrete time substrate. It is the geometric template for entropy production in high-energy manifolds.'
+                physics: 'Waveism: Geometric template for entropy production in high-energy manifolds.'
             }
         };
 
@@ -237,7 +243,7 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 256; canvas.height = 64;
-            ctx.font = 'Bold 20px JetBrains Mono';
+            ctx.font = 'Bold 24px JetBrains Mono';
             ctx.fillStyle = color;
             ctx.textAlign = 'center';
             ctx.fillText(text, 128, 32);

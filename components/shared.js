@@ -42,25 +42,9 @@ function renderMainNav(activeId) {
 
     return `
     <div class="${containerClass}">
-        <div class="nav-wave-icon up">
-            <svg viewBox="0 0 100 20">
-                <path d="M0 10 Q25 0 50 10 T100 10" fill="none" stroke="currentColor" stroke-width="2">
-                    <animate attributeName="d" values="M0 10 Q25 0 50 10 T100 10; M0 10 Q25 20 50 10 T100 10; M0 10 Q25 0 50 10 T100 10" dur="2s" repeatCount="indefinite" />
-                </path>
-            </svg>
-        </div>
-        <canvas id="nav-oscilloscope"></canvas>
-        <div class="nav-lens-indicator"></div>
         <div class="main-nav">
             ${homeBtn}
             ${navHtml}
-        </div>
-        <div class="nav-wave-icon down">
-            <svg viewBox="0 0 100 20">
-                <path d="M0 10 Q25 0 50 10 T100 10" fill="none" stroke="currentColor" stroke-width="2">
-                    <animate attributeName="d" values="M0 10 Q25 0 50 10 T100 10; M0 10 Q25 20 50 10 T100 10; M0 10 Q25 0 50 10 T100 10" dur="2.5s" repeatCount="indefinite" />
-                </path>
-            </svg>
         </div>
     </div>`;
 }
@@ -828,23 +812,7 @@ function initNavSlider() {
             if (nearestItem !== lastCenterIndex) {
                 lastCenterIndex = nearestItem;
 
-                // Color Wave Purple towards the DIRECTION of the Selected Item (Compass)
-                const waveUp = document.querySelector('.nav-wave-icon.up');
-                const waveDown = document.querySelector('.nav-wave-icon.down');
-
-                if (waveUp && waveDown) {
-                    waveUp.style.color = '';
-                    waveDown.style.color = '';
-
-                    // If current view is "above" active item (index < active), target is DOWN
-                    if (nearestItem < activeIdx) {
-                        waveDown.style.color = '#bf40bf';
-                    }
-                    // If current view is "below" active item (index > active), target is UP
-                    else if (nearestItem > activeIdx) {
-                        waveUp.style.color = '#bf40bf';
-                    }
-                }
+                // Wave color logic removed since icons are deleted
             }
         }
         items.forEach((item, i) => {

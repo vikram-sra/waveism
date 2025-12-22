@@ -39,6 +39,13 @@
         }
     </script>
 
+    <style>
+        html,
+        body {
+            background: #000 !important;
+            font-display: block;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css?v=2">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="components/shared.js?v=2"></script>
@@ -122,27 +129,30 @@
             /* Enhance pop */
         }
 
-        /* CONTENT (Bottom Center) */
+        /* CONTENT (Locked to Bottom) */
         .content {
             position: absolute;
-            bottom: max(60px, env(safe-area-inset-bottom) + 40px);
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(40px);
             width: 100%;
             text-align: center;
             z-index: 10;
             pointer-events: none;
             opacity: 0;
-            transform: translateY(20px);
             transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
+            gap: 25px;
+            /* Improved vertical spacing */
         }
 
         .section.active .content {
             opacity: 1;
-            transform: translateY(0);
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translateX(-50%);
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .phase-meta {
@@ -151,7 +161,7 @@
             color: var(--accent);
             letter-spacing: 0.4em;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             opacity: 0.8;
             text-shadow: 0 0 10px var(--accent);
         }
@@ -167,7 +177,7 @@
         .phase-title {
             font-family: 'JetBrains Mono', monospace;
             /* Cyber Mono */
-            font-size: 3.5rem;
+            font-size: 5rem;
             font-weight: 700;
             letter-spacing: -0.04em;
             color: #fff;
@@ -191,28 +201,27 @@
 
         .phase-desc {
             display: block;
-            /* Show Description */
             font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 15px;
-            max-width: 500px;
-            line-height: 1.5;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            max-width: 600px;
+            line-height: 1.6;
             background: rgba(0, 0, 0, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 16px;
-            border-radius: 2px;
-            border-radius: 2px;
-            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 4px;
+            backdrop-filter: blur(12px);
+            text-align: center;
         }
 
         .phase-question {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 1.1rem;
             color: var(--accent);
-            margin-bottom: 8px;
+            margin: 0;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 4px;
             opacity: 0.9;
         }
 
@@ -238,11 +247,11 @@
         /* HEADER & HUD */
         header {
             position: fixed;
-            top: 30px;
-            left: 30px;
+            top: 40px;
+            left: 40px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            letter-spacing: 0.2em;
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
             color: #fff;
             z-index: 100;
         }
@@ -252,7 +261,7 @@
             bottom: 30px;
             right: 30px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.5);
             z-index: 100;
         }
@@ -324,6 +333,7 @@
             .content {
                 bottom: max(40px, env(safe-area-inset-bottom) + 20px);
                 padding: 15px;
+                gap: 15px;
             }
 
             .phase-desc {
@@ -427,19 +437,19 @@
 
     <script>
         const phases = [
-            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Superposition, entanglement, and wave function collapse.', color: '#00ffaa' },
-            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'Heisenberg\'s limit on precision and determinism.', color: '#9d4edd' },
-            { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'The unified framework of oscillatory phenomena.', color: '#7b2cbf' },
-            { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Constructive interference and natural frequencies.', color: '#ff0055' },
-            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Strange attractors and sensitivity to initial conditions.', color: '#ff4d6d' },
-            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'The thermodynamic arrow of time and statistical irreversibility.', color: '#ff5500' },
-            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The tensor field substrate connecting all points in spacetime.', color: '#00ddff' },
-            { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Einstein-Rosen bridges connecting distant points.', color: '#4cc9f0' },
-            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The four-dimensional manifold of light cones and worldlines.', color: '#ff6b9d' },
-            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Regions of infinite curvature where time stands still.', color: '#ffaa00' },
-            { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Dark energy and the accelerating metric of space.', color: '#b5179e' },
-            { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'The large-scale structure of the galaxy filaments.', color: '#0088ff' },
-            { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Tactile interaction with the cosmic substrate. (Liquid Black Logic)', color: '#ffffff' }
+            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa' },
+            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd' },
+            { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'Unified framework of oscillatory reality.', color: '#7b2cbf' },
+            { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Coherent interference and entrainment protocols.', color: '#ff0055' },
+            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d' },
+            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500' },
+            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The metric tensor substrate of reality.', color: '#00ddff' },
+            { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Topological bridges through the manifold.', color: '#4cc9f0' },
+            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The 4D continuum of light cones and worldlines.', color: '#ff6b9d' },
+            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Infinite curvature and causal singularities.', color: '#ffaa00' },
+            { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Metric acceleration of the cosmic substrate.', color: '#b5179e' },
+            { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'Large-scale structure of galactic filaments.', color: '#0088ff' },
+            { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Manual interaction with the cosmic medium.', color: '#ffffff' }
         ];
 
         const reel = document.getElementById('reel');
@@ -710,7 +720,7 @@
 
         // PROCEDURAL SEA
         function drawSea(c, w, h, t, color) {
-            const hLine = h * 0.62; // Hero landscape sweet spot
+            const hLine = h * 0.5; // Dead Center Horizon
 
             c.fillStyle = '#010105';
             c.beginPath();
@@ -741,8 +751,8 @@
         // TOTEM ARTIFACTS
         function drawTotem(c, w, h, t, id, color) {
             const cx = w / 2;
-            // Stand on the waves
-            const hLine = h * 0.62 + Math.sin(cx * 0.005 + t) * 20 + Math.cos(cx * 0.02 - t * 0.3) * 10;
+            // Stand on the waves (Centered)
+            const hLine = h * 0.5 + Math.sin(cx * 0.005 + t) * 20 + Math.cos(cx * 0.02 - t * 0.3) * 10;
             const size = h * 0.15; // Slightly tighter scale for better fit
 
             c.save();
@@ -764,14 +774,14 @@
             // LABEL MAIN
             c.shadowBlur = 0;
             c.fillStyle = 'rgba(255,255,255,0.9)';
-            c.font = '500 12px "JetBrains Mono"';
+            c.font = '500 14px "JetBrains Mono"';
             c.textAlign = 'center';
             c.letterSpacing = '2px';
             c.fillText(id.toUpperCase().replace('_', ' '), 0, size * 0.8);
 
             // LABEL SUB (Tech Data)
             c.fillStyle = color;
-            c.font = '300 9px "JetBrains Mono"';
+            c.font = '300 11px "JetBrains Mono"';
             c.letterSpacing = '1px';
 
             const techData = {
@@ -944,7 +954,7 @@
                 fabric: (c, w, h, t) => {
                     c.strokeStyle = 'rgba(0,221,255,0.15)'; c.lineWidth = 1;
                     // Infinite 3D Grid Floor & Ceiling
-                    const horizon = h * 0.62;
+                    const horizon = h * 0.5;
                     c.beginPath();
                     // Vertical perspective lines
                     for (let i = -w; i <= w * 2; i += 60) {
@@ -970,7 +980,7 @@
                     }
                 },
                 spacetime: (c, w, h, t) => {
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     c.strokeStyle = 'rgba(255,107,157,0.4)';
                     c.lineWidth = 2;
                     c.lineCap = 'round';
@@ -997,7 +1007,7 @@
                     c.globalAlpha = 1;
                 },
                 blackhole: (c, w, h, t) => {
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     // Accretion Disk (Layers)
                     for (let i = 0; i < 40; i++) {
                         c.beginPath();
@@ -1024,7 +1034,7 @@
                     c.beginPath(); c.arc(cx, cy, 50, 0, 7); c.fill(); c.shadowBlur = 0;
                 },
                 expansion: (c, w, h, t) => {
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     c.fillStyle = 'rgba(255,100,50,0.8)';
                     // Big Bang Explosion
                     for (let i = 0; i < 1500; i++) {
@@ -1071,7 +1081,7 @@
                     }
                 },
                 resonance: (c, w, h, t) => {
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     // Cymatic Manifold
                     c.lineWidth = 1.5;
                     const count = 25;
@@ -1103,7 +1113,7 @@
                 chaos: (c, w, h, t) => {
                     // Butterfly Effect Trails
                     c.strokeStyle = 'rgba(255,50,50,0.4)'; c.lineWidth = 1;
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     const scale = 20;
                     // Draw multiple Lorenz-like curves
                     for (let k = 0; k < 5; k++) {
@@ -1119,7 +1129,7 @@
                     }
                 },
                 wormhole: (c, w, h, t) => {
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     // Spiral Tunnel
                     for (let i = 0; i < 100; i++) {
                         const dist = 500 - (t * 200 + i * 30) % 500; // Moving IN
@@ -1153,7 +1163,7 @@
                     for (let i = 0; i < 50; i++) {
                         c.beginPath();
                         for (let x = 0; x <= w; x += 20) {
-                            const y = h * 0.62 + Math.sin(x * 0.01 + t + i * 0.2) * 50 + (i - 25) * 10;
+                            const y = h * 0.5 + Math.sin(x * 0.01 + t + i * 0.2) * 50 + (i - 25) * 10;
                             c.lineTo(x, y);
                         }
                         c.stroke();
@@ -1165,7 +1175,7 @@
                     for (let i = 0; i < 800; i++) {
                         const x = (t * 200 + i * 5) % (w + 200) - 100;
                         const chaosFactor = Math.max(0, x / w); // 0 invar -> 1 chaos
-                        const yBase = h * 0.62;
+                        const yBase = h * 0.5;
                         const spread = Math.pow(chaosFactor, 2) * h;
                         const y = yBase + (Math.sin(i) * spread / 2) + (Math.random() - 0.5) * spread;
 
@@ -1178,7 +1188,7 @@
                 cosmic: (c, w, h, t) => {
                     c.strokeStyle = 'rgba(0,136,255,0.15)';
                     c.fillStyle = '#fff';
-                    const cx = w / 2, cy = h * 0.62;
+                    const cx = w / 2, cy = h * 0.5;
                     // Rotating Cosmic Web
                     for (let i = 0; i < 80; i++) {
                         const r = 200 + Math.sin(i) * 100;

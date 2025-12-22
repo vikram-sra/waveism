@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space-Time | Relativistic Manifolds</title>
+    <style>
+        html,
+        body {
+            background: #000 !important;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -35,11 +41,12 @@
             left: 20px;
             color: rgba(254, 235, 44, 0.4);
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             letter-spacing: 0.15em;
             pointer-events: none;
             z-index: 100;
-            max-width: 250px;
+            max-width: 180px;
+            line-height: 1.4;
         }
 
         .system-status {
@@ -48,7 +55,7 @@
             right: 20px;
             text-align: right;
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             color: rgba(254, 235, 44, 0.4);
             line-height: 1.4;
             pointer-events: none;
@@ -95,6 +102,8 @@
         <button class="theory-tab" data-theory="twin">Twin Paradox</button>
         <button class="theory-tab" data-theory="time-spiral">Time Spiral</button>
         <button class="theory-tab" data-theory="einstein-sr">Lorentz Scissoring</button>
+        <button class="theory-tab" data-theory="causal-net">Causal Network</button>
+        <button class="theory-tab" data-theory="event-horizon">Event Horizon</button>
     </div>
 
     <div class="params-panel">
@@ -158,87 +167,103 @@
 
         const theories = {
             'block-universe': {
-                name: 'The Block Universe', year: 'Eternalism, 1915',
+                name: 'Block Universe', year: 'Eternalism Protocol',
                 equation: 'M⁴ = R³ × T',
-                facts: [{ text: 'Past exists', status: 'yes' }, { text: 'Future exists', status: 'yes' }],
-                description: 'The "Meatloaf" of Reality. Relativity implies that the past, present, and future exist simultaneously as a solid 4D block. Your "Now" is just a 3D slice cutting through the loaf like a CT scan.',
+                facts: [{ text: 'Formal Past', status: 'yes' }, { text: 'Static Future', status: 'yes' }],
+                description: 'The 4D "Meatloaf". Space and time exist as a singular, immutable solid. Your "Now" is a cross-sectional slice traversing the continuum.',
                 concepts: [
-                    { term: 'Eternalism', definition: 'The philosophical view that all points in time are equally "real".' },
-                    { term: 'World-Tube', definition: 'An object is not a 3D shape, but a 4D worm stretching from birth to death.' }
+                    { term: 'Eternalism', definition: 'The view that all temporal points are equally objective.' },
+                    { term: 'World-Tube', definition: 'The 4D geometric extrusion of a 3D object\'s total history.' }
                 ],
-                physics: 'In Waveism, the Block Universe is the standing wave pattern of the entire cycle. We "experience" motion only because our consciousness is a traveling phase-front.'
+                physics: 'Waveism: The universe is a standing wave in 4D. Experience is the phase-front propagation of consciousness.'
             },
             'light-cone': {
-                name: 'Light Cone Topology', year: 'Hermann Minkowski, 1908',
-                equation: 'ds² = 0 [The Photon Path]',
-                facts: [{ text: 'Absolute Future', status: 'yes' }, { text: 'Causal Horizon', status: 'yes' }],
-                description: 'The geometry of causal possibility. Light defines a 45° boundary in flat spacetime; anything outside this cone is "Absolute Elsewhere"—regions of space that can never be reached or known by the observer at the origin.',
+                name: 'Light Cone Topology', year: 'Minkowski Geometry',
+                equation: 'ds² = 0',
+                facts: [{ text: 'Absolute Future', status: 'yes' }, { text: 'Causal Limit', status: 'yes' }],
+                description: 'Causality boundaries. Light defines a 45° manifold. Outside lies "Absolute Elsewhere"—regions biologically unreachable from the origin.',
                 concepts: [
-                    { term: 'Worldline', definition: 'The unique path of an object through 4D spacetime.' },
-                    { term: 'Null Geodesic', definition: 'The trajectory of light that stays on the surface of the cone.' },
-                    { term: 'Timelike Path', definition: 'Trajectories of massive objects strictly inside the light cone.' }
+                    { term: 'Causal Horizon', definition: 'The limit where signal propagation is blocked by light speed.' },
+                    { term: 'Null Geodesic', definition: 'The trajectory of photons along the surface of the cone.' }
                 ],
-                physics: 'In Waveism, the Light Cone is the coherence boundary of the cosmic signal. It represents the speed at which phase-information can propagate through the vacuum substrate.'
+                physics: 'Waveism: Coherence boundary of the cosmic signal. Represents the maximum info-velocity in the vacuum.'
             },
             'gravity': {
-                name: 'Einstein Field Geometry', year: 'Albert Einstein, 1915',
-                equation: 'G_μν = 8πG/c⁴ T_μν',
-                facts: [{ text: 'Metric Warping', status: 'yes' }, { text: 'Geodesic Flow', status: 'yes' }],
-                description: 'General Relativity shows that mass-energy density curves the 4D manifold. Gravity is not a force, but the straightest possible path (geodesic) through a distorted geometric substrate.',
+                name: 'Einstein Geometry', year: 'Metric Warping',
+                equation: 'G_μν = 8πT_μν',
+                facts: [{ text: 'Curvature', status: 'yes' }, { text: 'Inertial Flow', status: 'yes' }],
+                description: 'Spacetime curvature. Mass-energy density distorts the 4D manifold. Gravity is just the straightest possible path through a bent substrate.',
                 concepts: [
-                    { term: 'Equivalence Principle', definition: 'Gravity and acceleration are locally indistinguishable.' },
-                    { term: 'Ricci Curvature', definition: 'The mathematical measure of how spacetime volume deviates from flatness.' },
-                    { term: 'Flamm Paraboloid', definition: 'A spatial cross-section of the Schwarzschild gravity well.' }
+                    { term: 'Metric Tensor', definition: 'A function defining the distance between points in the manifold.' },
+                    { term: 'Geodesic', definition: 'The natural path followed by a free-falling particle.' }
                 ],
-                physics: 'Gravity is the refractive index of the vacuum. Waves moving through high-density substrates slow down and curve, interpreted by the observer as gravitational pull.'
+                physics: 'Waveism: Gravity is the refractive index of the vacuum. Waves curve through high-density subregions.'
             },
             'dilation': {
-                name: 'Lorentz Time Dilation', year: 'Hendrik Lorentz, 1904',
-                equation: 'dt = γ dτ [Where γ = 1/√(1-β²)]',
-                facts: [{ text: 'Non-Simultaneous', status: 'yes' }, { text: 'Invariant c', status: 'yes' }],
-                description: 'Time is a relative dimension. As an object\'s velocity (β) approaches the speed of light, its interval through time stretches to preserve the absolute invariance of the speed of light.',
+                name: 'Lorentz Dilation', year: 'Temporal Distortion',
+                equation: 'dt = γ dτ',
+                facts: [{ text: 'Time Stretch', status: 'yes' }, { text: 'Invariant c', status: 'yes' }],
+                description: 'Relative dimensionality. High velocity stretches the temporal interval to maintain the absolute invariance of c.',
                 concepts: [
-                    { term: 'Proper Time (τ)', definition: 'The temporal duration measured by a clock moving along a worldline.' },
-                    { term: 'Length Contraction', definition: 'The reciprocal compression of space along the axis of motion.' },
-                    { term: 'Lorentz Gamma (γ)', definition: 'The factor by which time and space scale during relativistic transit.' }
+                    { term: 'Proper Time', definition: 'Time as measured by a clock following the worldline.' },
+                    { term: 'Lorentz Shift', definition: 'The compression of space-time axes during high-β transit.' }
                 ],
-                physics: 'Time dilation is the doppler-shift of the system\'s internal oscillatory frequency. A moving clock oscillates "slower" relative to the rest frame substrate.'
+                physics: 'Waveism: Doppler-shift of internal oscillator frequency. Moving clocks beat slower relative to substrate.'
             },
             'twin': {
-                name: 'The Twin Paradox', year: 'Proper Time Asymmetry',
-                equation: '∫ dτ_stay > ∫ dτ_travel',
-                facts: [{ text: 'Real Physicality', status: 'yes' }, { text: 'Non-Inertial Path', status: 'yes' }],
-                description: 'One twin stays home (geodesic path), the other travels at high velocity and returns. Because the traveler accelerated (leaving the initial inertial frame), their path through the metric is physically shorter.',
+                name: 'Twin Paradox', year: 'Asymmetry Protocol',
+                equation: 'Δτ_1 ≠ Δτ_2',
+                facts: [{ text: 'Frame Breaking', status: 'yes' }, { text: 'Metric Drift', status: 'yes' }],
+                description: 'The traveler accelerates, physically shortening their metric trajectory. Returning results in a tangible phase-offset in age.',
                 concepts: [
-                    { term: 'Path Dependency', definition: 'Elapsed time depends on the specific worldline trajectory.' },
-                    { term: 'Space-Time Interval', definition: 'The invariant "distance" in 4D space, analogous to the Pythagorean theorem.' },
-                    { term: 'Frame Breaking', definition: 'Acceleration requires shifting between different Lorentz frames.' }
+                    { term: 'Acceleration', definition: 'The act of breaking inertial frames to traverse the metric.' },
+                    { term: 'Path Invariant', definition: 'The length of a worldline through 4D space.' }
                 ],
-                physics: 'The "Stay" twin remains aligned with the local temporal manifold. The "Traveler" cuts across the phase-lines of the cosmos, returning with a phase-offset—resulting in younger age.'
+                physics: 'Waveism: The traveler cuts across cosmic phase-lines, returning with a permanent lag in internal frequency.'
             },
             'time-spiral': {
-                name: 'The Temporal Spiral', year: 'Non-Linear Chronostructure',
-                equation: 't(θ) = z / (2πb) [The Helix Path]',
+                name: 'Temporal Spiral', year: 'Cyclical Drift',
+                equation: 't(θ) = z / (2πb)',
                 facts: [{ text: 'Cyclicality', status: 'yes' }, { text: 'Entropy Drift', status: 'yes' }],
-                description: 'Visualizing time not as a line, but as a three-dimensional spiral. This model suggests that events repeat in a self-similar way (periodicity) while drifting along a linear progression, creating the "Spiral of History".',
+                description: 'Time as a 3D helix. Periodicity allows events to repeat in self-similar cycles while drifting forward linearly.',
                 concepts: [
-                    { term: 'Helical Time', definition: 'A model where time progress linearly while oscillating circularly.' },
-                    { term: 'Event-Horizon Drift', definition: 'The gradual increase in radius representing the expansion of causal memory.' },
-                    { term: 'Return Period', definition: 'The phase-offset after one full rotation where self-similarity peaks.' }
+                    { term: 'Helical Time', definition: 'Motion through time combining oscillation and linear progress.' },
+                    { term: 'Frequency Match', definition: 'The phenomenon of history repeating when the spiral radius aligns.' }
                 ],
-                physics: 'In Waveism, the Time Spiral is the "Twist" of the vacuum. It represents a system where energy is recycled through oscillations while moving forward in coordinate time.'
+                physics: 'Waveism: The "Twist" of the vacuum. Energy recycled through cycles during forward drift.'
             },
             'einstein-sr': {
-                name: 'Lorentz Scissoring', year: 'Special Relativity Axes',
-                equation: 'x\' = γ(x - vt), t\' = γ(t - vx/c²)',
-                facts: [{ text: 'Frame Invariance', status: 'yes' }, { text: 'Relative Now', status: 'yes' }],
-                description: 'A visual proof of the Lorentz transformation. As velocity increases, the space and time axes swap and "scissor" toward the 45° light line, proving that "now" is entirely dependent on motion.',
+                name: 'Lorentz Scissoring', year: 'Axiomatic Geometry',
+                equation: 'x\' = γ(x - vt)',
+                facts: [{ text: 'Frame Invariant', status: 'yes' }, { text: 'Relative Now', status: 'yes' }],
+                description: 'Visual proof of transformation. Spacetime axes "scissor" toward the light line as velocity approaches c.',
                 concepts: [
-                    { term: 'Hyperbolic Rotation', definition: 'A Lorentz boost is a rotation in Minkowski space by an imaginary angle.' },
-                    { term: 'Relativity of Simultaneity', definition: 'Two events that are simultaneous in one frame are not in another.' },
-                    { term: 'Calibration Isotherms', definition: 'The grid lines denoting equal units of proper space and time.' }
+                    { term: 'Hyperbolic Shift', definition: 'Rotation in Minkowski space by an imaginary angle.' },
+                    { term: 'Simultaneity', definition: 'The collapse of "Now" into a relative observer slice.' }
                 ],
-                physics: 'This scissoring is the geometric representation of phase-coherence alignment. The observer\'s "Now" slice rotates through the substrate to maintain signal speed.'
+                physics: 'Waveism: Geometric representation of phase-coherence. Observer rotates to align with signal flux.'
+            },
+            'causal-net': {
+                name: 'Causal Network', year: 'Events & Nodes',
+                equation: 'E = {v, e}',
+                facts: [{ text: 'Connectivity', status: 'yes' }, { text: 'Information Flow', status: 'yes' }],
+                description: 'Spacetime as a graph. Discrete events linked by light-speed signaling, forming a "web" of causality that underpins the continuum.',
+                concepts: [
+                    { term: 'Node Density', definition: 'The concentration of events in a local metric patch.' },
+                    { term: 'Signal Latency', definition: 'The delay inherent in 4D connectivity dictated by c.' }
+                ],
+                physics: 'Waveism: The quantum graph of interconnected phase-oscillators.'
+            },
+            'event-horizon': {
+                name: 'Event Horizon', year: 'The Final Frontier',
+                equation: 'R_s = 2GM/c²',
+                facts: [{ text: 'No Exit', status: 'yes' }, { text: 'Time Freeze', status: 'yes' }],
+                description: 'The boundary of no return. Beyond this shell, all light-cones tip inward, ensuring every path leads to the singularity.',
+                concepts: [
+                    { term: 'Schwarzschild Radius', definition: 'The radius where the escape velocity equals the speed of light.' },
+                    { term: 'Temporal Tipping', definition: 'The rotation of spacetime axes where time becomes space.' }
+                ],
+                physics: 'Waveism: The critical damping point where the medium stops propagating signals outward.'
             }
         };
 
@@ -306,7 +331,7 @@
             canvas.height = 128;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = color;
-            ctx.font = 'bold 36px JetBrains Mono, monospace'; // Slightly smaller font
+            ctx.font = 'bold 40px JetBrains Mono, monospace'; // Slightly smaller font
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(text, 256, 64);
@@ -514,81 +539,196 @@
                 });
 
                 document.getElementById('param1-label').innerText = "Coordinate Time Scrub";
-
-                document.getElementById('param1-label').innerText = "Coordinate Time Scrub";
-
             } else if (mode === 'block-universe') {
-                // THE 4D LOAF VISUALIZATION
-                // We render a long extrusion (The Loaf) and a transparent plane (The Now)
+                // THE 4D CRYSTAL MANIFOLD (Refined Loaf)
+                const crystalGroup = new THREE.Group();
+                crystalGroup.name = "spacetime_crystal";
 
-                // 1. The Loaf (A complex 4D shape extruded in Z)
-                const shape = new THREE.Shape();
-                // Create an amorphous "Event" shape
-                const r = 20;
-                shape.moveTo(r, 0);
-                for (let i = 0; i <= Math.PI * 2; i += 0.5) {
-                    shape.lineTo(Math.cos(i) * r + Math.sin(i * 3) * 5, Math.sin(i) * r + Math.cos(i * 2) * 5);
-                }
-
-                const extrudeSettings = {
-                    steps: 100,
-                    depth: 200, // Time axis length
-                    bevelEnabled: false,
-                    curveSegments: 30
-                };
-
-                const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                // Center it
-                geometry.translate(0, 0, -100);
-                geometry.rotateX(Math.PI / 2); // Align Z as time? No, let's keep Z depth.
-                // Reset rotation
-                geometry.rotateX(-Math.PI / 2);
-
-                const material = new THREE.MeshPhongMaterial({
+                // 1. The Core Manifold (Slender Crystalline structure)
+                const crystalGeo = new THREE.IcosahedronGeometry(15, 2);
+                const crystalMat = new THREE.MeshPhongMaterial({
                     color: 0xfeeb2c,
                     wireframe: true,
                     transparent: true,
-                    opacity: 0.1
+                    opacity: 0.1,
+                    emissive: 0xfeeb2c,
+                    emissiveIntensity: 0.1
                 });
-                const loaf = new THREE.Mesh(geometry, material);
-                loaf.name = "spacetime_loaf";
-                activeGroup.add(loaf);
-
-                // 2. The World Tubes (Individual Object Histories inside the loaf)
-                for (let i = 0; i < 5; i++) {
-                    const pathPts = [];
-                    for (let z = 0; z <= 200; z += 10) {
-                        pathPts.push(new THREE.Vector3(
-                            (Math.random() - 0.5) * 30 + Math.sin(z * 0.05 + i) * 10,
-                            (Math.random() - 0.5) * 30 + Math.cos(z * 0.05 + i) * 10,
-                            z - 100
-                        ));
-                    }
-                    const tube = new THREE.Mesh(
-                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pathPts), 64, 1.5, 8, false),
-                        new THREE.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0.5 })
-                    );
-                    activeGroup.add(tube);
+                const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+                // Extrude in time (Subtler layering)
+                for (let i = 0; i < 8; i++) {
+                    const layer = crystal.clone();
+                    layer.position.z = (i - 3.5) * 10;
+                    layer.rotation.z = i * 0.2;
+                    layer.scale.setScalar(1 + Math.sin(i * 0.5) * 0.15);
+                    crystalGroup.add(layer);
                 }
+                activeGroup.add(crystalGroup);
 
-                // 3. The "Now" Slicer
-                const slicerGeo = new THREE.PlaneGeometry(80, 80);
+                // 2. The Consciousness Fronts (Refined Slices)
+                const slicerGeo = new THREE.PlaneGeometry(60, 60);
                 const slicerMat = new THREE.MeshPhongMaterial({
-                    color: 0xffffff,
+                    color: 0x00ffff,
                     transparent: true,
-                    opacity: 0.2,
+                    opacity: 0.15,
                     side: THREE.DoubleSide,
-                    blending: THREE.AdditiveBlending
+                    blending: THREE.AdditiveBlending,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 0.3
                 });
                 const slicer = new THREE.Mesh(slicerGeo, slicerMat);
                 slicer.name = "now_slicer";
                 activeGroup.add(slicer);
 
+                // 3. Selective World Line Filaments
+                const lineGroup = new THREE.Group();
+                for (let i = 0; i < 8; i++) {
+                    const pts = [];
+                    const radius = 4 + Math.random() * 8;
+                    for (let z = -60; z <= 60; z += 10) {
+                        pts.push(new THREE.Vector3(
+                            Math.sin(z * 0.08 + i) * radius,
+                            Math.cos(z * 0.08 + i) * radius,
+                            z
+                        ));
+                    }
+                    const tubeGeo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.1, 6, false);
+                    const tubeMat = new THREE.MeshPhongMaterial({ color: 0xff00ff, transparent: true, opacity: 0.15 });
+                    lineGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+                }
+                activeGroup.add(lineGroup);
+
                 const label = createLabel("THE ETERNAL NOW", "#ffffff");
                 label.name = "now_label";
                 activeGroup.add(label);
 
-                document.getElementById('param1-label').innerText = "Slice Time";
+                document.getElementById('param1-label').innerText = "Slice Coordinate Time";
+            } else if (mode === 'causal-net') {
+                // TOPOLOGICAL NODE WEB
+                const netGroup = new THREE.Group();
+                const nodeCount = 60;
+                const nodeGeo = new THREE.SphereGeometry(0.5, 12, 12);
+                const nodeMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 2 });
+
+                const nodePos = [];
+                for (let i = 0; i < nodeCount; i++) {
+                    const node = new THREE.Mesh(nodeGeo, nodeMat);
+                    node.position.set(
+                        (Math.random() - 0.5) * 60,
+                        (Math.random() - 0.5) * 60,
+                        (Math.random() - 0.5) * 60
+                    );
+                    netGroup.add(node);
+                    nodePos.push(node.position);
+                }
+
+                // Connections
+                const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+                const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2 });
+                for (let i = 0; i < nodeCount; i++) {
+                    for (let j = i + 1; j < nodeCount; j++) {
+                        if (nodePos[i].distanceTo(nodePos[j]) < 20) {
+                            const line = new THREE.Line(lineGeo.clone(), lineMat);
+                            line.geometry.setFromPoints([nodePos[i], nodePos[j]]);
+                            netGroup.add(line);
+                        }
+                    }
+                }
+                netGroup.name = "causal_net";
+                activeGroup.add(netGroup);
+                document.getElementById('param1-label').innerText = "Signal Coherence";
+            } else if (mode === 'event-horizon') {
+                // GRAVITATIONAL SINGULARITY (Interstellar Style)
+                const bhGroup = new THREE.Group();
+                bhGroup.name = "singularity";
+
+                // 1. The Event Horizon (Dark Core)
+                const core = new THREE.Mesh(
+                    new THREE.SphereGeometry(3, 64, 64),
+                    new THREE.MeshBasicMaterial({ color: 0x000000 })
+                );
+                bhGroup.add(core);
+
+                // 2. Gravitational Lensing Halo (The "Vertical" Ring)
+                const halo = new THREE.Mesh(
+                    new THREE.TorusGeometry(10, 0.4, 16, 100),
+                    new THREE.MeshBasicMaterial({ color: 0xff4400, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending })
+                );
+                halo.name = "lensing_halo";
+                bhGroup.add(halo);
+
+                // 2b. Photon Sphere (Inner Light Trapping)
+                const photonSphere = new THREE.Mesh(
+                    new THREE.TorusGeometry(5, 0.05, 16, 100),
+                    new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending })
+                );
+                photonSphere.rotation.x = Math.PI / 2;
+                photonSphere.name = "photon_sphere";
+                bhGroup.add(photonSphere);
+
+                // 3. Multi-Layer Accretion Disk (Horizontal)
+                const diskGroup = new THREE.Group();
+                diskGroup.name = "accretion_group";
+                for (let i = 0; i < 4; i++) {
+                    const disk = new THREE.Mesh(
+                        new THREE.TorusGeometry(7 + i * 3, 0.4 - i * 0.08, 16, 100),
+                        new THREE.MeshBasicMaterial({
+                            color: i === 0 ? 0xffbb00 : 0xff3300,
+                            transparent: true,
+                            opacity: 0.7 - i * 0.15,
+                            blending: THREE.AdditiveBlending
+                        })
+                    );
+                    disk.rotation.x = Math.PI / 2;
+                    disk.userData.speed = 3 - i * 0.6;
+                    diskGroup.add(disk);
+                }
+                bhGroup.add(diskGroup);
+
+                // 4. Polar Jets (Gamma Emission)
+                const jetGeo = new THREE.CylinderGeometry(0.1, 2, 80, 16, 1, true);
+                const jetMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending });
+                const jet1 = new THREE.Mesh(jetGeo, jetMat);
+                jet1.position.y = 40;
+                const jet2 = jet1.clone();
+                jet2.position.y = -40;
+                jet2.rotation.z = Math.PI;
+                bhGroup.add(jet1, jet2);
+
+                // 5. Spiraling Infall Particles
+                const pCount = 200;
+                const pGeo = new THREE.BufferGeometry();
+                const pPos = new Float32Array(pCount * 3);
+                const pSpeeds = new Float32Array(pCount);
+                for (let i = 0; i < pCount; i++) {
+                    pSpeeds[i] = 0.5 + Math.random();
+                }
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                const pMat = new THREE.PointsMaterial({ color: 0xffaa00, size: 0.3, transparent: true, blending: THREE.AdditiveBlending });
+                const particles = new THREE.Points(pGeo, pMat);
+                particles.name = "infall_particles";
+                particles.userData.speeds = pSpeeds;
+                bhGroup.add(particles);
+
+                // 6. Curvature Grid
+                const gridGroup = new THREE.Group();
+                gridGroup.name = "warped_grid";
+                const step = 4;
+                for (let i = -40; i <= 40; i += step) {
+                    const lineXPts = [];
+                    const lineZPts = [];
+                    for (let j = -40; j <= 40; j += 2) {
+                        lineXPts.push(new THREE.Vector3(i, 0, j));
+                        lineZPts.push(new THREE.Vector3(j, 0, i));
+                    }
+                    const lMat = new THREE.LineBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.15 });
+                    gridGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lineXPts), lMat));
+                    gridGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lineZPts), lMat));
+                }
+                bhGroup.add(gridGroup);
+
+                activeGroup.add(bhGroup);
+                document.getElementById('param1-label').innerText = "Mass Density (M)";
             } else if (mode === 'gravity') {
                 const gridRes = 30, range = 40;
                 const points = [];
@@ -744,17 +884,84 @@
             if (currentMode === 'block-universe') {
                 const slicer = activeGroup.getObjectByName("now_slicer");
                 const label = activeGroup.getObjectByName("now_label");
+                const crystal = activeGroup.getObjectByName("spacetime_crystal");
 
-                // Slider (p1: 0..1) controls Z position
-                const zPos = (p1 - 0.5) * 200; // Range -100 to 100
+                const zPos = (p1 - 0.5) * 150;
 
                 if (slicer) {
                     slicer.position.z = zPos;
-                    // Pulse the slicer
-                    slicer.material.opacity = 0.2 + Math.sin(time * 5) * 0.05;
+                    slicer.material.opacity = 0.15 + Math.sin(time * 3) * 0.05;
                 }
                 if (label) {
                     label.position.set(0, 50, zPos);
+                }
+                if (crystal) {
+                    crystal.children.forEach((c, i) => {
+                        c.rotation.z += 0.005;
+                        c.material.opacity = 0.1 + Math.sin(time + i) * 0.05;
+                    });
+                }
+            } else if (currentMode === 'causal-net') {
+                const net = activeGroup.getObjectByName("causal_net");
+                if (net) {
+                    net.children.forEach((c, j) => {
+                        if (c.type === "Mesh") {
+                            c.position.y += Math.sin(time + j) * 0.05 * p1;
+                            c.scale.setScalar(1 + Math.sin(time * 5 + j) * 0.2);
+                        }
+                    });
+                    net.rotation.y += 0.002;
+                }
+            } else if (currentMode === 'event-horizon') {
+                const singularity = activeGroup.getObjectByName("singularity");
+                if (singularity) {
+                    const mass = p1 * 50;
+                    const disco = singularity.getObjectByName("accretion_group");
+                    const halo = singularity.getObjectByName("lensing_halo");
+                    const particles = singularity.getObjectByName("infall_particles");
+                    const grid = singularity.getObjectByName("warped_grid");
+
+                    if (disco) {
+                        disco.children.forEach((layer, i) => {
+                            layer.rotation.z += 0.02 * layer.userData.speed * (p1 + 0.5);
+                            layer.scale.setScalar(1 + Math.sin(time * 2 + i) * 0.05);
+                        });
+                    }
+
+                    if (halo) {
+                        halo.rotation.y = time * 0.5;
+                        halo.rotation.x = Math.sin(time * 0.3) * 0.2;
+                        halo.scale.setScalar(1 + Math.cos(time) * 0.02);
+                    }
+
+                    if (particles) {
+                        const pos = particles.geometry.attributes.position;
+                        const speeds = particles.userData.speeds;
+                        for (let i = 0; i < pos.count; i++) {
+                            const angle = time * speeds[i] + i;
+                            const r = 25 - ((time * 10 * speeds[i] + i * 5) % 22);
+                            if (r < 3) { // Reset if too close to center
+                                pos.setXYZ(i, 0, 0, 0);
+                            } else {
+                                pos.setXYZ(i, Math.cos(angle) * r, Math.sin(time * 0.1) * 2, Math.sin(angle) * r);
+                            }
+                        }
+                        pos.needsUpdate = true;
+                    }
+
+                    if (grid) {
+                        grid.children.forEach(line => {
+                            const pos = line.geometry.attributes.position;
+                            for (let i = 0; i < pos.count; i++) {
+                                const x = pos.getX(i);
+                                const z = pos.getZ(i);
+                                const r = Math.sqrt(x * x + z * z);
+                                const y = -mass / (r / 4 + 1.2);
+                                pos.setY(i, y);
+                            }
+                            pos.needsUpdate = true;
+                        });
+                    }
                 }
             } else if (currentMode === 'light-cone') {
                 const h = 60;

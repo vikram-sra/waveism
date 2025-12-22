@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resonance | Wave Harmonics</title>
+    <style>
+        html,
+        body {
+            background: #000 !important;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -35,11 +41,12 @@
             left: 20px;
             color: rgba(0, 221, 255, 0.4);
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             letter-spacing: 0.15em;
             pointer-events: none;
             z-index: 100;
-            max-width: 250px;
+            max-width: 180px;
+            line-height: 1.4;
         }
 
         .system-status {
@@ -48,7 +55,7 @@
             right: 20px;
             text-align: right;
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             color: rgba(0, 221, 255, 0.4);
             line-height: 1.4;
             pointer-events: none;
@@ -117,7 +124,7 @@
 
         .wave-band-desc {
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.55rem;
+            font-size: 0.52rem;
         }
 
         .manifold-glitch {
@@ -244,39 +251,37 @@
 
         const theories = {
             'social': {
-                name: 'Social Resonance', year: 'Emergent Collectivity, 2025',
-                equation: 'Ψ_total = Σ ψ_individual',
-                facts: [{ text: 'Path Memory', status: 'yes' }, { text: 'Collective Unconscious', status: 'yes' }],
-                description: 'We are not isolated observers. Every visitor to this space leaves a "Ghost"—a trace of their interaction. This installation visualizes the paths of previous observers, showing how individual agencies weave together into a collective social resonance.',
+                name: 'Social Resonance', year: 'Emergent Collectivity',
+                equation: 'Ψ_total = Σ ψ_i',
+                facts: [{ text: 'Path Memory', status: 'yes' }, { text: 'Collective Drift', status: 'yes' }],
+                description: 'Visitors leave "Ghosts"—traces of interaction. This mode visualizes individual agency weaving into a collective social manifold.',
                 concepts: [
-                    { term: 'Stigmergy', definition: 'Indirect coordination between agents or actions, where the trace left in the environment stimulates the performance of a next action.' },
-                    { term: 'Path Dependence', definition: 'The current state of the system is a sum of its entire history.' }
+                    { term: 'Stigmergy', definition: 'Indirect coordination via environmental traces.' },
+                    { term: 'Path Dependence', definition: 'The current state as a product of system history.' }
                 ],
-                physics: 'In Waveism, society is a standing wave. We are all phase-locked oscillators in a shared cognitive manifold. Your actions ripple out and interfere with the paths of others, creating the constructive interference we call "Culture".'
+                physics: 'Waveism: Society as a standing wave. Constructive interference creates "Culture" in the cognitive manifold.'
             },
             'neural': {
-                name: 'Neural Binding', year: 'Conscious Synchrony, 1990',
-                equation: 'γ(synchrony) = Binding',
-                facts: [{ text: 'Phase Locking', status: 'yes' }, { text: 'Information Gating', status: 'yes' }],
-                description: 'The brain does not process information in isolated chunks, but through synchronized oscillations across different brain regions. High-frequency Gamma waves bind disparate sensory inputs into a singular unified experience. This resonance is the foundation of consciousness itself.',
+                name: 'Neural Binding', year: 'Synchrony Protocol',
+                equation: 'γ(synchrony)',
+                facts: [{ text: 'Phase Locking', status: 'yes' }, { text: 'Info Gating', status: 'yes' }],
+                description: 'Synchronized oscillations across brain regions. Gamma waves (40Hz) bind disparate sensory data into unified conscious experience.',
                 concepts: [
-                    { term: 'Neural Synchrony', definition: 'The simultaneous firing of neurons that enables different brain regions to communicate and share data.' },
-                    { term: 'Gamma Binding', definition: '30-100Hz oscillations that link colors, shapes, and motion into a coherent perceptual object.' },
-                    { term: 'The 40Hz Theory', definition: 'The hypothesis that 40Hz oscillations are the fundamental mechanism of conscious awareness.' },
-                    { term: 'Cross-Frequency Coupling', definition: 'The mechanism where memory cycles (Theta) providing the framework for perceptual binding (Gamma).' }
+                    { term: 'Gamma Binding', definition: '30-100Hz oscillations linking perceptual objects.' },
+                    { term: 'Neural Synchrony', definition: 'Simultaneous firing enabling cross-regional communication.' }
                 ],
-                physics: 'In Waveism, neural binding is a macro-scale "Quantum Coherence". The neural network mimics the phase-locking of the fundamental vacuum, allowing complex consciousness to arise from simple oscillatory nodes. It is the emergence of order from biological chaos through pure resonance.'
+                physics: 'Waveism: Neural binding acts as macro-scale coherence, mimicking vacuum phase-locking.'
             },
             'gravity': {
-                name: 'Metrical Ripples', year: 'Gravitational Waves, 1916/2015',
-                equation: 'h_μν = (2G/c⁴r) d²Q_μν/dt²',
-                facts: [{ text: 'Transverse Strain', status: 'yes' }, { text: 'Metric Warp', status: 'yes' }],
-                description: 'Ripples in the very fabric of spacetime. When massive objects accelerate, they radiate energy as quadropolar waves that physically stretch and squeeze the dimensions of the universe as they pass.',
+                name: 'Metrical Ripples', year: 'Gravitational Waves',
+                equation: 'h_μν ∝ d²Q_μν/dt²',
+                facts: [{ text: 'Metric Warp', status: 'yes' }, { text: 'Transverse Strain', status: 'yes' }],
+                description: 'Oscillations in spacetime. Massive accelerations radiate quadropolar energy, physically stretching and squeezing the cosmic substrate.',
                 concepts: [
-                    { term: 'Inspiral Chirp', definition: 'The characteristic increase in frequency and amplitude as two black holes approach a collision.' },
-                    { term: 'Strain (h)', definition: 'A dimensionless number representing the fractional change in distance between two points in space.' }
+                    { term: 'Strain (h)', definition: 'Fractional change in metric distance.' },
+                    { term: 'Inspiral Chirp', definition: 'The freq-amplitude increase during binary collisions.' }
                 ],
-                physics: 'Gravitational waves are the "Sound" of the universe. They are the longitudinal-transverse oscillations of the metric itself, proving space is a dynamic, resonant medium.'
+                physics: 'Waveism: Space is a dynamic resonant medium. Gravitational waves are metric "Sound".'
             },
             'pilot': {
                 name: 'De Broglie-Bohm Pilot', year: 'Deterministic Quantum Fluid',
@@ -369,7 +374,7 @@
             canvas.width = 256;
             canvas.height = 128;
             ctx.fillStyle = color;
-            ctx.font = 'bold 36px JetBrains Mono, monospace';
+            ctx.font = 'bold 40px JetBrains Mono, monospace';
             ctx.textAlign = 'center';
             ctx.fillText(text, 128, 64);
             const tex = new THREE.CanvasTexture(canvas);

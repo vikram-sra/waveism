@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic | Spacetime Manifolds</title>
+    <style>
+        html,
+        body {
+            background: #000 !important;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -35,11 +41,12 @@
             left: 20px;
             color: rgba(0, 136, 255, 0.4);
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             letter-spacing: 0.15em;
             pointer-events: none;
             z-index: 100;
-            max-width: 250px;
+            max-width: 140px;
+            line-height: 1.4;
         }
 
         .system-status {
@@ -48,7 +55,7 @@
             right: 20px;
             text-align: right;
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             color: rgba(0, 136, 255, 0.4);
             line-height: 1.4;
             pointer-events: none;
@@ -112,6 +119,7 @@
         <button class="theory-tab" data-theory="emc2">E = mc² Core</button>
         <button class="theory-tab" data-theory="gravity">Metric Tensor</button>
         <button class="theory-tab" data-theory="funnel">Cosmic Funnel</button>
+        <button class="theory-tab" data-theory="singularity">The Singularity</button>
     </div>
 
     <div class="params-panel">
@@ -187,37 +195,48 @@
                 physics: 'In Waveism, a worldline is the "Phase-Trace" of a signal. Every object is a wave-packet moving through the substrate; its path is the coherent history of its constructive interference.'
             },
             'emc2': {
-                name: 'Mass-Energy Symmetry', year: 'Einstein, 1905',
+                name: 'Mass-Energy Symmetry', year: 'Wave-Knot Protocol',
                 equation: 'E² = (pc)² + (m₀c²)²',
-                facts: [{ text: 'Binding Energy', status: 'yes' }, { text: 'Quanta Exchange', status: 'yes' }],
-                description: 'Mass is not a separate thing from energy; it is simply energy trapped in a localized resonant state. This symmetry allows mass to be converted into radiant energy and vice versa.',
+                facts: [{ text: 'Trapped Energy', status: 'yes' }, { text: 'Exchange', status: 'yes' }],
+                description: 'Mass as energy trapped in localized resonance. Mass-energy symmetry allows conversion between radiant flux and localized states.',
                 concepts: [
-                    { term: 'Rest Mass (m₀)', definition: 'The invariant energy content of a system at rest.' },
-                    { term: 'Relativistic Mass', definition: 'The apparent increase in mass as an object approaches light-speed.' }
+                    { term: 'Rest Mass', definition: 'The invariant energy of a static system.' },
+                    { term: 'Wave-Knot', definition: 'Localization of free waves into standing resonant structures.' }
                 ],
-                physics: 'Energy is a wave in motion; mass is a wave-knot. The equation E=mc² is the conversion factor between free waves and localized standing waves in the cosmic field.'
+                physics: 'Waveism: E=mc² is the conversion factor between free propagation and localized standing waves.'
             },
             'gravity': {
-                name: 'Metric Tensor Warping', year: 'General Relativity, 1915',
-                equation: 'G_μν = 8πG/c⁴ T_μν',
+                name: 'Metric Warping', year: 'Einstein Manifold',
+                equation: 'G_μν = 8πT_μν',
                 facts: [{ text: 'Dynamic Stage', status: 'yes' }, { text: 'Geodesic Flow', status: 'yes' }],
-                description: 'Gravity is not a force, but the curvature of the spacetime metric. Massive objects "tell" space how to curve, and the curvature "tells" objects how to move.',
+                description: 'Gravity as curvature. Massive objects deform the metric, dictating the "straightest" paths for all system agents.',
                 concepts: [
-                    { term: 'Stress-Energy Tensor', definition: 'A mathematical description of the density and flux of energy and momentum.' },
-                    { term: 'Ricci Curvature', definition: 'The component of spacetime curvature that accounts for gravity.' }
+                    { term: 'Energy Flux', definition: 'The flow of momentum density through the manifold.' },
+                    { term: 'Ricci Curvature', definition: 'The geometric measure of local volume distortion.' }
                 ],
-                physics: 'Gravity is the "Refractive Index" of the substrate. Massive energy-concentrations slow down or bend the propagation of waves, effectively "curving" the path of any object.'
+                physics: 'Waveism: Gravity is the refractive index of the cosmic substrate.'
             },
             'funnel': {
-                name: 'Cosmic Funnel History', year: 'Friedmann-Lemaître, 1922',
+                name: 'Cosmic Funnel', year: 'Expansion Era',
                 equation: 'ȧ/a = H(t)',
-                facts: [{ text: 'Expansion Era', status: 'yes' }, { text: 'Scale Factor', status: 'yes' }],
-                description: 'The holographic history of the universe as an expanding manifold. From the high-energy singularity of the Big Bang to the current era of dark energy acceleration.',
+                facts: [{ text: 'Metric Stretch', status: 'yes' }, { text: 'Scalar Field', status: 'yes' }],
+                description: 'Holographic history of the manifold. Expansion from high-energy singularity to the era of dark energy acceleration.',
                 concepts: [
-                    { term: 'Hubble Expansion', definition: 'The metric stretching of space between distant galaxy clusters.' },
-                    { term: 'Particle Horizon', definition: 'The limit of the observable universe—how far light has traveled since the beginning.' }
+                    { term: 'Hubble Flow', definition: 'Metric stretching of space between clusters.' },
+                    { term: 'Phase Shift', definition: 'The global transition from coherent node to multi-frequency field.' }
                 ],
-                physics: 'The Big Bang was a "Global Phase-Shift". The universe expanded from a single coherent node into the multi-frequency interference field we see today.'
+                physics: 'Waveism: The Big Bang was a global phase-shift in the vacuum state.'
+            },
+            'singularity': {
+                name: 'Event Horizon', year: 'Schwarzschild Limit',
+                equation: 'R_s = 2GM/c²',
+                facts: [{ text: 'Infinite Curve', status: 'yes' }, { text: 'Time Freeze', status: 'yes' }],
+                description: 'The ultimate cosmic resonance. A region where curvature is so extreme that the metric field effectively disconnects from the surrounding worldlines.',
+                concepts: [
+                    { term: 'Spaghettification', definition: 'Extreme tidal forces stretching objects into worldline filaments.' },
+                    { term: 'Lensing', definition: 'The bending of information-carrying waves around the gravitational well.' }
+                ],
+                physics: 'Waveism: A singularity is a point of destructive interference in the metric field where all phase-information is localized and lost.'
             }
         };
 
@@ -281,7 +300,7 @@
             valEl.innerText = p1;
         }
 
-        function createLabel(text, yPos, size = 32) {
+        function createLabel(text, yPos, size = 36) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 512; canvas.height = 128;
@@ -382,6 +401,41 @@
 
                 activeGroup.add(createLabel("CURRENT ERA", 160));
                 activeGroup.add(createLabel("BIG BANG", -160));
+            } else if (mode === 'singularity') {
+                // THE SINGULARITY (Interstellar Style)
+                const core = new THREE.Mesh(
+                    new THREE.SphereGeometry(20, 64, 64),
+                    new THREE.MeshBasicMaterial({ color: 0x000000 })
+                );
+                activeGroup.add(core);
+
+                // Accretion Disk Layers
+                for (let i = 0; i < 4; i++) {
+                    const ring = new THREE.Mesh(
+                        new THREE.TorusGeometry(35 + i * 15, 0.5 - i * 0.1, 16, 100),
+                        new THREE.MeshBasicMaterial({
+                            color: i === 0 ? 0x00ffff : 0x0088ff,
+                            transparent: true,
+                            opacity: 0.6 - i * 0.1,
+                            blending: THREE.AdditiveBlending
+                        })
+                    );
+                    ring.rotation.x = Math.PI / 2;
+                    ring.userData.speed = 4 - i * 0.8;
+                    ring.name = "acc_disk_" + i;
+                    activeGroup.add(ring);
+                }
+
+                // Vertical Lensing Ring
+                const halo = new THREE.Mesh(
+                    new THREE.TorusGeometry(60, 0.4, 16, 100),
+                    new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending })
+                );
+                halo.name = "lensing_halo";
+                activeGroup.add(halo);
+
+                activeGroup.add(createLabel("EVENT HORIZON", 120));
+                activeGroup.add(createLabel("GRAVITY WELL", -120));
             }
 
             if (window.globalDrag) {
@@ -444,6 +498,18 @@
                 if (funnel) {
                     const scale = 1 + (p1 / 100 - 1) * 0.5;
                     funnel.scale.set(scale, 1, scale);
+                }
+            } else if (currentMode === 'singularity') {
+                activeGroup.children.forEach(c => {
+                    if (c.name && c.name.startsWith("acc_disk_")) {
+                        c.rotation.z += 0.01 * c.userData.speed * (p1 / 100 + 0.5);
+                        c.scale.setScalar(1 + Math.sin(time * 2) * 0.03);
+                    }
+                });
+                const halo = activeGroup.getObjectByName("lensing_halo");
+                if (halo) {
+                    halo.rotation.y = time * 0.5;
+                    halo.rotation.x = Math.sin(time * 0.3) * 0.2;
                 }
             }
         }

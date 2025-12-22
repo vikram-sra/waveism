@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Realm | Wave Manifolds</title>
+    <style>
+        html,
+        body {
+            background: #000 !important;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -35,11 +41,12 @@
             left: 20px;
             color: rgba(0, 255, 170, 0.4);
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             letter-spacing: 0.15em;
             pointer-events: none;
             z-index: 100;
-            max-width: 250px;
+            max-width: 180px;
+            line-height: 1.4;
         }
 
         .system-status {
@@ -48,7 +55,7 @@
             right: 20px;
             text-align: right;
             font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
+            font-size: 0.52rem;
             color: rgba(0, 255, 170, 0.4);
             line-height: 1.4;
             pointer-events: none;
@@ -209,123 +216,114 @@
 
         const theories = {
             'superposition': {
-                name: 'The Observer Paradox', year: 'Aesthetic Interpretation, 2025',
+                name: 'Observer Paradox', year: 'Aesthetic Interpretation',
                 equation: '|Ψ⟩ = α|Face⟩ + β|Landscape⟩',
-                facts: [{ text: 'Morphological', status: 'yes' }, { text: ' Interactive', status: 'yes' }],
-                description: 'A visual metaphor for quantum superposition. The object exists simultaneously as a localized entity (a Face) and a distributed field (a Landscape). It only chooses a form when you interact with it (Observation).',
+                facts: [{ text: 'Morphological', status: 'yes' }, { text: 'Interactive', status: 'yes' }],
+                description: 'Visual metaphor for superposition. The object exists as both a localized entity (Face) and a distributed field (Landscape), choosing a form only upon interaction.',
                 concepts: [
-                    { term: 'Wavefunction Collapse', definition: 'The reduction of the physical possibilities into a single concrete reality upon measurement.' },
-                    { term: 'Complementarity', definition: 'Objects have dual natures (particle/wave) that cannot be observed simultaneously.' }
+                    { term: 'Collapse', definition: 'The reduction of possibilities into a concrete reality upon measurement.' },
+                    { term: 'Complementarity', definition: 'Duality of nature that cannot be observed simultaneously.' }
                 ],
-                physics: 'This installation demonstrates that reality is not static; it is a probability cloud that solidifies only when we ask it a specific question.'
+                physics: 'Waveism: Reality is a probability cloud that solidifies only when questioned.'
             },
             'double-slit': {
-                name: 'Double-Slit Interference', year: 'Wave-Particle Duality, 1927',
+                name: 'Interference Patterns', year: 'Wave-Particle Duality',
                 equation: 'ψ = ψ₁ + ψ₂',
                 facts: [{ text: 'Superposition', status: 'yes' }, { text: 'Pattern Persistence', status: 'yes' }],
-                description: 'The prototypical quantum experiment. Particles traveling through two slits interfere with themselves like waves, creating a deterministic distribution pattern that only collapses into localized points upon measurement.',
+                description: 'The prototypical quantum test. Particles travel through two slits and interfere with themselves, creating a deterministic distribution pattern.',
                 concepts: [
-                    { term: 'Probability Amplitude', definition: 'A complex number ($ψ$) whose magnitude squared gives the probability of a particle\'s location.' },
-                    { term: 'Phasing', definition: 'The relative timing of the waves that causes constructive or destructive interference.' },
-                    { term: 'Observer Effect', definition: 'The phenomenon where measuring which slit a particle went through destroys the interference pattern.' }
+                    { term: 'Probability Amplitude', definition: 'A complex number (ψ) giving location probability.' },
+                    { term: 'Decoherence', definition: 'The loss of quantum interference due to interaction with the environment.' }
                 ],
-                physics: 'In Waveism, the double-slit is a phase-coherence test. It shows that the cosmic substrate can maintain parallel signal states until a decoherence event forces a system reset.'
+                physics: 'Waveism: Phase-coherence test. The substrate maintains parallel states until a decoherence event forces a reset.'
             },
             'orbitals': {
-                name: 'Hydrogenic Orbitals', year: 'Quantum Chemistry, 1926',
-                equation: 'Hψₙₗₘ = Eₙψₙₗₘ',
+                name: 'Atomic Orbitals', year: 'Harmonic States',
+                equation: 'Hψ = Eψ',
                 facts: [{ text: 'Stable States', status: 'yes' }, { text: 'Quantized energy', status: 'yes' }],
-                description: 'The probability clouds where electrons reside in an atom. These are not orbits, but standing-wave patterns (Spherical Harmonics) in the electron field around the nucleus.',
+                description: 'Probability clouds of electron residence. These are standing-wave patterns (Spherical Harmonics) in the field around the nucleus.',
                 concepts: [
-                    { term: 'Principal Number n', definition: 'Determines the overall energy and size of the orbital cloud.' },
                     { term: 'Nodal Plains', definition: 'Regions of zero probability where the wavefunction changes sign.' },
-                    { term: 'Shell Stability', definition: 'The geometric arrangement of electrons that defines all chemical properties.' }
+                    { term: 'Shell Stability', definition: 'The geometric arrangement defining all chemical properties.' }
                 ],
-                physics: 'Orbitals are the harmonic resonances of the atomic substrate. They are the macroscopic result of the vacuum field folding in on itself to reach a minimum energy configuration.'
+                physics: 'Waveism: Orbitals are the harmonic resonances of the atomic substrate.'
             },
             'strings': {
-                name: 'Superstring Manifolds', year: 'The Theory of Everything',
-                equation: 'L = -1/2πα\' ∫ d²σ',
+                name: 'Superstring Manifolds', year: 'Harmonic Elements',
+                equation: 'L ∝ ∫ d²σ',
                 facts: [{ text: '10 Dimensions', status: 'yes' }, { text: 'Calabi-Yau', status: 'yes' }],
-                description: 'Replaces point-particles with one-dimensional vibrating strings. The different vibration modes of these strings correspond to the different fundamental particles like electrons, photons, and gravitons.',
+                description: 'Point-particles as vibrating strings. Different vibration modes correspond to electrons, photons, and gravitons.',
                 concepts: [
-                    { term: 'Extra Dimensions', definition: 'The 6 or 7 extra dimensions curled into tiny, complex shapes known as Calabi-Yau manifolds.' },
-                    { term: 'Brane Dynamics', definition: 'Higher-dimensional surfaces to which strings can be attached.' },
-                    { term: 'Planck Scale', definition: 'The microscopic distance (10⁻³⁵m) where string effects become dominant.' }
+                    { term: 'Calabi-Yau', definition: 'Extra dimensions curled into complex geometric manifolds.' },
+                    { term: 'Planck Scale', definition: 'The distance (10⁻³⁵m) where string effects dominate.' }
                 ],
-                physics: 'String theory is the ultimate Waveism goal. It views the entire universe as a single, complex, multi-dimensional interference pattern of a fundamental cosmic string.'
+                physics: 'Waveism: The universe as a multi-dimensional interference pattern of a fundamental string.'
             },
             'crystal': {
-                name: 'Discrete Time Crystals', year: 'Symmetry Breaking, 2012',
+                name: 'Time Crystals', year: 'Temporal Order',
                 equation: '⟨ψ(t+T)⟩ = ⟨ψ(t)⟩',
                 facts: [{ text: 'Broken T-Symmetry', status: 'yes' }, { text: 'Non-equilibrium', status: 'yes' }],
-                description: 'A new phase of matter that breaks time-translation symmetry. Unlike a regular crystal that repeats in space, a time-crystal repeats its patterns and motion through time, even at its lowest energy state.',
+                description: 'A phase of matter breaking time-translation symmetry. Pattern repetition occurs through time rather than space, even at lowest energy states.',
                 concepts: [
-                    { term: 'Period Doubling', definition: 'The system responds to a drive force at a lower frequency than the force itself.' },
-                    { term: 'Stroboscopic Floquet', definition: 'A mathematical description of systems driven periodically in time.' },
-                    { term: 'Rigidity', definition: 'The crystal’s ability to resist external noise and maintain its rhythmic oscillation.' }
+                    { term: 'Floquet Protocol', definition: 'Periodic drive leading to stable non-equilibrium phases.' },
+                    { term: 'Temporal Rigidity', definition: 'Resistance to noise, maintaining rhythmic oscillation.' }
                 ],
-                physics: 'Time crystals prove that time is a phase-dimension. The substrate can "crystallize" in time just as it does in space, creating temporal order out of chaos.'
+                physics: 'Waveism: Time crystals prove time is a phase-dimension capable of crystallization.'
             },
             'gedanken': {
-                name: 'Schrödinger\'s Cat', year: 'Thought Experiment, 1935',
-                equation: '1/√2 (|Alive⟩ + |Dead⟩)',
-                facts: [{ text: 'Macroscopic', status: 'yes' }, { text: 'Entanglement', status: 'yes' }],
-                description: 'A paradox illustrating the problem of the Copenhagen interpretation applied to everyday objects. A cat in a sealed box is simultaneously alive and dead until the box is opened (measurement).',
+                name: "Schrödinger's Cat", year: 'Measurement Problem',
+                equation: '1/√2 (|A⟩ + |D⟩)',
+                facts: [{ text: 'Macroscopic', status: 'yes' }, { text: 'Entangled', status: 'yes' }],
+                description: 'Paradox illustrating interpretation limits. A cat is simultaneously alive and dead until the system is observed.',
                 concepts: [
-                    { term: 'Superposition', definition: 'The system exists in all possible states simultaneously.' },
-                    { term: 'Decoherence', definition: 'The loss of quantum coherence due to interaction with the environment.' },
-                    { term: 'Many Worlds', definition: 'An alternative interpretation where both outcomes happen in branching universes.' }
+                    { term: 'Many Worlds', definition: 'Interpretation where all outcomes occur in branching manifolds.' },
+                    { term: 'Decoherence', definition: 'Interaction with environment forcing state selection.' }
                 ],
-                physics: 'Schrödinger intended this as a critique of the absurdity of quantum mechanics, but it remains the most famous illustration of the measurement problem.'
+                physics: 'Waveism: Illustration of the measurement problem and state-selection.'
             },
             'tunneling': {
-                name: 'Quantum Tunneling', year: 'Alpha Decay, 1928',
-                equation: 'T ≈ exp(-2L√{2m(V-E)}/ℏ)',
-                facts: [{ text: 'Barrier Penetration', status: 'yes' }, { text: 'Evanescent Wave', status: 'yes' }],
-                description: 'A phenomenon where a particle passes through a potential barrier that it classically could not surmount. The wavefunction does not end at the wall but decays exponentially inside it.',
+                name: 'Quantum Tunneling', year: 'Barrier Penetration',
+                equation: 'T ∝ exp(-κL)',
+                facts: [{ text: 'Evanescent Wave', status: 'yes' }, { text: 'Barrier Leak', status: 'yes' }],
+                description: 'Barrier penetration via wave mechanics. Classically impossible: the field permeates the barrier, re-establishing on the other side.',
                 concepts: [
-                    { term: 'Tw', definition: 'Transmission Coefficient: The probability of passing through.' },
-                    { term: 'Potential V', definition: 'The energy height of the barrier (the wall).' },
-                    { term: 'Alpha Decay', definition: 'Tunneling explains how particles escape the nucleus.' }
+                    { term: 'Evanescence', definition: 'The exponential decay of the field within the forbidden zone.' },
+                    { term: 'Alpha Decay', definition: 'The mechanism of nuclear particle escape via tunneling.' }
                 ],
-                physics: 'Tunneling is strictly impossible in classical physics. In Waveism, the field permeates the barrier, allowing resonance to re-establish on the other side if the wall is thin enough.'
+                physics: 'Waveism: Non-local resonance through classically forbidden regions.'
             },
             'entanglement': {
-                name: 'Quantum Entanglement', year: 'EPR Paradox, 1935',
+                name: 'Quantum Entanglement', year: 'EPR Paradox',
                 equation: '|Ψ⟩ = (|00⟩ + |11⟩)/√2',
-                facts: [{ text: 'Non-locality', status: 'yes' }, { text: 'Spooky Action', status: 'yes' }],
-                description: 'A phenomenon where particles become interlinked such that the state of one instantly determines the state of the other, regardless of distance. Einstein called this "Spooky Action at a Distance".',
+                facts: [{ text: 'Non-locality', status: 'yes' }, { text: 'Phase Lock', status: 'yes' }],
+                description: 'Instantaneous correlation between distant particles. Einstein’s "Spooky Action"—the state of one defines the state of the other globally.',
                 concepts: [
-                    { term: 'Bell States', definition: 'Maximally entangled quantum states of two qubits.' },
-                    { term: 'Non-locality', definition: 'The effect occurs instantly, faster than light, though no information travels FTL.' },
-                    { term: 'Correlation', definition: 'Perfect statistical correlation between measurements.' }
+                    { term: 'Bell State', definition: 'Maximally entangled quantum states.' },
+                    { term: 'Non-locality', definition: 'Instantaneous synchronization across spatial separation.' }
                 ],
-                physics: 'Entanglement reveals the holistic nature of the Waveism substrate. Space is not a separator but a medium; entangled points are phase-locked across the manifold.'
+                physics: 'Waveism: Space is not a separator but a medium; entangled points are phase-locked across the manifold.'
             },
             'teleportation': {
-                name: 'Quantum Teleportation', year: 'Bennett et al., 1993',
-                equation: 'Bob(Ψ) → Alice(Measurement)',
+                name: 'Quantum Teleportation', year: 'Bennett Protocol',
+                equation: 'Bob(Ψ) → Alice(M)',
                 facts: [{ text: 'State Transfer', status: 'yes' }, { text: 'No Cloning', status: 'yes' }],
-                description: 'The transfer of a quantum state from one location to another using entanglement and classical communication. The original state is destroyed in the process (No-Cloning Theorem).',
+                description: 'Transfer of quantum states via entanglement. The original state is destroyed (No-Cloning), re-appearing at the destination through classic-quantum bridging.',
                 concepts: [
-                    { term: 'Qubit', definition: 'The basic unit of quantum information.' },
-                    { term: 'Bell Measurement', definition: 'A joint measurement of two qubits that projects them onto a Bell state.' },
-                    { term: 'Classical Channel', definition: 'Standard information must be sent to complete the protocol.' }
+                    { term: 'Bell Measure', definition: 'Projecting qubits onto maximally entangled states.' },
+                    { term: 'Qubit Geometry', definition: 'The informational footprint of matter in the field.' }
                 ],
-                physics: 'Teleportation demonstrates that "matter" is just "information" or "geometry" in the field. If you copy the geometry elsewhere, you have moved the object.'
+                physics: 'Waveism: Matter is local geometry. Replicating geometry elsewhere identicals the object.'
             },
             'zeno': {
-                name: 'Quantum Zeno Effect', year: 'Turing Paradox, 1977',
+                name: 'Quantum Zeno Effect', year: 'Turing Paradox',
                 equation: 'P(t) ≈ 1 - (t/τ_Z)²',
-                facts: [{ text: 'Measurement Freezing', status: 'yes' }, { text: 'Watch Pot', status: 'yes' }],
-                description: 'A quantum system can be arrested in its evolution by frequent observation. "A watched quantum pot never boils." Measuring the system collapses it back to its initial state repeatedly.',
+                facts: [{ text: 'Evolution Freeze', status: 'yes' }, { text: 'Watched Pot', status: 'yes' }],
+                description: 'System arrest via frequent observation. Measuring the state repeatedly collapses it back to initial conditions, preventing transition.',
                 concepts: [
-                    { term: 'Unitary Evolution', definition: 'The smooth, continuous change of a quantum system over time.' },
-                    { term: 'Collapse', definition: 'The abrupt change caused by measurement.' },
-                    { term: 'Coherence time', definition: 'The time window in which the system evolves.' }
+                    { term: 'Unitary Drift', definition: 'The smooth change of a system over time.' },
+                    { term: 'Measurement Bias', definition: 'The physical pressure exerted by the act of observation.' }
                 ],
-                physics: 'The Zeno effect shows that Observation is an active physical process. The act of "looking" forces the universe to decide on a state, preventing transition.'
+                physics: 'Waveism: Observation as an active force. Repeated collapse prevents the phase-shift of the substrate.'
             }
         };
 
@@ -409,7 +407,7 @@
             canvas.width = 512;
             canvas.height = 128;
             ctx.fillStyle = color;
-            ctx.font = 'bold 32px JetBrains Mono, monospace';
+            ctx.font = 'bold 36px JetBrains Mono, monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(text, 256, 64);

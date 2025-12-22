@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Epistemic Topology | The Unified Field</title>
+    <style>
+        html,
+        body {
+            background: #000 !important;
+        }
+    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -96,7 +102,7 @@
 
         .node text {
             font-family: 'JetBrains Mono';
-            font-size: 9px;
+            font-size: 11px;
             fill: rgba(0, 255, 255, 0.6);
             pointer-events: none;
             opacity: 0.7;
@@ -226,51 +232,51 @@
 
         const theories = {
             'map': {
-                name: 'Epistemic Topology', param: 'GRAVITY', equation: 'G = (V, E)', physics: 'Topology & Set Theory',
-                description: 'The causal mapping of first principles. All phenomena emerge from the relationships between these nodes.',
+                name: 'Epistemic Topology', param: 'GRAVITY', equation: 'G = (V, E, Φ)', physics: 'Ontological Set Theory',
+                description: 'Causal mapping of first principles. All phenomena emerge from the geometric relationships between primitives.',
                 concepts: [
                     { term: 'Nodes', definition: 'Ontological primitives (Reality, Time, Mind).' },
-                    { term: 'Edges', definition: 'Causal relationships and phase-locked flows.' }
+                    { term: 'Flows', definition: 'Causal relationships and phase-locked interference.' }
                 ]
             },
             'qft': {
-                name: 'Quantum Field', param: 'EXCITATION', equation: 'ℒ = ½(∂φ)² - ½m²φ²', physics: 'Quantum Electrodynamics',
-                description: 'A 3D energy density field where particles are localized wave-packet excitations. The "Grid" represents the underlying lattice of the vacuum.',
+                name: 'Quantum Field', param: 'EXCITATION', equation: 'ℒ = ½(∂φ)² - V(φ)', physics: 'Electrodynamics Protocol',
+                description: 'Energy density field where particles are localized wave-packet excitations. The "Grid" represents the vacuum lattice.',
                 concepts: [
-                    { term: 'Quantum Vacuum', definition: 'Not empty space, but a field with zero-point energy.' },
-                    { term: 'Particle-Field Duality', definition: 'A particle is a localized peak in the field amplitude.' },
-                    { term: 'Fluctuations', definition: 'Random variations in field strength that can spontaneously create virtual pairs.' }
+                    { term: 'Zero-Point', definition: 'The non-zero energy state of the fundamental vacuum.' },
+                    { term: 'Excitations', definition: 'Localized peaks in field amplitude perceived as particles.' }
                 ]
             },
             'pilot': {
-                name: 'Pilot Wave', param: 'GUIDANCE', equation: 'v = ∇S/m', physics: 'De Broglie-Bohm Theory',
-                description: 'A singular particle-wave duality where a point-like entity is guided by its own physical pilot wave. One "Pilot" per moment defines the path.',
+                name: 'Pilot Wave', param: 'GUIDANCE', equation: 'v = ∇S/m', physics: 'Bohmian Fluid Dynamics',
+                description: 'Particle guided by a physical pilot wave. The wave informs the particle of global conditions instantly.',
                 concepts: [
-                    { term: 'Non-Locality', definition: 'The wave informs the particle of conditions at the slits instantly.' },
-                    { term: 'Quantum Equilibrium', definition: 'The state where particle distribution matches |ψ|².' },
-                    { term: '1-Pilot System', definition: 'Focusing on the singular relationship between the wave force and its subject.' }
+                    { term: 'Non-Locality', definition: 'Instantaneous wave-particle information exchange.' },
+                    { term: 'Equilibrium', definition: 'State where particle distribution matches field intensity.' }
                 ]
             },
             'neural': {
-                name: 'Neural Sync', param: 'COHERENCE', equation: 'Δw = η·pre·post', physics: '3D Oscillatory Dynamics',
-                description: 'Consciousness as a 3D phase-locked resonance across cerebral regions.',
+                name: 'Neural Sync', param: 'COHERENCE', equation: 'Δw = η·pre·post', physics: 'Oscillatory Binding',
+                description: 'Consciousness as 3D phase-locked resonance. 40Hz temporal binding across cerebral regions.',
                 concepts: [
-                    { term: 'Temporal Binding', definition: 'Unified perception emerged from 3D sync.' }
+                    { term: 'Binding', definition: 'Unified perception from spatial-temporal synchrony.' },
+                    { term: 'Coherence', definition: 'The degree of phase-locking between neural nodes.' }
                 ]
             },
             'social': {
                 name: 'Social Resonance', param: 'INFLUENCE', equation: 'R0 > 1', physics: 'Network Contagion',
-                description: '3D spherical influence fields spreading memetic information.',
+                description: 'Spherical influence fields spreading memetic information through the social manifold.',
                 concepts: [
-                    { term: 'Memetic Field', definition: 'The abstract space of cultural ideas.' }
+                    { term: 'Influence', definition: 'The reach of a memetic signal within the network.' },
+                    { term: 'Contagion', definition: 'The phase-driven spread of information via resonance.' }
                 ]
             },
             'reality': {
-                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) \geq \text{Min}', physics: 'Interface Theory of Perception',
-                description: 'We do not perceive the substrate directly. Our senses provide a simplified "desktop interface" optimized for survival, not truth. $\mathcal{H}_{reality} \rightarrow \mathcal{H}_{mind}$',
+                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) ≥ Min', physics: 'Interface Theory',
+                description: 'Our senses provide a simplified "desktop interface" optimized for survival, not truth. We perceive a fitness reconstruction of the substrate.',
                 concepts: [
-                    { term: 'Fitness Beats Truth', definition: 'Evolution selects for organisms that see payoffs, not objective reality.' },
-                    { term: 'Conscious Agents', definition: 'The fundamental primitives of the universe are experiencing agents, not particles.' }
+                    { term: 'Interface', definition: 'The simplified perceptual model of the complex substrate.' },
+                    { term: 'Fitness Payoff', definition: 'Optimization for survival rather than objective accuracy.' }
                 ]
             }
         };

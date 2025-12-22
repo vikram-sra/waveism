@@ -271,19 +271,21 @@
         }
 
         function setupGraphics() {
-            // mode: LOAF
+            // mode: LOAF (Refined)
             loafGroup = new THREE.Group();
-            const sliceGeo = new THREE.BoxGeometry(4, 2.5, 0.05);
-            for (let i = 0; i < 15; i++) {
-                const isNow = i === 7;
+            const sliceGeo = new THREE.BoxGeometry(2.5, 1.5, 0.02);
+            for (let i = 0; i < 10; i++) {
+                const isNow = i === 5;
                 const mat = new THREE.MeshPhongMaterial({
-                    color: isNow ? 0x00ffff : 0x444444,
+                    color: isNow ? 0x00ffff : 0x004466,
                     transparent: true,
-                    opacity: isNow ? 0.4 : 0.08,
-                    wireframe: !isNow
+                    opacity: isNow ? 0.35 : 0.05,
+                    wireframe: !isNow,
+                    emissive: isNow ? 0x00ffff : 0x000000,
+                    emissiveIntensity: isNow ? 0.5 : 0
                 });
                 const slice = new THREE.Mesh(sliceGeo, mat);
-                slice.position.z = (i - 7) * 0.35;
+                slice.position.z = (i - 5) * 0.3;
                 if (isNow) slice.name = "nowSlice";
                 loafGroup.add(slice);
             }
