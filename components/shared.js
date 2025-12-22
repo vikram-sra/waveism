@@ -77,10 +77,16 @@ function init2DStarfield(containerId) {
     const ctx = canvas.getContext('2d');
     let width, height;
 
+    // Mobile detection
+    const isMobile = window.innerWidth <= 900;
+    const sizeMultiplier = isMobile ? 0.5 : 1; // 50% smaller on mobile
+    const speedMultiplier = isMobile ? 2.0 : 1; // 2x faster on mobile
+    const countMultiplier = isMobile ? 0.7 : 1; // Fewer stars on mobile for performance
+
     const layers = [
-        { count: 150, size: 0.8, speed: 0.02, opacity: 0.3, stars: [] },
-        { count: 80, size: 1.5, speed: 0.05, opacity: 0.5, stars: [] },
-        { count: 30, size: 2.5, speed: 0.1, opacity: 0.7, stars: [] }
+        { count: Math.floor(150 * countMultiplier), size: 0.8 * sizeMultiplier, speed: 0.02 * speedMultiplier, opacity: 0.3, stars: [] },
+        { count: Math.floor(80 * countMultiplier), size: 1.5 * sizeMultiplier, speed: 0.05 * speedMultiplier, opacity: 0.5, stars: [] },
+        { count: Math.floor(30 * countMultiplier), size: 2.5 * sizeMultiplier, speed: 0.1 * speedMultiplier, opacity: 0.7, stars: [] }
     ];
 
     function resize() {

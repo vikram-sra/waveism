@@ -45,6 +45,13 @@ body {
     background: transparent;
 }
 
+/* Mobile: Faster, smaller, more subtle stars */
+@media (max-width: 900px) {
+    #background-stars {
+        opacity: 0.5;
+    }
+}
+
 #three-container {
     position: fixed;
     top: 0;
@@ -863,6 +870,11 @@ body:not(.ui-open) .nav-counter {
         top: auto !important;
         bottom: 25px !important;
         right: 25px !important;
+    }
+
+    /* Shift theory tabs upwards on mobile */
+    .theory-tabs {
+        top: 8px !important;
     }
 }
 
