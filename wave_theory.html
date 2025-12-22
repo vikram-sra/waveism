@@ -112,6 +112,14 @@
     </div>
 
     <div class="info-panel">
+        <div id="mini-physics-monitor"
+            style="display: flex; gap: 15px; font-family: 'JetBrains Mono'; font-size: 0.55rem; color: rgba(0, 255, 255, 0.6); margin-bottom: 8px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <div style="display: none;" id="monitor-active-indicator">PHYSICS: ACTIVE</div>
+            <span>KE: <span id="kinetic-energy" style="color: #fff;">0.00</span></span>
+            <span>PE: <span id="potential-energy" style="color: #fff;">0.00</span></span>
+            <span>TOTAL: <span id="total-energy" style="color: #fff;">0.00</span></span>
+            <span>DRIFT: <span id="energy-drift" style="color: #00ff00;">0.00%</span></span>
+        </div>
         <div class="theory-name" id="theory-name">Epistemic Topology</div>
         <div class="theory-year" id="theory-year">Unified Field Ontology</div>
         <div class="equation-box">
@@ -145,18 +153,7 @@
         <p id="card-body"></p>
     </div>
 
-    <!-- Energy Monitor Panel -->
-    <div id="energy-panel"
-        style="position: fixed; top: 120px; right: 20px; background: rgba(5, 8, 12, 0.9); border: 1px solid rgba(0, 255, 255, 0.2); padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #00ffff; backdrop-filter: blur(8px); z-index: 40; display: none;">
-        <div
-            style="font-weight: bold; margin-bottom: 6px; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 4px;">
-            PHYSICS MONITOR</div>
-        <div>KE: <span id="kinetic-energy">0.00</span></div>
-        <div>PE: <span id="potential-energy">0.00</span></div>
-        <div>Total: <span id="total-energy">0.00</span></div>
-        <div>Drift: <span id="energy-drift">0.00%</span></div>
-        <canvas id="energy-graph" width="200" height="80" style="margin-top: 8px; display: block;"></canvas>
-    </div>
+    <!-- Energy Monitor Panel (Removed original bulky popup) -->
 
     <script>
         document.getElementById('nav-container').innerHTML = renderMainNav('wave_theory');
@@ -417,27 +414,8 @@
                 lastMouseX = e.clientX - rect.left;
                 lastMouseY = e.clientY - rect.top;
 
-                if (currentMode === 'map' && e.button === 0) {
-                    if (hoveredNode) {
-                        isDraggingNode = true;
-                        draggedNode = hoveredNode;
-                        draggedNode.isFixed = true;
-                        canvas.style.cursor = 'grabbing';
-                        // Disable rotation during drag
-                        if (rotationHandler) {
-                            rotationHandler.isDragging = false;
-                            rotationHandler.autoRotate = false;
-                        }
-                    } else {
-                        isPanning = true;
-                        canvas.style.cursor = 'move';
-                        // Disable rotation during pan
-                        if (rotationHandler) {
-                            rotationHandler.isDragging = false;
-                            rotationHandler.autoRotate = false;
-                        }
-                    }
-                }
+                // Manual Drag and Pan removed from Epistemic Map per request
+                // Drag Rotation still active via rotationHandler
             });
 
             // Node drag end
@@ -834,20 +812,14 @@
             if (!map3DState || !map3DState.hamiltonian) return;
 
             const ham = map3DState.hamiltonian;
-            const panel = document.getElementById('energy-panel');
+            const panel = document.getElementById('mini-physics-monitor');
+            if (!panel) return;
 
-            // Toggle visibility with 'E' key
-            document.addEventListener('keydown', (e) => {
-                if (e.key.toLowerCase() === 'e') {
-                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-                }
+            if (currentMode !== 'map') {
+                panel.style.display = 'none';
+                return;
             }
-
-                , {
-                    once: false
-                });
-
-            if (panel.style.display === 'none') return;
+            panel.style.display = 'flex';
 
             // Update numerical values
             document.getElementById('kinetic-energy').textContent = ham.kineticEnergy.toFixed(2);
@@ -858,55 +830,7 @@
             driftElement.textContent = drift + '%';
             driftElement.style.color = parseFloat(drift) > 1 ? '#ff4466' : '#00ff00';
 
-            // Draw energy history graph
-            const graphCanvas = document.getElementById('energy-graph');
-            if (!graphCanvas) return;
-            const ctx = graphCanvas.getContext('2d');
-            const w = graphCanvas.width;
-            const h = graphCanvas.height;
-
-            ctx.clearRect(0, 0, w, h);
-
-            if (ham.energyHistory.length < 2) return;
-
-            // Find energy range for scaling
-            const energies = ham.energyHistory.map(e => e.total);
-            const maxE = Math.max(...energies);
-            const minE = Math.min(...energies);
-            const range = maxE - minE || 1;
-
-            // Draw grid
-            ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
-            ctx.lineWidth = 0.5;
-
-            for (let i = 0; i <= 4; i++) {
-                const y = (h / 4) * i;
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(w, y);
-                ctx.stroke();
-            }
-
-            // Draw energy traces
-            const drawTrace = (data, color) => {
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-
-                data.forEach((e, i) => {
-                    const x = (i / (data.length - 1)) * w;
-                    const y = h - ((e - minE) / range) * h;
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-            }
-
-                ;
-
-            drawTrace(ham.energyHistory.map(e => e.total), '#00ffff');
-            drawTrace(ham.energyHistory.map(e => e.kinetic), '#ff00ff');
-            drawTrace(ham.energyHistory.map(e => e.potential), '#ffff00');
+            // Trace graph removed for non-intrusive look
         }
 
         // ============ 3D ENGINE ============

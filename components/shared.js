@@ -42,7 +42,7 @@ function renderMainNav(activeId) {
     setTimeout(initNavSlider, 0);
 
     return `
-    <div class="${containerClass}">
+    <div class="${containerClass} main-nav">
         ${homeBtn}
         ${navHtml}
     </div>`;
@@ -747,6 +747,14 @@ function enableDragScrolling(el) {
         const walk = (x - startX) * 2; // Scroll-fast multiplier
         el.scrollLeft = scrollLeft - walk;
     });
+
+    // Enable Mouse Wheel Horizontal Scrolling
+    el.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            el.scrollLeft += e.deltaY;
+        }
+    }, { passive: false });
 }
 
 // ============ NAV AUTO-CENTERING ============
@@ -883,8 +891,16 @@ function initNavSlider() {
     // Gentle Fade-In
     setTimeout(() => {
         const navContainer = document.querySelector('.main-nav-container');
-        if (navContainer) navContainer.classList.add('visible');
+        if (navContainer) {
+            navContainer.classList.add('visible');
+            centerActiveNavItems(); // Re-center once visible
+        }
     }, 100);
+
+    // Re-center on window resize (especially orientation change)
+    window.addEventListener('resize', () => {
+        centerActiveNavItems();
+    });
 }
 
 // ============ PAGE TRANSITION (FADE ONLY) ============
