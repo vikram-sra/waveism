@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic | Spacetime Manifolds</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.cosmic-tab {
+            color: #0088ff;
+        }
+
+        .theory-tab.cosmic-tab.active {
+            background: rgba(0, 136, 255, 0.1);
+            color: #0088ff;
+            box-shadow: inset 0 0 15px rgba(0, 136, 255, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(0, 136, 255, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(0, 136, 255, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 136, 255, 0.05) 1px, rgba(0, 136, 255, 0.05) 2px);
+        }
+
+        .system-status,
+        #cinematic-overlay {
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* ORB INTEGRATION */
+        body:not(.ui-open) .system-status,
+        body:not(.ui-open) #cinematic-overlay {
+            opacity: 0;
+            transform: translateX(50px) scale(0.9);
+            pointer-events: none;
+        }
+
+        body.ui-open .system-status,
+        body.ui-open #cinematic-overlay {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE MINKOWSKI WORLDLINE INTERFACE</div>
+    <div class="manifold-glitch"></div>
+
+    <div class="system-status">
+        [ METRIC: LORENTZIAN ]<br>
+        [ CURVATURE: DYNAMIC ]<br>
+        [ GEODESIC: OPTIMAL ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab cosmic-tab active" data-theory="worldline">Helical Worldline</button>
+        <button class="theory-tab" data-theory="emc2">E = mc² Core</button>
+        <button class="theory-tab" data-theory="gravity">Metric Tensor</button>
+        <button class="theory-tab" data-theory="funnel">Cosmic Funnel</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Metric Warp</div>
+            <div class="param-value" id="param1-value">1.0</div>
+            <input type="range" class="param-slider" id="param1-slider" min="10" max="250" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Simulation Rate</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Metric Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Helical Worldlines</div>
+        <div class="theory-year" id="theory-year">Minkowski Spacetime (1908)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Invariant Interval</div>
+            <div class="equation" id="equation">ds² = -c²dt² + dx² + dy² + dz²</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Cosmic Spacetime Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Metric Invariants</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('cosmic');
+
+        let scene, camera, renderer, currentMode = 'worldline';
+        let activeGroup;
+        let p1 = 100, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'worldline': {
+                name: 'Helical Worldlines', year: 'Hermann Minkowski, 1908',
+                equation: 'x(τ) = (R cos ωτ, R sin ωτ, vτ)',
+                facts: [{ text: 'Proper Time', status: 'yes' }, { text: '4D Cylinder', status: 'yes' }],
+                description: 'The geometric interpretation of orbits. In 3D space, a planet circles a sun. In 4D spacetime, the same planet traces a helical "worldline" through the vertical temporal dimension. All objects move through spacetime at the constant speed of light c.',
+                concepts: [
+                    { term: 'Simultaneity Slices', definition: 'Horizontal planes representing a single moment of "Now" for a given observer.' },
+                    { term: 'Proper Time (τ)', definition: 'The time experienced by an object traveling along its worldline.' },
+                    { term: 'Invariant Interval', definition: 'The "distance" in spacetime that remains constant regardless of the observer\'s frame.' }
+                ],
+                physics: 'In Waveism, a worldline is the "Phase-Trace" of a signal. Every object is a wave-packet moving through the substrate; its path is the coherent history of its constructive interference.'
+            },
+            'emc2': {
+                name: 'Mass-Energy Symmetry', year: 'Einstein, 1905',
+                equation: 'E² = (pc)² + (m₀c²)²',
+                facts: [{ text: 'Binding Energy', status: 'yes' }, { text: 'Quanta Exchange', status: 'yes' }],
+                description: 'Mass is not a separate thing from energy; it is simply energy trapped in a localized resonant state. This symmetry allows mass to be converted into radiant energy and vice versa.',
+                concepts: [
+                    { term: 'Rest Mass (m₀)', definition: 'The invariant energy content of a system at rest.' },
+                    { term: 'Relativistic Mass', definition: 'The apparent increase in mass as an object approaches light-speed.' }
+                ],
+                physics: 'Energy is a wave in motion; mass is a wave-knot. The equation E=mc² is the conversion factor between free waves and localized standing waves in the cosmic field.'
+            },
+            'gravity': {
+                name: 'Metric Tensor Warping', year: 'General Relativity, 1915',
+                equation: 'G_μν = 8πG/c⁴ T_μν',
+                facts: [{ text: 'Dynamic Stage', status: 'yes' }, { text: 'Geodesic Flow', status: 'yes' }],
+                description: 'Gravity is not a force, but the curvature of the spacetime metric. Massive objects "tell" space how to curve, and the curvature "tells" objects how to move.',
+                concepts: [
+                    { term: 'Stress-Energy Tensor', definition: 'A mathematical description of the density and flux of energy and momentum.' },
+                    { term: 'Ricci Curvature', definition: 'The component of spacetime curvature that accounts for gravity.' }
+                ],
+                physics: 'Gravity is the "Refractive Index" of the substrate. Massive energy-concentrations slow down or bend the propagation of waves, effectively "curving" the path of any object.'
+            },
+            'funnel': {
+                name: 'Cosmic Funnel History', year: 'Friedmann-Lemaître, 1922',
+                equation: 'ȧ/a = H(t)',
+                facts: [{ text: 'Expansion Era', status: 'yes' }, { text: 'Scale Factor', status: 'yes' }],
+                description: 'The holographic history of the universe as an expanding manifold. From the high-energy singularity of the Big Bang to the current era of dark energy acceleration.',
+                concepts: [
+                    { term: 'Hubble Expansion', definition: 'The metric stretching of space between distant galaxy clusters.' },
+                    { term: 'Particle Horizon', definition: 'The limit of the observable universe—how far light has traveled since the beginning.' }
+                ],
+                physics: 'The Big Bang was a "Global Phase-Shift". The universe expanded from a single coherent node into the multi-frequency interference field we see today.'
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2500);
+            camera.position.set(0, 0, 250);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x0088ff, 2, 500);
+            pointLight.position.set(50, 50, 50);
+            scene.add(pointLight);
+
+            setupGraphics();
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v; updateParamDisplay(); },
+                formatter: v => v
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, { initialRotationX: 0.2 });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 1.0 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (window.clickPrevented) { window.clickPrevented = false; return; }
+                drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('worldline');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function setupGraphics() { }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            valEl.innerText = p1;
+        }
+
+        function createLabel(text, yPos, size = 32) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 512; canvas.height = 128;
+            ctx.fillStyle = '#00ddff'; // Cyan
+            ctx.font = 'bold ' + size + 'px "JetBrains Mono"';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = '#00ddff';
+            ctx.shadowBlur = 10;
+            ctx.fillText(text, 256, 70);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.9, depthTest: false });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(60, 15, 1);
+            sprite.position.y = yPos;
+            return sprite;
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 10;
+
+            if (mode === 'worldline') {
+                const geo = new THREE.CylinderGeometry(50, 50, 300, 32, 1, true);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x0088ff, wireframe: true, transparent: true, opacity: 0.1 });
+                const cylinder = new THREE.Mesh(geo, mat);
+                activeGroup.add(cylinder);
+
+                const curve = new THREE.CatmullRomCurve3([]);
+                const helixGeo = new THREE.BufferGeometry().setFromPoints(new Array(200).fill(new THREE.Vector3()));
+                const helix = new THREE.Line(helixGeo, new THREE.LineBasicMaterial({ color: 0x00ffff }));
+                helix.name = "helix";
+                activeGroup.add(helix);
+
+                const nowLabel = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                nowLabel.name = "nowLabel";
+                activeGroup.add(nowLabel);
+
+                // LABELS
+                activeGroup.add(createLabel("FUTURE CONE", 160));
+                activeGroup.add(createLabel("PAST CONE", -160));
+                activeGroup.add(createLabel("OBSERVER NOW", 0, 24));
+
+            } else if (mode === 'emc2') {
+                const geo = new THREE.SphereGeometry(20, 32, 32);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x0088ff, emissive: 0x004488 });
+                const core = new THREE.Mesh(geo, mat);
+                activeGroup.add(core);
+
+                for (let i = 0; i < 3; i++) {
+                    const ring = new THREE.Mesh(new THREE.TorusGeometry(30 + i * 20, 0.5, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3 }));
+                    ring.rotation.x = Math.PI / 2;
+                    ring.name = "ring_" + i;
+                    activeGroup.add(ring);
+                }
+                activeGroup.add(createLabel("REST MASS m₀", 0));
+                activeGroup.add(createLabel("BINDING FIELD", 90));
+
+            } else if (mode === 'gravity') {
+                const geo = new THREE.PlaneGeometry(300, 300, 40, 40);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x0088ff, wireframe: true, transparent: true, opacity: 0.4 });
+                const grid = new THREE.Mesh(geo, mat);
+                grid.rotation.x = -Math.PI / 2;
+                grid.name = "grid";
+                activeGroup.add(grid);
+
+                const attractor = new THREE.Mesh(new THREE.SphereGeometry(10, 16, 16), new THREE.MeshPhongMaterial({ color: 0xffffff }));
+                attractor.name = "attractor";
+                activeGroup.add(attractor);
+
+                activeGroup.add(createLabel("MASS M", 30));
+                activeGroup.add(createLabel("METRIC DISTORTION", -50));
+
+            } else if (mode === 'funnel') {
+                const geo = new THREE.CylinderGeometry(150, 1, 300, 64, 1, true);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x0088ff, wireframe: true, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
+                const funnel = new THREE.Mesh(geo, mat);
+                funnel.name = "funnel";
+                activeGroup.add(funnel);
+
+                // Starfield logic...
+                const galaxiesGeo = new THREE.BufferGeometry();
+                const pos = new Float32Array(500 * 3);
+                for (let i = 0; i < 500; i++) {
+                    const h = Math.random() * 300 - 150;
+                    const r = (h + 150) * 0.5;
+                    const a = Math.random() * Math.PI * 2;
+                    pos[i * 3] = r * Math.cos(a);
+                    pos[i * 3 + 1] = h;
+                    pos[i * 3 + 2] = r * Math.sin(a);
+                }
+                galaxiesGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const galaxies = new THREE.Points(galaxiesGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.5 }));
+                activeGroup.add(galaxies);
+
+                activeGroup.add(createLabel("CURRENT ERA", 160));
+                activeGroup.add(createLabel("BIG BANG", -160));
+            }
+
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'worldline') {
+                const helix = activeGroup.getObjectByName("helix");
+                const nowLabel = activeGroup.getObjectByName("nowLabel");
+                if (helix && nowLabel) {
+                    const points = [];
+                    const count = 200;
+                    const r = p1 / 2;
+                    for (let i = 0; i < count; i++) {
+                        const h = (i / count) * 300 - 150;
+                        const a = (i / 10) * Math.PI + time * 5;
+                        points.push(new THREE.Vector3(r * Math.cos(a), h, r * Math.sin(a)));
+                    }
+                    helix.geometry.setFromPoints(points);
+                    nowLabel.position.copy(points[100]); // Pick middle as "Now"
+                }
+            } else if (currentMode === 'emc2') {
+                for (let i = 0; i < 3; i++) {
+                    const ring = activeGroup.getObjectByName("ring_" + i);
+                    if (ring) {
+                        ring.scale.setScalar(1 + Math.sin(time * 2 + i) * 0.1);
+                        ring.material.opacity = 0.3 + Math.sin(time * 3 + i) * 0.2;
+                    }
+                }
+            } else if (currentMode === 'gravity') {
+                const grid = activeGroup.getObjectByName("grid");
+                const attr = activeGroup.getObjectByName("attractor");
+                if (grid && attr) {
+                    attr.position.y = Math.sin(time) * 20;
+                    const pos = grid.geometry.attributes.position;
+                    const mass = p1 / 50;
+                    for (let i = 0; i < pos.count; i++) {
+                        const px = pos.getX(i);
+                        const pz = pos.getZ(i);
+                        const d = Math.sqrt(px * px + pz * pz);
+                        const h = - (mass * 50) / (d / 10 + 1);
+                        pos.setY(i, h);
+                    }
+                    pos.needsUpdate = true;
+                }
+            } else if (currentMode === 'funnel') {
+                const funnel = activeGroup.getObjectByName("funnel");
+                if (funnel) {
+                    const scale = 1 + (p1 / 100 - 1) * 0.5;
+                    funnel.scale.set(scale, 1, scale);
+                }
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 400 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

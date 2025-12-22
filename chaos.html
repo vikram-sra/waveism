@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaos Dynamics | The Strange Attractor Suite</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.chaos-tab {
+            color: #cc00ff;
+        }
+
+        .theory-tab.chaos-tab.active {
+            background: rgba(204, 0, 255, 0.15);
+            color: #cc00ff;
+            box-shadow: inset 0 0 15px rgba(204, 0, 255, 0.2);
+        }
+
+        .telemetry-overlay {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            font-family: 'JetBrains Mono';
+            font-size: 0.7rem;
+            color: #cc00ff;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            z-index: 100;
+            padding: 10px;
+            border-left: 2px solid rgba(204, 0, 255, 0.4);
+            background: linear-gradient(90deg, rgba(204, 0, 255, 0.05), transparent);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            color: rgba(204, 0, 255, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 150px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(204, 0, 255, 0.5);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.02;
+            background: repeating-linear-gradient(45deg, transparent, transparent 1px, #cc00ff 1px, #cc00ff 2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE NON-LINEAR STOCHASTIC MANIFOLD</div>
+    <div class="telemetry-overlay" id="telemetry">LYAPUNOV STATUS: NOMINAL</div>
+    <div class="manifold-glow"></div>
+
+    <div class="system-status">
+        [ INTEGRATOR: RUNGE-KUTTA 4 ]<br>
+        [ PRECISION: 64-BIT FLOATING ]<br>
+        [ ENTROPY DRIFT: MONITORING ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab chaos-tab active" data-theory="sensitivity">Sensitivity</button>
+        <button class="theory-tab" data-theory="lorenz">Lorenz Attractor</button>
+        <button class="theory-tab" data-theory="three-body">Restricted 3-Body</button>
+        <button class="theory-tab" data-theory="pendulum">Double Pendulum</button>
+        <button class="theory-tab" data-theory="logistic">Logistic Bifurcation</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Sensitivity (δ)</div>
+            <div class="param-value" id="param1-value">0.05</div>
+            <input type="range" class="param-slider" id="param1-slider" min="1" max="100" value="5">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Simulation Speed</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Phase Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">The Lorenz Butterfly</div>
+        <div class="theory-year" id="theory-year">Deterministic Chaos (1963)</div>
+        <div class="equation-box">
+            <div class="equation-label">Attractor Topology</div>
+            <div class="equation" id="equation">dx/dt = σ(y - x)</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Non-Linear Dynamics Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Structural Chaos</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('chaos');
+
+        let scene, camera, renderer, currentMode = 'lorenz';
+        let activeGroup;
+        let p1 = 0.05, timeScale = 1.0, time = 0;
+        let targetZoom = 1.0, smoothedZoom = 1.0;
+
+        const theories = {
+            'sensitivity': {
+                name: 'Sensitivity to Initial Conditions', year: 'The Butterfly Effect',
+                equation: 'δx(t) ≈ e^(λt)δx(0)',
+                facts: [{ text: 'Exponential Divergence', status: 'yes' }, { text: 'Structural Collapse', status: 'yes' }],
+                description: 'A perfect crystalline structure representing a "Linear" system. However, it is fundamentally unstable. A single touch (perturbation) introduces micro-errors that amplify exponentially, collapsing the order into entropy.',
+                concepts: [
+                    { term: 'Lyapunov Exponent (λ)', definition: 'The rate at which two initially close trajectories diverge over time.' },
+                    { term: 'Perturbation', definition: 'A slight deviation in the starting state of a system.' }
+                ],
+                physics: 'This installation demonstrates how fragile "Order" is. In Waveism, reality is a balancing act; a single decoherent wave can shatter the standing-wave manifold of an entire object.'
+            },
+            'lorenz': {
+                name: 'Lorenz Strange Attractor', year: 'Edward Lorenz, 1963',
+                equation: 'dx/dt = σ(y - x)',
+                facts: [{ text: 'Deterministic', status: 'yes' }, { text: 'Non-Periodic', status: 'yes' }],
+                description: 'The foundation of modern chaos theory. It demonstrates that a deterministic universe is not a predictable one. The "Strange Attractor" is a fractal manifold that traps trajectories in an infinite loop that never intersects itself.',
+                concepts: [
+                    { term: 'Butterfly Effect', definition: 'Infinitesimal perturbations cause macroscopic divergence.' },
+                    { term: 'Fractal Dimension', definition: 'The attractor has a non-integer dimension, filling phase space with infinite detail.' },
+                    { term: 'Lyapunov Horizon', definition: 'The temporal limit of predictability for any non-linear system.' }
+                ],
+                physics: 'In Waveism, Chaos is the emergent interference pattern of high-frequency wave-packet collisions. It represents the limit where the phase-drift of the cosmos exceeds the coherence length of the observer.'
+            },
+            'three-body': {
+                name: 'Restricted 3-Body Problem', year: 'Poincaré / Euler',
+                equation: '∇²Φ = -4πGρ',
+                facts: [{ text: 'Sensitive', status: 'high' }, { text: 'Non-Integrable', status: 'yes' }],
+                description: 'The most famous unsolved problem in astrodynamics. While a 2-body system is perfectly integrable, a 3rd body introduces non-linearities that lead to orbital chaos and inevitable system ejection.',
+                concepts: [
+                    { term: 'KAM Theory', definition: 'Explains how near-integrable systems remain stable under small perturbations.' },
+                    { term: 'Symplectic Integration', definition: 'Energy-conserving numerical methods required to simulate orbital chaos.' }
+                ],
+                physics: 'Gravitational chaos is a manifestation of waves interacting in a non-linear gravitational substrate. The bodies are resonant spikes whose worldlines become tangled in the spacetime manifold.'
+            },
+            'pendulum': {
+                name: 'The Double Pendulum', year: 'Lagrangian Chaos',
+                equation: 'L = T - V',
+                facts: [{ text: 'Highly Unstable', status: 'yes' }, { text: 'Fractal Basins', status: 'yes' }],
+                description: 'The quintessential mechanical chaos. Two weights, connected in series, form a system of coupled differential equations. The result is a movement that defies human intuition and repeats only after statistical aeons.',
+                concepts: [
+                    { term: 'Coupled Oscillators', definition: 'Energy transfer between modes creates non-linear feedback loops.' },
+                    { term: 'Bifurcation', definition: 'A critical threshold where a stable orbit splits into chaotic turbulence.' }
+                ],
+                physics: 'The double pendulum is a mechanical computer solving the local gravitational gradient. Its chaos is the result of the wave-function of the system decohering into thermal noise.'
+            },
+            'logistic': {
+                name: 'Logistic Bifurcation Map', year: 'Mitchell Feigenbaum, 1978',
+                equation: 'x_(n+1) = r x_n(1 - x_n)',
+                facts: [{ text: 'Feigenbaum δ', status: '4.669' }, { text: 'Universality', status: 'yes' }],
+                description: 'A mathematical proof that chaos is universal. Whether it is population growth, heartbeats, or fluid flow, the path to chaos follows a precise "Period Doubling" geometric ratio.',
+                concepts: [
+                    { term: 'Feigenbaum Constant', definition: 'The universal ratio (4.669...) governing the onset of chaos in all systems.' },
+                    { term: 'Self-Similarity', definition: 'The chaotic map contains infinite nested copies of its own structure.' }
+                ],
+                physics: 'This map represents the folding of wave-packets in a discrete time substrate. It is the geometric template for entropy production in high-energy manifolds.'
+            }
+        };
+
+        // ============ UTILITIES ============
+        function createLabel(text, color) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 256; canvas.height = 64;
+            ctx.font = 'Bold 20px JetBrains Mono';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.fillText(text, 128, 32);
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.scale.set(20, 5, 1);
+            return sprite;
+        }
+
+        // INTEGRATORS
+        const LorenzDynamics = (p, dt, σ = 10, ρ = 28, β = 8 / 3) => {
+            const dx = σ * (p.y - p.x);
+            const dy = p.x * (ρ - p.z) - p.y;
+            const dz = p.x * p.y - β * p.z;
+            return { x: dx, y: dy, z: dz };
+        };
+
+        const RK4_Lorenz = (p, dt) => {
+            const k1 = LorenzDynamics(p, dt);
+            const k2 = LorenzDynamics({ x: p.x + k1.x * dt / 2, y: p.y + k1.y * dt / 2, z: p.z + k1.z * dt / 2 }, dt);
+            const k3 = LorenzDynamics({ x: p.x + k2.x * dt / 2, y: p.y + k2.y * dt / 2, z: p.z + k2.z * dt / 2 }, dt);
+            const k4 = LorenzDynamics({ x: p.x + k3.x * dt, y: p.y + k3.y * dt, z: p.z + k3.z * dt }, dt);
+
+            p.x += (dt / 6) * (k1.x + 2 * k2.x + 2 * k3.x + k4.x);
+            p.y += (dt / 6) * (k1.y + 2 * k2.y + 2 * k3.y + k4.y);
+            p.z += (dt / 6) * (k1.z + 2 * k2.z + 2 * k3.z + k4.z);
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 50); // Centered camera
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 1.5);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xcc00ff, 2, 100);
+            pointLight.position.set(20, 20, 20);
+            scene.add(pointLight);
+
+            setupGraphics();
+
+            // Improved control state: Click to pause ROTATION, slider for SIMULATION
+            const drag = initDragRotation(renderer.domElement, {
+                initialRotationX: 0.2
+            });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 1.0 });
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v / 100; resetChaos(); },
+                formatter: v => v
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (zoomControl) zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (window.clickPrevented) { window.clickPrevented = false; return; }
+                drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('sensitivity');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        let lorenzData = { pts: [], lines: [] };
+        let bodies = [];
+        let pendulumData = { a1: 0, a2: 0, v1: 0, v2: 0, trail: [] };
+
+        function setupGraphics() {
+            // LORENZ
+            lorenzData.pts = [
+                { x: 0.1, y: 0.1, z: 0.1, color: 0xcc00ff, trail: [] },
+                { x: 0.1001, y: 0.1, z: 0.1, color: 0xffffff, trail: [] }
+            ];
+            const lGroup = new THREE.Group();
+            lGroup.name = "lorenz_group";
+            lorenzData.pts.forEach((p, i) => {
+                const geo = new THREE.BufferGeometry();
+                const mat = new THREE.LineBasicMaterial({ color: p.color, transparent: true, opacity: 0.5 });
+                const line = new THREE.Line(geo, mat);
+                lorenzData.lines.push(line);
+                lGroup.add(line);
+            });
+            activeGroup = lGroup;
+
+            // 3-BODY (Pre-render setup)
+            initThreeBody();
+        }
+
+        function initThreeBody() {
+            bodies = [
+                { pos: new THREE.Vector3(15, 0, 0), vel: new THREE.Vector3(0, 4, 0), m: 10, color: 0xcc00ff, trail: [] },
+                { pos: new THREE.Vector3(-15, 0, 0), vel: new THREE.Vector3(0, -4, 0), m: 10, color: 0xffffff, trail: [] },
+                { pos: new THREE.Vector3(0, 15, 0), vel: new THREE.Vector3(-4, 0, 0), m: 1 + p1 * 5, color: 0x00ffff, trail: [] }
+            ];
+        }
+
+        function resetChaos() {
+            if (currentMode === 'lorenz') {
+                lorenzData.pts[1].x = 0.1 + (p1 * 0.1);
+                lorenzData.pts.forEach(p => p.trail = []);
+            } else if (currentMode === 'three-body') {
+                initThreeBody();
+            } else if (currentMode === 'pendulum') {
+                pendulumData = { a1: Math.PI / 2, a2: Math.PI / 2 + p1, v1: 0, v2: 0, trail: [] };
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 2;
+            resetChaos();
+
+            if (mode === 'lorenz') {
+                lorenzData.lines.forEach(l => activeGroup.add(l));
+                document.getElementById('param1-label').innerText = "Initial δ";
+            } else if (mode === 'three-body') {
+                bodies.forEach(b => {
+                    const sphere = new THREE.Mesh(new THREE.SphereGeometry(1.5), new THREE.MeshBasicMaterial({ color: b.color }));
+                    sphere.name = "body";
+                    sphere.userData.b = b;
+                    activeGroup.add(sphere);
+                    const tGeo = new THREE.BufferGeometry();
+                    const tMat = new THREE.LineBasicMaterial({ color: b.color, transparent: true, opacity: 0.5 });
+                    const line = new THREE.Line(tGeo, tMat);
+                    line.name = "trail";
+                    activeGroup.add(line);
+                });
+                document.getElementById('param1-label').innerText = "3rd Body Mass";
+            } else if (mode === 'pendulum') {
+                const arm1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 10), new THREE.MeshBasicMaterial({ color: 0xcc00ff }));
+                arm1.name = "arm1";
+                activeGroup.add(arm1);
+                const arm2 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                arm2.name = "arm2";
+                activeGroup.add(arm2);
+                const trailGeo = new THREE.BufferGeometry();
+                const trailMat = new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.6 });
+                const trailLine = new THREE.Line(trailGeo, trailMat);
+                trailLine.name = "trail";
+                activeGroup.add(trailLine);
+                document.getElementById('param1-label').innerText = "Start Offset";
+            } else if (mode === 'logistic') {
+                const points = [];
+                for (let r = 2.8; r < 4.0; r += 0.002) {
+                    let x = 0.5;
+                    for (let i = 0; i < 150; i++) x = r * x * (1 - x);
+                    for (let i = 0; i < 60; i++) {
+                        x = r * x * (1 - x);
+                        points.push(new THREE.Vector3((r - 3.3) * 20, (x - 0.5) * 30, (Math.random() - 0.5) * 2));
+                    }
+                }
+                const cloud = new THREE.Points(new THREE.BufferGeometry().setFromPoints(points), new THREE.PointsMaterial({ color: 0xcc00ff, size: 0.08, transparent: true, opacity: 0.4 }));
+                activeGroup.add(cloud);
+                document.getElementById('param1-label').innerText = "Grain Size";
+            } else if (mode === 'sensitivity') {
+                // THE BUTTERFLY EFFECT VISUALIZATION
+                // A Sphere that explodes when rotated
+                const geo = new THREE.IcosahedronGeometry(20, 4); // High detail
+                const wireframe = new THREE.WireframeGeometry(geo);
+                const line = new THREE.LineSegments(wireframe);
+                line.material.depthTest = false;
+                line.material.opacity = 0.5;
+                line.material.transparent = true;
+                line.material.color.setHex(0xcc00ff);
+                line.name = "unstable_mesh";
+
+                // Store original positions for reset or calculation
+                line.userData.originalPos = line.geometry.attributes.position.array.slice();
+                line.userData.chaosFactor = 0;
+
+                activeGroup.add(line);
+
+                const label = createLabel("TOUCH TO PERTURB", "#cc00ff");
+                label.position.y = 30;
+                activeGroup.add(label);
+
+                document.getElementById('param1-label').innerText = "Fragility (λ)";
+            }
+
+            // Sync group rotation with current drag state to avoid snapping
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            if (currentMode === 'lorenz') valEl.innerText = (p1 * 0.1).toFixed(4);
+            else if (currentMode === 'three-body') valEl.innerText = (1 + p1 * 5).toFixed(2) + ' M';
+            else if (currentMode === 'pendulum') valEl.innerText = (p1 * 180).toFixed(0) + '°';
+            else if (currentMode === 'logistic') valEl.innerText = (p1 * 100).toFixed(0);
+        }
+
+        function updateSim(dt) {
+            if (currentMode === 'lorenz') {
+                lorenzData.pts.forEach((p, i) => {
+                    RK4_Lorenz(p, dt * 2.5);
+                    p.trail.push(new THREE.Vector3(p.x, p.y, p.z - 25));
+                    if (p.trail.length > 1000) p.trail.shift();
+                    lorenzData.lines[i].geometry.setFromPoints(p.trail);
+                });
+                const d = lorenzData.pts[0].trail[lorenzData.pts[0].trail.length - 1].distanceTo(lorenzData.pts[1].trail[lorenzData.pts[1].trail.length - 1]);
+                document.getElementById('telemetry').innerText = `LYAPUNOV DISTANCE Δ: ${d.toFixed(4)}`;
+            } else if (currentMode === 'three-body') {
+                const G = 100.0;
+                for (let s = 0; s < 10; s++) {
+                    const dts = dt / 10;
+                    bodies.forEach(b1 => {
+                        let force = new THREE.Vector3();
+                        bodies.forEach(b2 => {
+                            if (b1 === b2) return;
+                            let dir = b2.pos.clone().sub(b1.pos);
+                            let r3 = Math.pow(dir.lengthSq() + 0.1, 1.5);
+                            force.add(dir.multiplyScalar(G * b1.m * b2.m / r3));
+                        });
+                        b1.vel.add(force.multiplyScalar(dts / b1.m));
+                    });
+                    bodies.forEach(b => {
+                        b.pos.add(b.vel.clone().multiplyScalar(dts));
+                        b.trail.push(b.pos.clone());
+                        if (b.trail.length > 500) b.trail.shift();
+                    });
+                }
+                let trailIdx = 0;
+                activeGroup.children.forEach(c => {
+                    if (c.name === "body") c.position.copy(c.userData.b.pos);
+                    if (c.name === "trail") {
+                        c.geometry.setFromPoints(bodies[trailIdx].trail);
+                        trailIdx++;
+                    }
+                });
+            } else if (currentMode === 'pendulum') {
+                const g = 9.8, m1 = 1, m2 = 1, l1 = 10, l2 = 10;
+                const h = dt * 10;
+                const d2a1 = (-g * (2 * m1 + m2) * Math.sin(pendulumData.a1) - m2 * g * Math.sin(pendulumData.a1 - 2 * pendulumData.a2) - 2 * Math.sin(pendulumData.a1 - pendulumData.a2) * m2 * (pendulumData.v2 * pendulumData.v2 * l2 + pendulumData.v1 * pendulumData.v1 * l1 * Math.cos(pendulumData.a1 - pendulumData.a2))) / (l1 * (2 * m1 + m2 - m2 * Math.cos(2 * pendulumData.a1 - 2 * pendulumData.a2)));
+                const d2a2 = (2 * Math.sin(pendulumData.a1 - pendulumData.a2) * (pendulumData.v1 * pendulumData.v1 * l1 * (m1 + m2) + g * (m1 + m2) * Math.cos(pendulumData.a1) + pendulumData.v2 * pendulumData.v2 * l2 * m2 * Math.cos(pendulumData.a1 - pendulumData.a2))) / (l2 * (2 * m1 + m2 - m2 * Math.cos(2 * pendulumData.a1 - 2 * pendulumData.a2)));
+
+                pendulumData.v1 += d2a1 * h; pendulumData.v2 += d2a2 * h;
+                pendulumData.a1 += pendulumData.v1 * h; pendulumData.a2 += pendulumData.v2 * h;
+
+                const x1 = l1 * Math.sin(pendulumData.a1), y1 = -l1 * Math.cos(pendulumData.a1);
+                const x2 = x1 + l2 * Math.sin(pendulumData.a2), y2 = y1 - l2 * Math.cos(pendulumData.a2);
+
+                activeGroup.getObjectByName("arm1").position.set(x1 / 2, y1 / 2, 0);
+                activeGroup.getObjectByName("arm1").rotation.z = -pendulumData.a1;
+                activeGroup.getObjectByName("arm2").position.set(x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2, 0);
+                activeGroup.getObjectByName("arm2").rotation.z = -pendulumData.a2;
+
+                pendulumData.trail.push(new THREE.Vector3(x2, y2, 0));
+                if (pendulumData.trail.length > 200) pendulumData.trail.shift();
+                activeGroup.getObjectByName("trail").geometry.setFromPoints(pendulumData.trail);
+                pendulumData.trail.push(new THREE.Vector3(x2, y2, 0));
+                if (pendulumData.trail.length > 200) pendulumData.trail.shift();
+                activeGroup.getObjectByName("trail").geometry.setFromPoints(pendulumData.trail);
+            } else if (currentMode === 'sensitivity') {
+                const mesh = activeGroup.getObjectByName("unstable_mesh");
+                if (mesh) {
+                    const isInteracting = window.globalDrag ? window.globalDrag.isDragging : false;
+
+                    // If interacting, increase chaos. If not, slowly heal (or stay broken?)
+                    // "Collapse into a different form" implies permanent or semi-permanent change.
+                    // Let's make it explode then re-form slowly.
+
+                    if (isInteracting) {
+                        mesh.userData.chaosFactor += 0.05 * (p1 * 2); // p1 is fragility
+                    } else {
+                        mesh.userData.chaosFactor *= 0.98; // Heal slowly
+                    }
+
+                    const chaos = mesh.userData.chaosFactor;
+                    const pos = mesh.geometry.attributes.position.array;
+                    const orig = mesh.userData.originalPos;
+
+                    for (let i = 0; i < pos.length; i += 3) {
+                        // Per-vertex noise
+                        const noiseX = Math.sin(time * 10 + i) * chaos * 5;
+                        const noiseY = Math.cos(time * 15 + i) * chaos * 5;
+                        const noiseZ = Math.sin(time * 20 + i) * chaos * 5;
+
+                        pos[i] = orig[i] + noiseX;
+                        pos[i + 1] = orig[i + 1] + noiseY;
+                        pos[i + 2] = orig[i + 2] + noiseZ;
+                    }
+                    mesh.geometry.attributes.position.needsUpdate = true;
+
+                    mesh.rotation.y += 0.002; // Slow drift
+                }
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            const dt = 0.01 * timeScale;
+            time += dt;
+            updateSim(dt);
+
+            targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 50 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

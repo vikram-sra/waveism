@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Realm | Wave Manifolds</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.quantum-tab {
+            color: #00ffaa;
+        }
+
+        .theory-tab.quantum-tab.active {
+            background: rgba(0, 255, 170, 0.1);
+            color: #00ffaa;
+            box-shadow: inset 0 0 15px rgba(0, 255, 170, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(0, 255, 170, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(0, 255, 170, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 255, 170, 0.05) 1px, rgba(0, 255, 170, 0.05) 2px);
+        }
+
+
+
+        /* Mobile Cleanup */
+        @media (max-width: 600px) {
+            #cinematic-overlay {
+                font-size: 0.4rem;
+                bottom: 10px;
+                left: 10px;
+                max-width: 150px;
+                opacity: 0.5;
+            }
+
+            .system-status {
+                font-size: 0.4rem;
+                bottom: 10px;
+                right: 10px;
+                line-height: 1.2;
+                opacity: 0.5;
+            }
+
+            /* Info Panel needs to be above the tiny labels but not blocking view */
+            .info-panel {
+                bottom: 50px !important;
+                width: 90% !important;
+                padding-bottom: 20px;
+            }
+
+            .theory-name {
+                font-size: 0.9rem;
+            }
+
+            .theory-year {
+                display: none;
+            }
+
+            /* Hide year on tiny screens */
+            .equation-box {
+                padding: 5px 10px;
+                margin-bottom: 5px;
+            }
+
+            .theory-facts {
+                display: none;
+            }
+
+            /* Hide facts on tiny screens */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE QUANTUM HILBERT SPACE INTERFACE</div>
+    <div class="manifold-glitch"></div>
+
+    <div class="system-status">
+        [ WAVEFUNCTION: UNITARY ]<br>
+        [ PHASE COHERENCE: LOCKED ]<br>
+        [ OBSERVATION: SUPPRESSED ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab quantum-tab active" data-theory="superposition">Superposition Art</button>
+        <button class="theory-tab" data-theory="double-slit">Double Slit</button>
+        <button class="theory-tab" data-theory="orbitals">Atomic Orbitals</button>
+        <button class="theory-tab" data-theory="strings">String Manifolds</button>
+        <button class="theory-tab" data-theory="crystal">Time Crystals</button>
+        <button class="theory-tab" data-theory="gedanken">Schrödinger's Cat</button>
+        <button class="theory-tab" data-theory="tunneling">Tunneling</button>
+        <button class="theory-tab" data-theory="entanglement">Entanglement</button>
+        <button class="theory-tab" data-theory="teleportation">Teleportation</button>
+        <button class="theory-tab" data-theory="zeno">Zeno Effect</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Energy Level (n)</div>
+            <div class="param-value" id="param1-value">1</div>
+            <input type="range" class="param-slider" id="param1-slider" min="1" max="10" value="1">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Decherence Rate</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Quantum Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Double-Slit Interference</div>
+        <div class="theory-year" id="theory-year">The Wave-Particle Duality (1927)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Schrödinger Equation</div>
+            <div class="equation" id="equation">iℏ ∂/∂t ψ = Ĥψ</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Quantum Manifold Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Geometric Phase</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('quantum');
+
+        let scene, camera, renderer, currentMode = 'double-slit';
+        let activeGroup;
+        let p1 = 1, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'superposition': {
+                name: 'The Observer Paradox', year: 'Aesthetic Interpretation, 2025',
+                equation: '|Ψ⟩ = α|Face⟩ + β|Landscape⟩',
+                facts: [{ text: 'Morphological', status: 'yes' }, { text: ' Interactive', status: 'yes' }],
+                description: 'A visual metaphor for quantum superposition. The object exists simultaneously as a localized entity (a Face) and a distributed field (a Landscape). It only chooses a form when you interact with it (Observation).',
+                concepts: [
+                    { term: 'Wavefunction Collapse', definition: 'The reduction of the physical possibilities into a single concrete reality upon measurement.' },
+                    { term: 'Complementarity', definition: 'Objects have dual natures (particle/wave) that cannot be observed simultaneously.' }
+                ],
+                physics: 'This installation demonstrates that reality is not static; it is a probability cloud that solidifies only when we ask it a specific question.'
+            },
+            'double-slit': {
+                name: 'Double-Slit Interference', year: 'Wave-Particle Duality, 1927',
+                equation: 'ψ = ψ₁ + ψ₂',
+                facts: [{ text: 'Superposition', status: 'yes' }, { text: 'Pattern Persistence', status: 'yes' }],
+                description: 'The prototypical quantum experiment. Particles traveling through two slits interfere with themselves like waves, creating a deterministic distribution pattern that only collapses into localized points upon measurement.',
+                concepts: [
+                    { term: 'Probability Amplitude', definition: 'A complex number ($ψ$) whose magnitude squared gives the probability of a particle\'s location.' },
+                    { term: 'Phasing', definition: 'The relative timing of the waves that causes constructive or destructive interference.' },
+                    { term: 'Observer Effect', definition: 'The phenomenon where measuring which slit a particle went through destroys the interference pattern.' }
+                ],
+                physics: 'In Waveism, the double-slit is a phase-coherence test. It shows that the cosmic substrate can maintain parallel signal states until a decoherence event forces a system reset.'
+            },
+            'orbitals': {
+                name: 'Hydrogenic Orbitals', year: 'Quantum Chemistry, 1926',
+                equation: 'Hψₙₗₘ = Eₙψₙₗₘ',
+                facts: [{ text: 'Stable States', status: 'yes' }, { text: 'Quantized energy', status: 'yes' }],
+                description: 'The probability clouds where electrons reside in an atom. These are not orbits, but standing-wave patterns (Spherical Harmonics) in the electron field around the nucleus.',
+                concepts: [
+                    { term: 'Principal Number n', definition: 'Determines the overall energy and size of the orbital cloud.' },
+                    { term: 'Nodal Plains', definition: 'Regions of zero probability where the wavefunction changes sign.' },
+                    { term: 'Shell Stability', definition: 'The geometric arrangement of electrons that defines all chemical properties.' }
+                ],
+                physics: 'Orbitals are the harmonic resonances of the atomic substrate. They are the macroscopic result of the vacuum field folding in on itself to reach a minimum energy configuration.'
+            },
+            'strings': {
+                name: 'Superstring Manifolds', year: 'The Theory of Everything',
+                equation: 'L = -1/2πα\' ∫ d²σ',
+                facts: [{ text: '10 Dimensions', status: 'yes' }, { text: 'Calabi-Yau', status: 'yes' }],
+                description: 'Replaces point-particles with one-dimensional vibrating strings. The different vibration modes of these strings correspond to the different fundamental particles like electrons, photons, and gravitons.',
+                concepts: [
+                    { term: 'Extra Dimensions', definition: 'The 6 or 7 extra dimensions curled into tiny, complex shapes known as Calabi-Yau manifolds.' },
+                    { term: 'Brane Dynamics', definition: 'Higher-dimensional surfaces to which strings can be attached.' },
+                    { term: 'Planck Scale', definition: 'The microscopic distance (10⁻³⁵m) where string effects become dominant.' }
+                ],
+                physics: 'String theory is the ultimate Waveism goal. It views the entire universe as a single, complex, multi-dimensional interference pattern of a fundamental cosmic string.'
+            },
+            'crystal': {
+                name: 'Discrete Time Crystals', year: 'Symmetry Breaking, 2012',
+                equation: '⟨ψ(t+T)⟩ = ⟨ψ(t)⟩',
+                facts: [{ text: 'Broken T-Symmetry', status: 'yes' }, { text: 'Non-equilibrium', status: 'yes' }],
+                description: 'A new phase of matter that breaks time-translation symmetry. Unlike a regular crystal that repeats in space, a time-crystal repeats its patterns and motion through time, even at its lowest energy state.',
+                concepts: [
+                    { term: 'Period Doubling', definition: 'The system responds to a drive force at a lower frequency than the force itself.' },
+                    { term: 'Stroboscopic Floquet', definition: 'A mathematical description of systems driven periodically in time.' },
+                    { term: 'Rigidity', definition: 'The crystal’s ability to resist external noise and maintain its rhythmic oscillation.' }
+                ],
+                physics: 'Time crystals prove that time is a phase-dimension. The substrate can "crystallize" in time just as it does in space, creating temporal order out of chaos.'
+            },
+            'gedanken': {
+                name: 'Schrödinger\'s Cat', year: 'Thought Experiment, 1935',
+                equation: '1/√2 (|Alive⟩ + |Dead⟩)',
+                facts: [{ text: 'Macroscopic', status: 'yes' }, { text: 'Entanglement', status: 'yes' }],
+                description: 'A paradox illustrating the problem of the Copenhagen interpretation applied to everyday objects. A cat in a sealed box is simultaneously alive and dead until the box is opened (measurement).',
+                concepts: [
+                    { term: 'Superposition', definition: 'The system exists in all possible states simultaneously.' },
+                    { term: 'Decoherence', definition: 'The loss of quantum coherence due to interaction with the environment.' },
+                    { term: 'Many Worlds', definition: 'An alternative interpretation where both outcomes happen in branching universes.' }
+                ],
+                physics: 'Schrödinger intended this as a critique of the absurdity of quantum mechanics, but it remains the most famous illustration of the measurement problem.'
+            },
+            'tunneling': {
+                name: 'Quantum Tunneling', year: 'Alpha Decay, 1928',
+                equation: 'T ≈ exp(-2L√{2m(V-E)}/ℏ)',
+                facts: [{ text: 'Barrier Penetration', status: 'yes' }, { text: 'Evanescent Wave', status: 'yes' }],
+                description: 'A phenomenon where a particle passes through a potential barrier that it classically could not surmount. The wavefunction does not end at the wall but decays exponentially inside it.',
+                concepts: [
+                    { term: 'Tw', definition: 'Transmission Coefficient: The probability of passing through.' },
+                    { term: 'Potential V', definition: 'The energy height of the barrier (the wall).' },
+                    { term: 'Alpha Decay', definition: 'Tunneling explains how particles escape the nucleus.' }
+                ],
+                physics: 'Tunneling is strictly impossible in classical physics. In Waveism, the field permeates the barrier, allowing resonance to re-establish on the other side if the wall is thin enough.'
+            },
+            'entanglement': {
+                name: 'Quantum Entanglement', year: 'EPR Paradox, 1935',
+                equation: '|Ψ⟩ = (|00⟩ + |11⟩)/√2',
+                facts: [{ text: 'Non-locality', status: 'yes' }, { text: 'Spooky Action', status: 'yes' }],
+                description: 'A phenomenon where particles become interlinked such that the state of one instantly determines the state of the other, regardless of distance. Einstein called this "Spooky Action at a Distance".',
+                concepts: [
+                    { term: 'Bell States', definition: 'Maximally entangled quantum states of two qubits.' },
+                    { term: 'Non-locality', definition: 'The effect occurs instantly, faster than light, though no information travels FTL.' },
+                    { term: 'Correlation', definition: 'Perfect statistical correlation between measurements.' }
+                ],
+                physics: 'Entanglement reveals the holistic nature of the Waveism substrate. Space is not a separator but a medium; entangled points are phase-locked across the manifold.'
+            },
+            'teleportation': {
+                name: 'Quantum Teleportation', year: 'Bennett et al., 1993',
+                equation: 'Bob(Ψ) → Alice(Measurement)',
+                facts: [{ text: 'State Transfer', status: 'yes' }, { text: 'No Cloning', status: 'yes' }],
+                description: 'The transfer of a quantum state from one location to another using entanglement and classical communication. The original state is destroyed in the process (No-Cloning Theorem).',
+                concepts: [
+                    { term: 'Qubit', definition: 'The basic unit of quantum information.' },
+                    { term: 'Bell Measurement', definition: 'A joint measurement of two qubits that projects them onto a Bell state.' },
+                    { term: 'Classical Channel', definition: 'Standard information must be sent to complete the protocol.' }
+                ],
+                physics: 'Teleportation demonstrates that "matter" is just "information" or "geometry" in the field. If you copy the geometry elsewhere, you have moved the object.'
+            },
+            'zeno': {
+                name: 'Quantum Zeno Effect', year: 'Turing Paradox, 1977',
+                equation: 'P(t) ≈ 1 - (t/τ_Z)²',
+                facts: [{ text: 'Measurement Freezing', status: 'yes' }, { text: 'Watch Pot', status: 'yes' }],
+                description: 'A quantum system can be arrested in its evolution by frequent observation. "A watched quantum pot never boils." Measuring the system collapses it back to its initial state repeatedly.',
+                concepts: [
+                    { term: 'Unitary Evolution', definition: 'The smooth, continuous change of a quantum system over time.' },
+                    { term: 'Collapse', definition: 'The abrupt change caused by measurement.' },
+                    { term: 'Coherence time', definition: 'The time window in which the system evolves.' }
+                ],
+                physics: 'The Zeno effect shows that Observation is an active physical process. The act of "looking" forces the universe to decide on a state, preventing transition.'
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 200);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00ffaa, 2.5, 600);
+            pointLight.position.set(100, 200, 50);
+            scene.add(pointLight);
+            const fillLight = new THREE.PointLight(0xffffff, 1, 600);
+            fillLight.position.set(-100, 50, 150);
+            scene.add(fillLight);
+
+            setupGraphics();
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v / 100; updateParamDisplay(); },
+                formatter: v => v.toFixed(2)
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, {
+                initialRotationX: 0.6,
+                initialRotationY: -0.4
+            });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 0.8 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (window.clickPrevented) { window.clickPrevented = false; return; }
+                drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('superposition');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function setupGraphics() { }
+
+        function createEmojiSprite(emoji, size = 256) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size; canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            ctx.font = `${size * 0.75}px "Apple Color Emoji", "Segoe UI Emoji", serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, size / 2, size / 2 + size * 0.1);
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+            return new THREE.Sprite(mat);
+        }
+
+        function createLabel(text, color = "#ffffff") {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 128;
+            ctx.fillStyle = color;
+            ctx.font = 'bold 32px JetBrains Mono, monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 256, 64);
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.minFilter = THREE.LinearFilter;
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(40, 10, 1);
+            return sprite;
+        }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            if (currentMode === 'orbitals') valEl.innerText = "Level: " + p1;
+            else if (currentMode === 'strings') valEl.innerText = "Harmonic: " + p1;
+            else if (currentMode === 'crystal') valEl.innerText = "Freq: " + p1;
+            else valEl.innerText = p1;
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 2;
+
+            if (mode === 'double-slit') {
+                const geo = new THREE.PlaneGeometry(200, 300, 100, 150);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa, wireframe: true, transparent: true, opacity: 0.15 });
+                const plane = new THREE.Mesh(geo, mat);
+                plane.rotation.x = -Math.PI / 2;
+                plane.name = "wave_plane";
+                activeGroup.add(plane);
+
+                const wallGroup = new THREE.Group();
+                const wallMat = new THREE.MeshPhongMaterial({ color: 0x222222, side: THREE.DoubleSide });
+                const w1 = new THREE.Mesh(new THREE.BoxGeometry(85, 40, 2), wallMat); w1.position.x = -57.5;
+                const w2 = new THREE.Mesh(new THREE.BoxGeometry(30, 40, 2), wallMat); w2.position.x = 0;
+                const w3 = new THREE.Mesh(new THREE.BoxGeometry(85, 40, 2), wallMat); w3.position.x = 57.5;
+                wallGroup.add(w1, w2, w3); wallGroup.position.z = -50;
+                activeGroup.add(wallGroup);
+
+                const screen = new THREE.Mesh(new THREE.PlaneGeometry(200, 40), new THREE.MeshBasicMaterial({ color: 0x000505, side: THREE.DoubleSide }));
+                screen.position.set(0, 15, 150); activeGroup.add(screen);
+
+                const intensity = new THREE.Mesh(new THREE.PlaneGeometry(200, 40, 100, 1), new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true, opacity: 0.6, transparent: true }));
+                intensity.position.set(0, 15, 149); intensity.name = "intensity_graph"; activeGroup.add(intensity);
+
+                const pCount = 50;
+                const pPos = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount; i++) {
+                    pPos[i * 3] = (Math.random() - 0.5) * 10;
+                    pPos[i * 3 + 1] = 15;
+                    pPos[i * 3 + 2] = -150 - Math.random() * 300;
+                }
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                const parts = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 2.5 }));
+                parts.name = "photons";
+                activeGroup.add(parts);
+
+                activeGroup.add(createLabel("DOUBLE SLITS", "#ffffff").translateY(25).translateZ(-50));
+                activeGroup.add(createLabel("DOUBLE SLITS", "#ffffff").translateY(25).translateZ(-50));
+            }
+            else if (mode === 'superposition') {
+                // SUPERPOSITION ART: Face vs Landscape
+                const pCount = 8000;
+                const pPos = new Float32Array(pCount * 3);
+
+                // Initialize as Sphere (Face approximation)
+                for (let i = 0; i < pCount; i++) {
+                    const phi = Math.acos(-1 + (2 * i) / pCount);
+                    const theta = Math.sqrt(pCount * Math.PI) * phi;
+
+                    // Sphere Coords
+                    const sx = 60 * Math.cos(theta) * Math.sin(phi);
+                    const sy = 60 * Math.sin(theta) * Math.sin(phi);
+                    const sz = 60 * Math.cos(phi);
+
+                    pPos[i * 3] = sx;
+                    pPos[i * 3 + 1] = sy;
+                    pPos[i * 3 + 2] = sz;
+                }
+
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                const material = new THREE.PointsMaterial({ size: 1.5, color: 0x00ffaa, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+                const points = new THREE.Points(pGeo, material);
+                points.name = "morph_points";
+
+                // Store target states in userData
+                const landscapeTargets = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount; i++) {
+                    // Grid Plane
+                    const ix = (i % 80);
+                    const iz = Math.floor(i / 80);
+                    landscapeTargets[i * 3] = (ix - 40) * 4; // x
+                    landscapeTargets[i * 3 + 1] = -50 + Math.random() * 5; // y (flat-ish)
+                    landscapeTargets[i * 3 + 2] = (iz - 50) * 4; // z
+                }
+                points.userData = { landscape: landscapeTargets };
+
+                activeGroup.add(points);
+                activeGroup.add(createLabel("OBSERVE ME", "#00ffaa").translateY(80));
+            }
+            else if (mode === 'orbitals') {
+                const pCount = 5000;
+                const pPos = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount; i++) {
+                    const x = Math.random() * 2 - 1; const y = Math.random() * 2 - 1; const z = Math.random() * 2 - 1;
+                    const r = Math.sqrt(x * x + y * y + z * z);
+                    pPos[i * 3] = x * 50 / r; pPos[i * 3 + 1] = y * 50 / r; pPos[i * 3 + 2] = z * 50 / r;
+                }
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                const cloud = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 1.5, color: 0x00ffaa, transparent: true, opacity: 0.6 }));
+                cloud.name = "orbital_cloud";
+                activeGroup.add(cloud);
+            }
+            else if (mode === 'strings') {
+                for (let i = 0; i < 10; i++) {
+                    const curve = new THREE.CatmullRomCurve3([
+                        new THREE.Vector3(-50, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20),
+                        new THREE.Vector3(0, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 40),
+                        new THREE.Vector3(50, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20)
+                    ]);
+                    const string = new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.5, 8, false), new THREE.MeshPhongMaterial({ color: 0x00ffaa }));
+                    string.position.y = (i - 5) * 10;
+                    string.userData.baseY = string.position.y;
+                    activeGroup.add(string);
+                }
+            }
+            else if (mode === 'crystal') {
+                const geo = new THREE.IcosahedronGeometry(5, 0);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa });
+                for (let i = 0; i < 6; i++) {
+                    for (let j = 0; j < 6; j++) {
+                        const m = new THREE.Mesh(geo, mat);
+                        m.position.set((i - 3) * 25, 0, (j - 3) * 25);
+                        m.userData.phaseOffset = (i + j) * 0.5;
+                        activeGroup.add(m);
+                    }
+                }
+            }
+            else if (mode === 'gedanken') {
+                const box = new THREE.Mesh(new THREE.BoxGeometry(50, 50, 50), new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true, transparent: true, opacity: 0.3 }));
+                box.name = "containment";
+                activeGroup.add(box);
+
+                const alive = createEmojiSprite("😺", 256);
+                alive.name = "cat_alive";
+                alive.scale.set(30, 30, 1);
+                activeGroup.add(alive);
+
+                const dead = createEmojiSprite("☠️", 256);
+                dead.name = "cat_dead";
+                dead.scale.set(30, 30, 1);
+                dead.visible = false;
+                activeGroup.add(dead);
+
+                const label = createLabel("|Ψ⟩ = (|😺⟩ + |☠️⟩)/√2", "#00ffaa");
+                label.position.set(0, 45, 0);
+                activeGroup.add(label);
+            }
+            else if (mode === 'tunneling') {
+                const barrier = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 60), new THREE.MeshPhongMaterial({ color: 0xff0055, transparent: true, opacity: 0.5 }));
+                barrier.name = "barrier";
+                activeGroup.add(barrier);
+
+                const pCount = 1000;
+                const pPos = new Float32Array(pCount * 3);
+                const pCol = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount; i++) {
+                    pPos[i * 3] = -100 + Math.random() * 150;
+                    pPos[i * 3 + 1] = (Math.random() - 0.5) * 40;
+                    pPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+                    pCol[i * 3] = 0; pCol[i * 3 + 1] = 1; pCol[i * 3 + 2] = 1;
+                }
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+                const parts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 1.5, vertexColors: true }));
+                parts.name = "tunnel_particles";
+                activeGroup.add(parts);
+
+                const label = createLabel("Tunneling", "#ff0055");
+                label.position.set(0, 50, 0);
+                activeGroup.add(label);
+            }
+            else if (mode === 'entanglement') {
+                const sGeo = new THREE.SphereGeometry(15, 32, 32);
+                const sMat = new THREE.MeshPhongMaterial({ color: 0x00aaff });
+                const A = new THREE.Mesh(sGeo, sMat); A.position.x = -60; A.name = "ent_A";
+                const B = new THREE.Mesh(sGeo, sMat); B.position.x = 60; B.name = "ent_B";
+                const line = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 120), new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true }));
+                line.rotation.z = Math.PI / 2;
+                line.name = "ent_bond";
+                activeGroup.add(A, B, line);
+                const label = createLabel("Entangled Pair", "#00aaff");
+                label.position.set(0, 50, 0);
+                activeGroup.add(label);
+            }
+            else if (mode === 'teleportation') {
+                const ring = new THREE.TorusGeometry(20, 1, 16, 50);
+                const mat = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true });
+                const s1 = new THREE.Mesh(ring, mat); s1.position.x = -80;
+                const s2 = new THREE.Mesh(ring, mat); s2.position.x = 80;
+                activeGroup.add(s1, s2);
+
+                const payload = new THREE.Mesh(new THREE.IcosahedronGeometry(8), new THREE.MeshPhongMaterial({ color: 0xffff00 }));
+                payload.position.x = -80;
+                payload.name = "tele_payload";
+                activeGroup.add(payload);
+
+                const label = createLabel("Teleportation", "#ff00ff");
+                label.position.set(0, 50, 0);
+                activeGroup.add(label);
+            }
+            else if (mode === 'zeno') {
+                const atom = new THREE.Mesh(new THREE.SphereGeometry(20), new THREE.MeshPhongMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8 }));
+                atom.name = "zeno_atom";
+                activeGroup.add(atom);
+
+                const eye = createEmojiSprite("👁️", 128);
+                eye.position.set(0, 60, 0);
+                eye.scale.set(40, 40, 1);
+                eye.name = "zeno_eye";
+                activeGroup.add(eye);
+
+                const label = createLabel("Zeno Effect", "#ffffff");
+                label.position.set(0, -50, 0);
+                activeGroup.add(label);
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'double-slit') {
+                const plane = activeGroup.getObjectByName("wave_plane");
+                if (plane) {
+                    const pos = plane.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        const px = pos.getX(i);
+                        const pz = pos.getZ(i);
+                        if (pz < -50) {
+                            const d = Math.sqrt(px ** 2 + (pz + 150) ** 2);
+                            pos.setY(i, Math.sin(d * 0.25 - time * 8) * (p1 * 4));
+                        } else {
+                            const d1 = Math.sqrt((px - 15) ** 2 + (pz + 50) ** 2);
+                            const d2 = Math.sqrt((px + 15) ** 2 + (pz + 50) ** 2);
+                            const h = (Math.sin(d1 * 0.25 - time * 8) + Math.sin(d2 * 0.25 - time * 8)) * (p1 * 2);
+                            pos.setY(i, h);
+                        }
+                    }
+                    pos.needsUpdate = true;
+                }
+                const parts = activeGroup.getObjectByName("photons");
+                if (parts) {
+                    const pos = parts.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        let z = pos.getZ(i) + 3 * timeScale;
+                        if (z > 150) z = -150 - Math.random() * 100;
+                        pos.setZ(i, z);
+                    }
+                    pos.needsUpdate = true;
+                }
+                if (parts) {
+                    const pos = parts.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        let z = pos.getZ(i) + 3 * timeScale;
+                        if (z > 150) z = -150 - Math.random() * 100;
+                        pos.setZ(i, z);
+                    }
+                    pos.needsUpdate = true;
+                }
+            } else if (currentMode === 'superposition') {
+                const points = activeGroup.getObjectByName("morph_points");
+                if (points) {
+                    const pos = points.geometry.attributes.position;
+                    const landscape = points.userData.landscape;
+                    const isObserved = window.globalDrag ? window.globalDrag.isDragging : false;
+
+                    // Collapse State: 0 (Landscape/Unobserved) -> 1 (Face/Observed)
+                    // Logic: If Observed (Dragging), morph to Face (Sphere). If Idle, morph to Landscape.
+                    // Wait, user said "Two things at once UNTIL observed". So default should be a confusing mix, 
+                    // and clicking snaps it to ONE.
+
+                    const targetState = isObserved ? 1 : 0; // 1 = Sphere, 0 = Landscape
+                    // Smooth transition
+                    if (!points.userData.morphFactor) points.userData.morphFactor = 0;
+                    points.userData.morphFactor += (targetState - points.userData.morphFactor) * 0.05;
+
+                    const t = points.userData.morphFactor;
+
+                    for (let i = 0; i < pos.count; i++) {
+                        const phi = Math.acos(-1 + (2 * i) / pos.count);
+                        const theta = Math.sqrt(pos.count * Math.PI) * phi;
+
+                        // Re-calculate Sphere (Face) target on fly or store it?
+                        // Let's calc on fly for memory save, it's cheap.
+                        const sx = 60 * Math.cos(theta) * Math.sin(phi);
+                        const sy = 60 * Math.sin(theta) * Math.sin(phi);
+                        const sz = 60 * Math.cos(phi);
+
+                        // Landscape Target
+                        const lx = landscape[i * 3];
+                        const ly = landscape[i * 3 + 1] + Math.sin(lx * 0.1 + time) * 5; // Wave the landscape
+                        const lz = landscape[i * 3 + 2];
+
+                        // Superposition Mix
+                        // When t=0.5 (halfway), it's a mess. 
+
+                        pos.setX(i, sx * t + lx * (1 - t));
+                        pos.setY(i, sy * t + ly * (1 - t));
+                        pos.setZ(i, sz * t + lz * (1 - t));
+                    }
+                    pos.needsUpdate = true;
+                    points.rotation.y += 0.002;
+                }
+            } else if (currentMode === 'orbitals') {
+                const cloud = activeGroup.getObjectByName("orbital_cloud");
+                if (cloud) {
+                    const pos = cloud.geometry.attributes.position;
+                    const n = parseInt(p1);
+                    for (let i = 0; i < pos.count; i++) {
+                        const x = pos.getX(i); const y = pos.getY(i); const z = pos.getZ(i);
+                        const r = Math.sqrt(x * x + y * y + z * z);
+                        const s = 1 + Math.sin(time * 2 + r * 0.1) * 0.02 * n;
+                        // Just subtle pulse
+                    }
+                    cloud.rotation.y += dt * 0.1;
+                }
+            } else if (currentMode === 'strings') {
+                activeGroup.children.forEach((s, idx) => {
+                    if (s.type === "Mesh") {
+                        s.rotation.x += dt * (idx + 1) * 0.2;
+                        s.position.y = s.userData.baseY + Math.sin(time * 5 + idx) * 2;
+                    }
+                });
+            } else if (currentMode === 'crystal') {
+                activeGroup.children.forEach(m => {
+                    const phase = time * (p1 / 2) + m.userData.phaseOffset;
+                    const scale = 1 + Math.sin(phase) * 0.5;
+                    m.scale.setScalar(scale);
+                    m.rotation.y += dt;
+                });
+            } else if (currentMode === 'gedanken') {
+                const alive = activeGroup.getObjectByName('cat_alive');
+                const dead = activeGroup.getObjectByName('cat_dead');
+                const box = activeGroup.getObjectByName('containment');
+                if (box) { box.rotation.y += dt; }
+                if (alive && dead) {
+                    const t = (Math.sin(time * 2) + 1) / 2;
+                    alive.visible = true; dead.visible = true;
+                    alive.material.opacity = t;
+                    dead.material.opacity = 1 - t;
+                }
+            } else if (currentMode === 'tunneling') {
+                const parts = activeGroup.getObjectByName('tunnel_particles');
+                if (parts) {
+                    const pos = parts.geometry.attributes.position.array;
+                    const col = parts.geometry.attributes.color.array;
+                    for (let i = 0; i < pos.length / 3; i++) {
+                        let x = pos[i * 3];
+                        x += 2 * timeScale;
+                        if (x > 100) x = -100;
+                        pos[i * 3] = x;
+                        // Color logic (red in barrier)
+                        if (x > -5 && x < 5) { col[i * 3] = 1; col[i * 3 + 1] = 0; col[i * 3 + 2] = 0; }
+                        else { col[i * 3] = 0; col[i * 3 + 1] = 1; col[i * 3 + 2] = 1; }
+                    }
+                    parts.geometry.attributes.position.needsUpdate = true;
+                    parts.geometry.attributes.color.needsUpdate = true;
+                }
+            } else if (currentMode === 'entanglement') {
+                const A = activeGroup.getObjectByName('ent_A');
+                const B = activeGroup.getObjectByName('ent_B');
+                if (A && B) {
+                    A.rotation.y += dt; B.rotation.y -= dt;
+                    const cVal = (Math.sin(time * 3) + 1) / 2;
+                    A.material.emissive.setHSL(0.6, 1, cVal * 0.5);
+                    B.material.emissive.setHSL(0.6, 1, cVal * 0.5);
+                }
+            } else if (currentMode === 'teleportation') {
+                const p = activeGroup.getObjectByName('tele_payload');
+                if (p) {
+                    const seq = time % 4;
+                    if (seq < 1) { p.position.x = -80; p.visible = true; p.material.opacity = 1; }
+                    else if (seq < 2) { p.material.opacity = 2 - seq; p.scale.setScalar(1 + (seq - 1) * 2); }
+                    else if (seq < 3) { p.position.x = 80; p.material.opacity = seq - 2; p.scale.setScalar(3 - (seq - 2) * 2); }
+                    else { p.position.x = 80; p.material.opacity = 1; p.scale.setScalar(1); }
+                }
+            } else if (currentMode === 'zeno') {
+                const atom = activeGroup.getObjectByName('zeno_atom');
+                const eye = activeGroup.getObjectByName('zeno_eye');
+                const watching = (time % 1.5) < 0.2;
+                if (eye) { eye.scale.setScalar(watching ? 40 : 30); eye.material.opacity = watching ? 1 : 0.3; }
+                if (atom) {
+                    if (watching) { atom.material.color.setHex(0x00ff00); atom.scale.setScalar(1); }
+                    else {
+                        const prog = ((time % 1.5) - 0.2) / 1.3;
+                        atom.material.color.setHSL(0.3 - prog * 0.3, 1, 0.5);
+                        atom.scale.setScalar(1 + prog * 0.5);
+                    }
+                }
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 350 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function makeDraggable(el) {
+            if (!el) return;
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            const onStart = (clientX, clientY) => {
+                isDragging = true;
+                startX = clientX;
+                startY = clientY;
+                const rect = el.getBoundingClientRect();
+                // Switch to absolute positioning based on current viewport
+                el.style.bottom = 'auto';
+                el.style.right = 'auto';
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                el.style.left = initialLeft + 'px';
+                el.style.top = initialTop + 'px';
+                el.style.position = 'fixed';
+            };
+
+            const onMove = (clientX, clientY) => {
+                if (!isDragging) return;
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+                el.style.left = (initialLeft + dx) + 'px';
+                el.style.top = (initialTop + dy) + 'px';
+            };
+
+            const onEnd = () => { isDragging = false; };
+
+            // Touch
+            el.addEventListener('touchstart', e => { onStart(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive: false });
+            window.addEventListener('touchmove', e => { if (isDragging) { onMove(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); } }, { passive: false });
+            window.addEventListener('touchend', onEnd);
+
+            // Mouse
+            el.addEventListener('mousedown', e => { onStart(e.clientX, e.clientY); });
+            window.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX, e.clientY); });
+            window.addEventListener('mouseup', onEnd);
+        }
+
+        window.onload = function () {
+            init();
+            makeDraggable(document.getElementById('info-btn'));
+        };
+    </script>
+</body>
+
+</html>

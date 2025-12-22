@@ -1,0 +1,893 @@
+/**
+ * Shared Component Styles for Spacetime Visualizations
+ * Externalized common CSS across all visualization pages
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400&display=swap');
+
+/* ============ RESET & BASE ============ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #000;
+    overflow-x: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+    /* GLOBAL COSMIC BACKGROUND */
+    background: radial-gradient(circle at center, #0b1026 0%, #000 100%);
+    background-attachment: fixed;
+}
+
+#background-stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.8;
+    background: #000;
+    /* Fallback for transparency */
+}
+
+#three-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    /* RESTORE BACKGROUND DEPTH */
+    background: radial-gradient(circle at center, rgba(5, 12, 20, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+body>canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: grab;
+    z-index: 0;
+}
+
+canvas:active {
+    cursor: grabbing;
+}
+
+/* ============ MAIN NAVIGATION (Rolling Instrument) ============ */
+.main-nav-container {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    /* Moved to Right */
+    transform: translateY(-50%) perspective(1000px) rotateY(-8deg);
+    /* 3D Perspective */
+    z-index: 110;
+    width: 60px;
+    height: 350px;
+    /* Reduced specific height for instrument feel */
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Masking for the "instrument" look */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    pointer-events: auto;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px 0;
+    opacity: 0;
+}
+
+.main-nav-container.visible {
+    opacity: 1;
+}
+
+.main-nav-container.hidden-on-index {
+    display: none !important;
+}
+
+.nav-wave-icon {
+    width: 40px;
+    height: 20px;
+    color: rgba(0, 255, 255, 0.4);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    margin: 5px 0;
+}
+
+.nav-wave-icon.up {
+    transform: rotate(180deg);
+}
+
+.main-nav-container:hover .nav-wave-icon {
+    color: #00ffff;
+    opacity: 1;
+}
+
+.main-nav-container:hover {
+    transform: translateY(-50%) perspective(1000px) rotateY(-4deg);
+}
+
+.nav-lens-indicator {
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    /* Relative to right edge */
+    width: 100%;
+    height: 44px;
+    margin-top: -22px;
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    /* Focus glow from the right */
+    background: linear-gradient(270deg,
+            rgba(0, 255, 255, 0.1) 0%,
+            rgba(0, 255, 255, 0.05) 50%,
+            rgba(0, 255, 255, 0) 100%);
+    pointer-events: none;
+    z-index: 5;
+    border-right: 2px solid #00ffff;
+}
+
+#nav-oscilloscope {
+    display: none;
+    /* Hide oscilloscope for this mode to clean up visuals */
+}
+
+.main-nav {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* No flex here, we use abs positioning for wheel items */
+    perspective: 500px;
+    overflow: hidden;
+    cursor: grab;
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    padding: 0;
+}
+
+.main-nav:active {
+    cursor: grabbing;
+}
+
+/* Hide scrollbar */
+.main-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.main-nav-tab {
+    position: absolute;
+    /* Key change for wheel */
+    left: 0;
+    width: 100%;
+    height: 40px;
+    /* Taller hit area */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Center everything */
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.1s;
+    /* Fast color transition */
+    /* Default state: hidden/centered */
+    top: 50%;
+    margin-top: -20px;
+    /* Center offset */
+    transform-style: preserve-3d;
+    user-select: none;
+    opacity: 0;
+    /* JS controls visibility */
+    pointer-events: none;
+    /* JS enables clicks on visible ones */
+
+    /* Reset previous styles */
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.main-nav-tab::before {
+    display: none;
+    /* Remove old tick marks */
+}
+
+.main-nav-tab.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.main-nav-tab.active {
+    color: #bf40bf;
+    /* Deep Purple */
+    text-shadow: 0 0 15px rgba(191, 64, 191, 0.6);
+    font-weight: 600;
+    z-index: 10;
+}
+
+.main-nav-tab .nav-content {
+    opacity: 1;
+    /* Always visible if parent is visible */
+    transform: none;
+    margin: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-label {
+    /* Vertical Text Style */
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    /* Increased size */
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: inherit;
+    /* Inherit active color */
+    background: transparent;
+    border: none;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.nav-scale {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.45rem;
+    color: rgba(0, 255, 255, 0.4);
+    writing-mode: horizontal-tb;
+    margin-bottom: 2px;
+    opacity: 0.8;
+}
+
+/* Home button special styling */
+.main-nav-tab.home-btn {
+    opacity: 0.5;
+    font-size: 1.2rem;
+    writing-mode: horizontal-tb;
+    /* Exception for symbol */
+}
+
+/* ============ THEORY TABS (SUB-NAVIGATION) ============ */
+/* ============ SUB-NAVIGATION HEADER ============ */
+.theory-nav-header {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 110;
+    pointer-events: none;
+    width: 100%;
+}
+
+.theory-nav-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    color: #00ffff;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.theory-nav-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.05em;
+}
+
+.theory-tabs {
+    position: fixed;
+    top: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0;
+    z-index: 105;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 6px;
+    backdrop-filter: blur(5px);
+    /* Enable scrolling globally without scrollbars */
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    max-width: 90vw;
+    /* Limit width */
+    white-space: nowrap;
+}
+
+.theory-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.theory-tab {
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba(0, 255, 255, 0.1);
+    color: rgba(0, 255, 255, 0.4);
+    padding: 8px 14px;
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.theory-tab:last-child {
+    border-right: none;
+}
+
+.theory-tab:hover {
+    color: rgba(0, 255, 255, 0.8);
+    background: rgba(0, 255, 255, 0.05);
+}
+
+.theory-tab.active {
+    background: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+}
+
+/* Page Specific Tab Colors (Overrides) */
+.theory-tab.chaos-tab.active {
+    background: rgba(204, 0, 255, 0.15);
+    color: #cc00ff;
+    box-shadow: inset 0 0 15px rgba(204, 0, 255, 0.2);
+}
+
+.theory-tab.relativity-tab.active {
+    background: rgba(255, 100, 0, 0.15);
+    color: #ff6600;
+    box-shadow: inset 0 0 15px rgba(255, 100, 0, 0.2);
+}
+
+.theory-tab.flow-tab.active {
+    background: rgba(255, 136, 0, 0.15);
+    color: #ffaa00;
+    box-shadow: inset 0 0 15px rgba(255, 136, 0, 0.2);
+}
+
+/* ============ INFO PANEL (FOOTER) ============ */
+.info-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 80;
+    /* Behind controls */
+    max-width: 600px;
+    width: calc(100% - 40px);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.9;
+    /* Brightened from 0.5 */
+    transition: opacity 0.5s;
+}
+
+.info-panel:hover {
+    opacity: 1;
+}
+
+.theory-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    /* Bolder */
+    color: rgba(0, 255, 255, 1);
+    /* Full brightness */
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.theory-year {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: rgba(0, 255, 255, 0.8);
+    /* Brightened */
+    margin-bottom: 5px;
+}
+
+/* Mobile - Medium Override (Redundant but safe to keep for touch/font adjust) */
+@media (max-width: 700px) {
+    .main-nav {
+        top: 8px;
+        max-width: calc(100vw - 12px);
+    }
+
+    .main-nav-tab {
+        padding: 10px 14px;
+        font-size: 0.65rem;
+    }
+
+    .main-nav-tab.home-btn {
+        padding: 10px 14px;
+        font-size: 1rem;
+    }
+
+    .theory-tabs {
+        top: 54px;
+        justify-content: flex-start;
+    }
+
+    .theory-tab {
+        padding: 8px 12px;
+        font-size: 0.6rem;
+    }
+}
+
+.equation-box {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 6px 12px;
+    margin-bottom: 5px;
+    pointer-events: auto;
+}
+
+.equation {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: rgba(0, 255, 255, 0.7);
+    letter-spacing: 0.03em;
+    word-break: break-word;
+}
+
+.equation-label {
+    font-size: 0.5rem;
+    color: rgba(0, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 2px;
+}
+
+/* Theory Facts (status indicators) */
+.theory-facts {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-size: 0.55rem;
+    color: rgba(0, 255, 255, 0.4);
+    flex-wrap: wrap;
+}
+
+.fact {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.fact-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.fact-dot.yes {
+    background: #00ff88;
+}
+
+.fact-dot.no {
+    background: #ff4466;
+}
+
+.fact-dot.maybe {
+    background: #ffaa00;
+}
+
+/* ============ CHRONOS CONTROL DECK (TOP LEFT) ============ */
+.params-panel {
+    position: fixed;
+    top: 85px;
+    left: 100px;
+    /* Shifted right to clear Tuning Fork Nav */
+    bottom: auto;
+    transform: none;
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Tight stacking */
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.6;
+    /* Ghost Mode */
+    transition: opacity 0.3s ease;
+}
+
+.params-panel:hover,
+.params-panel:active,
+.params-panel:focus-within {
+    opacity: 1;
+    /* Wake on interact */
+}
+
+.param-group {
+    pointer-events: auto;
+    background: rgba(5, 12, 18, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 4px 8px;
+    /* Minimal padding */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+}
+
+.param-group:hover {
+    background: rgba(5, 12, 18, 0.8);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+.param-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    /* Tiny label */
+    color: rgba(0, 255, 255, 0.6);
+    text-transform: uppercase;
+    width: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.param-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: #fff;
+    width: 40px;
+    text-align: right;
+    margin-left: 4px;
+}
+
+/* Slim Slider */
+.param-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex-grow: 1;
+    height: 12px;
+    background: transparent;
+    cursor: pointer;
+    margin: 0 6px;
+    position: relative;
+}
+
+/* The visible track (Thin line) */
+.param-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 1px;
+    margin-top: 5px;
+}
+
+/* The Thumb (Small Dot) */
+.param-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background: #000;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    margin-top: -4px;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.1);
+    transition: transform 0.1s;
+}
+
+.param-slider:hover::-webkit-slider-thumb {
+    background: #00ffff;
+    border-color: #fff;
+    transform: scale(1.2);
+}
+
+/* Time-Specific styling override class */
+.param-slider.time-travel::-webkit-slider-runnable-track {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.2) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(0, 255, 255, 0.2) 100%);
+}
+
+
+/* ============ INFO MODAL ============ */
+.info-btn {
+    position: fixed;
+    top: 85px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    color: rgba(0, 255, 255, 0.8);
+    font-family: 'JetBrains Mono';
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 105;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-btn:hover {
+    background: rgba(0, 255, 255, 0.1);
+    color: #fff;
+    border-color: #00ffff;
+}
+
+.info-modal {
+    position: fixed;
+    top: 120px;
+    right: 20px;
+    width: 300px;
+    background: rgba(5, 10, 15, 0.95);
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 120;
+    color: #fff;
+    display: none;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+}
+
+.info-modal.open {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.info-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    padding-bottom: 10px;
+}
+
+.info-modal-title {
+    font-family: 'JetBrains Mono';
+    font-size: 0.7rem;
+    color: rgba(0, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.info-modal-close {
+    background: none;
+    border: none;
+    color: rgba(0, 255, 255, 0.5);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.info-modal-close:hover {
+    color: #fff;
+}
+
+.info-section {
+    margin-bottom: 20px;
+}
+
+.info-section-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #00ffff;
+    margin-bottom: 8px;
+}
+
+.info-section p {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+.info-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-section li {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    border-left: 1px solid rgba(0, 255, 255, 0.2);
+    padding-left: 10px;
+}
+
+.info-section li strong {
+    color: rgba(0, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+/* ============ MOBILE GLOBAL CLEANUP ============ */
+@media (max-width: 900px) {
+
+    #cinematic-overlay,
+    .system-status,
+    .telemetry-overlay {
+        font-size: 0.45rem !important;
+        bottom: 5px !important;
+        opacity: 0.6;
+        line-height: 1.1;
+    }
+
+    #cinematic-overlay {
+        left: 5px !important;
+        max-width: 140px !important;
+    }
+
+    .system-status {
+        right: 5px !important;
+        text-align: right;
+    }
+
+    .telemetry-overlay {
+        left: 5px !important;
+        bottom: 25px !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .info-panel {
+        bottom: 45px !important;
+        width: 95% !important;
+    }
+
+    .theory-facts,
+    .theory-year {
+        display: none !important;
+    }
+
+    /* .params-panel handled globally now (bottom deck) */
+    .params-panel {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 60px !important;
+        width: 80% !important;
+    }
+
+    .info-btn {
+        top: 90px !important;
+        right: 10px !important;
+    }
+
+    .ui-orb {
+        top: auto !important;
+        bottom: 25px !important;
+        right: 25px !important;
+    }
+}
+
+/* ============ SUBTLE GLASS ORB (MINIMALIST) ============ */
+.ui-orb {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    bottom: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    z-index: 10001;
+    cursor: pointer;
+
+    /* Subtle Glass */
+    background: rgba(10, 20, 30, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Inner Dot (Status) */
+.ui-orb::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: rgba(0, 255, 255, 0.6);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Magnetism / Hover */
+.ui-orb:hover {
+    border-color: rgba(0, 255, 255, 0.5);
+    background: rgba(0, 255, 255, 0.08);
+    /* Slight tint */
+    transform: scale(1.05);
+    /* Subtle grow */
+}
+
+.ui-orb:hover::after {
+    background: #00ffff;
+    box-shadow: 0 0 12px #00ffff;
+}
+
+/* Active State */
+.ui-orb.active {
+    background: rgba(0, 255, 255, 0.15);
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.ui-orb.active::after {
+    background: transparent;
+    box-shadow: none;
+    content: '×';
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 200;
+    width: auto;
+    height: auto;
+    line-height: 1;
+    /* Center X */
+    padding-bottom: 2px;
+}
+
+/* UI STATE MANAGEMENT */
+body:not(.ui-open) .main-nav,
+body:not(.ui-open) .theory-tabs,
+body:not(.ui-open) .params-panel,
+body:not(.ui-open) .info-panel,
+body:not(.ui-open) #cinematic-overlay,
+body:not(.ui-open) .system-status,
+body:not(.ui-open) .info-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+body:not(.ui-open) canvas {
+    cursor: grab;
+    /* Full screen canvas experience */
+}
+
+/* Exception for Info Panel if needed, but let's hide all for immersion */

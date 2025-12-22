@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance | Wave Harmonics</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.resonance-tab {
+            color: #00ddff;
+        }
+
+        .theory-tab.resonance-tab.active {
+            background: rgba(0, 221, 255, 0.1);
+            color: #00ddff;
+            box-shadow: inset 0 0 15px rgba(0, 221, 255, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(0, 221, 255, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(0, 221, 255, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        #brainwave-hud {
+            position: fixed;
+            top: 250px;
+            right: 20px;
+            width: 220px;
+            display: none;
+            /* Flex when active */
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        #cinematic-overlay {
+            transition: all 0.5s ease;
+        }
+
+        /* ORB INTEGRATION */
+        body:not(.ui-open) #brainwave-hud,
+        body:not(.ui-open) .system-status,
+        body:not(.ui-open) #cinematic-overlay {
+            opacity: 0;
+            transform: translateX(50px) scale(0.9);
+            /* Overlay might move left? keeps simple */
+            pointer-events: none;
+        }
+
+        body.ui-open #brainwave-hud,
+        body.ui-open .system-status,
+        body.ui-open #cinematic-overlay {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .wave-band {
+            padding: 8px;
+            background: rgba(0, 20, 30, 0.6);
+            border: 1px solid rgba(0, 221, 255, 0.2);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono';
+            font-size: 0.65rem;
+            transition: all 0.3s;
+        }
+
+        .wave-band.active {
+            border-color: rgba(0, 221, 255, 0.8);
+            background: rgba(0, 50, 70, 0.7);
+            box-shadow: 0 0 15px rgba(0, 221, 255, 0.2);
+        }
+
+        .wave-band-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: #00ddff;
+        }
+
+        .wave-band-desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.55rem;
+        }
+
+        .manifold-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 221, 255, 0.05) 1px, rgba(0, 221, 255, 0.05) 2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE RESONANT FIELD MANIFOLD</div>
+    <div class="manifold-glitch"></div>
+
+    <div class="system-status">
+        [ MODE: EIGENSTATE ]<br>
+        [ Q-FACTOR: INFINITE ]<br>
+        [ PHASE: SYNCHRONIZED ]
+    </div>
+
+    <div id="brainwave-hud">
+        <div class="wave-band" id="band-gamma">
+            <div class="wave-band-header"><span>GAMMA</span><span>30-100Hz</span></div>
+            <div class="wave-band-desc">Cognitive Binding & Processing</div>
+        </div>
+        <div class="wave-band" id="band-beta">
+            <div class="wave-band-header"><span>BETA</span><span>12-30Hz</span></div>
+            <div class="wave-band-desc">Active Focus & Alertness</div>
+        </div>
+        <div class="wave-band" id="band-alpha">
+            <div class="wave-band-header"><span>ALPHA</span><span>8-12Hz</span></div>
+            <div class="wave-band-desc">Relaxed Reflective State</div>
+        </div>
+        <div class="wave-band" id="band-theta">
+            <div class="wave-band-header"><span>THETA</span><span>4-8Hz</span></div>
+            <div class="wave-band-desc">Deep Meditation / R.E.M.</div>
+        </div>
+        <div class="wave-band" id="band-delta">
+            <div class="wave-band-header"><span>DELTA</span><span>0.1-4Hz</span></div>
+            <div class="wave-band-desc">Deep Sleep & Healing</div>
+        </div>
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab resonance-tab active" data-theory="social">Social Resonance</button>
+        <button class="theory-tab" data-theory="neural">Neural Binding</button>
+        <button class="theory-tab" data-theory="gravity">Metric Waves</button>
+        <button class="theory-tab" data-theory="pilot">Pilot Wave</button>
+        <button class="theory-tab" data-theory="cymatics">Cymatics</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Synaptic Gain</div>
+            <div class="param-value" id="param1-value">100</div>
+            <input type="range" class="param-slider" id="param1-slider" min="10" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Harmonic Step</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Phase Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Resonance Loops</div>
+        <div class="theory-year" id="theory-year">Coupled Oscillators (19th-21st Century)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Eigenstate</div>
+            <div class="equation" id="equation">Ĥψ = Eψ</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Resonance Physics Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Eigenmode Invariants</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('resonance');
+
+        let scene, camera, renderer, currentMode = 'neural';
+        let activeGroup;
+        let p1 = 100, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'social': {
+                name: 'Social Resonance', year: 'Emergent Collectivity, 2025',
+                equation: 'Ψ_total = Σ ψ_individual',
+                facts: [{ text: 'Path Memory', status: 'yes' }, { text: 'Collective Unconscious', status: 'yes' }],
+                description: 'We are not isolated observers. Every visitor to this space leaves a "Ghost"—a trace of their interaction. This installation visualizes the paths of previous observers, showing how individual agencies weave together into a collective social resonance.',
+                concepts: [
+                    { term: 'Stigmergy', definition: 'Indirect coordination between agents or actions, where the trace left in the environment stimulates the performance of a next action.' },
+                    { term: 'Path Dependence', definition: 'The current state of the system is a sum of its entire history.' }
+                ],
+                physics: 'In Waveism, society is a standing wave. We are all phase-locked oscillators in a shared cognitive manifold. Your actions ripple out and interfere with the paths of others, creating the constructive interference we call "Culture".'
+            },
+            'neural': {
+                name: 'Neural Binding', year: 'Conscious Synchrony, 1990',
+                equation: 'γ(synchrony) = Binding',
+                facts: [{ text: 'Phase Locking', status: 'yes' }, { text: 'Information Gating', status: 'yes' }],
+                description: 'The brain does not process information in isolated chunks, but through synchronized oscillations across different brain regions. High-frequency Gamma waves bind disparate sensory inputs into a singular unified experience. This resonance is the foundation of consciousness itself.',
+                concepts: [
+                    { term: 'Neural Synchrony', definition: 'The simultaneous firing of neurons that enables different brain regions to communicate and share data.' },
+                    { term: 'Gamma Binding', definition: '30-100Hz oscillations that link colors, shapes, and motion into a coherent perceptual object.' },
+                    { term: 'The 40Hz Theory', definition: 'The hypothesis that 40Hz oscillations are the fundamental mechanism of conscious awareness.' },
+                    { term: 'Cross-Frequency Coupling', definition: 'The mechanism where memory cycles (Theta) providing the framework for perceptual binding (Gamma).' }
+                ],
+                physics: 'In Waveism, neural binding is a macro-scale "Quantum Coherence". The neural network mimics the phase-locking of the fundamental vacuum, allowing complex consciousness to arise from simple oscillatory nodes. It is the emergence of order from biological chaos through pure resonance.'
+            },
+            'gravity': {
+                name: 'Metrical Ripples', year: 'Gravitational Waves, 1916/2015',
+                equation: 'h_μν = (2G/c⁴r) d²Q_μν/dt²',
+                facts: [{ text: 'Transverse Strain', status: 'yes' }, { text: 'Metric Warp', status: 'yes' }],
+                description: 'Ripples in the very fabric of spacetime. When massive objects accelerate, they radiate energy as quadropolar waves that physically stretch and squeeze the dimensions of the universe as they pass.',
+                concepts: [
+                    { term: 'Inspiral Chirp', definition: 'The characteristic increase in frequency and amplitude as two black holes approach a collision.' },
+                    { term: 'Strain (h)', definition: 'A dimensionless number representing the fractional change in distance between two points in space.' }
+                ],
+                physics: 'Gravitational waves are the "Sound" of the universe. They are the longitudinal-transverse oscillations of the metric itself, proving space is a dynamic, resonant medium.'
+            },
+            'pilot': {
+                name: 'De Broglie-Bohm Pilot', year: 'Deterministic Quantum Fluid',
+                equation: 'v = ∇S / m',
+                facts: [{ text: 'Guidance Field', status: 'yes' }, { text: 'Non-Local Potential', status: 'yes' }],
+                description: 'An alternative to standard quantum mechanics where particles are real and follow exact paths. They are "guided" by a pilot wave (the wavefunction) that creates interference and tunneling through fluid-like dynamics.',
+                concepts: [
+                    { term: 'Bohmian Trajectory', definition: 'The deterministic path a particle takes when driven by the phase of the wavefunction.' },
+                    { term: 'Quantum Potential', definition: 'A non-local force that accounts for all "weird" quantum effects in a mechanical way.' }
+                ],
+                physics: 'The pilot-wave is a hydrodynamic model of Waveism. It views the vacuum as a "Superfluid" where particles are simply topological singularities (droplets) walking on their own surface-waves.'
+            },
+            'cymatics': {
+                name: 'Eigenmode Manifolds', year: 'Hans Jenny / Chladni',
+                equation: '∇²ψ + k²ψ = 0',
+                facts: [{ text: 'Nodal Patterning', status: 'yes' }, { text: 'Geometric Nodes', status: 'yes' }],
+                description: 'The visual manifestation of sound and vibration. When a surface is vibrated at resonant frequencies, matter organizes itself into intricate geometric patterns at the nodal points where the field is at rest.',
+                concepts: [
+                    { term: 'Nodal Point', definition: 'A location in a standing wave where the amplitude is always zero.' },
+                    { term: 'Resonance Curve', definition: 'A chart of a system\'s response frequency, peaking at its fundamental and harmonic modes.' }
+                ],
+                physics: 'Cymatics is "Structure from Sound". It shows how harmonic energy creates complex geometry, mirroring how the Big Bang seeded the distribution of all galaxies.'
+            }
+        };
+
+        const waveBands = [
+            { id: 'delta', range: [0.1, 4], color: 0x4444ff, name: 'DELTA' },
+            { id: 'theta', range: [4, 8], color: 0x44ffff, name: 'THETA' },
+            { id: 'alpha', range: [8, 12], color: 0x44ff44, name: 'ALPHA' },
+            { id: 'beta', range: [12, 30], color: 0xffff44, name: 'BETA' },
+            { id: 'gamma', range: [30, 100], color: 0xff44ff, name: 'GAMMA' }
+        ];
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 250);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00ffff, 2, 500);
+            pointLight.position.set(50, 50, 50);
+            scene.add(pointLight);
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v; updateParamDisplay(); },
+                formatter: v => v
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, { initialRotationX: 0.2 });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 1.0 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (window.clickPrevented) { window.clickPrevented = false; return; }
+                drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('social');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function createLabel(text, color = "#ffffff") {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 128;
+            ctx.fillStyle = color;
+            ctx.font = 'bold 36px JetBrains Mono, monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, 128, 64);
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(15, 7.5, 1);
+            return sprite;
+        }
+
+        function setupGraphics() { }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            valEl.innerText = p1;
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+            document.getElementById('brainwave-hud').style.display = mode === 'neural' ? 'flex' : 'none';
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 2; // Balanced visual alignment
+
+            if (mode === 'neural') {
+                document.getElementById('param1-label').innerText = "Synaptic Gain";
+                waveBands.forEach((band, bandIdx) => {
+                    const cluster = new THREE.Group();
+                    cluster.name = "cluster_" + band.id;
+                    const count = 40;
+
+                    // Neurons
+                    const pointsGeo = new THREE.BufferGeometry();
+                    const pos = new Float32Array(count * 3);
+                    const rBase = 60 + bandIdx * 25;
+
+                    for (let i = 0; i < count; i++) {
+                        const phi = Math.random() * Math.PI;
+                        const theta = Math.random() * Math.PI * 2;
+                        const r = rBase + (Math.random() - 0.5) * 10;
+                        pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                        pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                        pos[i * 3 + 2] = r * Math.cos(phi);
+                    }
+                    pointsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                    const neurons = new THREE.Points(pointsGeo, new THREE.PointsMaterial({ color: band.color, size: 2, transparent: true, opacity: 0.8 }));
+                    neurons.name = "neurons";
+                    cluster.add(neurons);
+
+                    // Synaptic Connections (Line segments)
+                    const lineMat = new THREE.LineBasicMaterial({ color: band.color, transparent: true, opacity: 0.1 });
+                    const linesGeo = new THREE.BufferGeometry();
+                    const linePoints = [];
+                    for (let i = 0; i < count; i += 2) {
+                        linePoints.push(new THREE.Vector3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]));
+                        linePoints.push(new THREE.Vector3(pos[(i + 1) * 3], pos[(i + 1) * 3 + 1], pos[(i + 1) * 3 + 2]));
+                    }
+                    linesGeo.setFromPoints(linePoints);
+                    const synapses = new THREE.LineSegments(linesGeo, lineMat);
+                    synapses.name = "synapses";
+                    cluster.add(synapses);
+
+                    activeGroup.add(cluster);
+                });
+
+                const lbl = createLabel("SYNCHRONY FIELD", "#ffffff");
+                lbl.position.y = 100;
+                activeGroup.add(lbl);
+
+            } else if (mode === 'gravity') {
+                document.getElementById('param1-label').innerText = "Mass Scaling";
+                const geo = new THREE.PlaneGeometry(300, 300, 64, 64);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ddff, wireframe: true, transparent: true, opacity: 0.3 });
+                const grid = new THREE.Mesh(geo, mat);
+                grid.rotation.x = -Math.PI / 2;
+                grid.name = "grid";
+                activeGroup.add(grid);
+
+                const bh1 = new THREE.Mesh(new THREE.SphereGeometry(8, 16, 16), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+                bh1.name = "bh1";
+                const g1 = new THREE.Mesh(new THREE.SphereGeometry(10, 16, 16), new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3 }));
+                bh1.add(g1);
+                activeGroup.add(bh1);
+
+                const bh2 = bh1.clone();
+                bh2.name = "bh2";
+                activeGroup.add(bh2);
+
+                const lbl = createLabel("BINARY INSPIRAL", "#00ffff");
+                lbl.position.y = 40;
+                activeGroup.add(lbl);
+
+            } else if (mode === 'pilot') {
+                document.getElementById('param1-label').innerText = "Surface Tension";
+                const geo = new THREE.PlaneGeometry(300, 300, 128, 128);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ddff, wireframe: true, transparent: true, opacity: 0.4 });
+                const surf = new THREE.Mesh(geo, mat);
+                surf.rotation.x = -Math.PI / 2;
+                surf.name = "surface";
+                activeGroup.add(surf);
+
+                const droplet = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), new THREE.MeshPhongMaterial({ color: 0xffffff }));
+                droplet.name = "droplet";
+                activeGroup.add(droplet);
+
+                const lbl = createLabel("WALKER WAVE", "#00ffff");
+                lbl.position.y = 30;
+                activeGroup.add(lbl);
+
+            } else if (mode === 'cymatics') {
+                document.getElementById('param1-label').innerText = "Driving Freq";
+                // Chladni Plate Particle System
+                const count = 15000;
+                const geo = new THREE.BufferGeometry();
+                const pos = new Float32Array(count * 3);
+                for (let i = 0; i < count; i++) {
+                    pos[i * 3] = (Math.random() - 0.5) * 200;
+                    pos[i * 3 + 1] = 0;
+                    pos[i * 3 + 2] = (Math.random() - 0.5) * 200;
+                }
+                geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const mat = new THREE.PointsMaterial({ color: 0x00ffff, size: 1.2, transparent: true, opacity: 0.8 });
+                const plate = new THREE.Points(geo, mat);
+                plate.name = "chladni_plate";
+                activeGroup.add(plate);
+
+                const lbl = createLabel("CHLADNI RESONANCE", "#ffffff");
+                lbl.position.y = 30;
+                activeGroup.add(lbl);
+            } else if (mode === 'social') {
+                document.getElementById('param1-label').innerText = "Ghost Fade";
+
+                // Initialize Ghost System
+                // 1. Get Ghosts from LocalStorage
+                let ghosts = [];
+                try {
+                    const store = localStorage.getItem('waveism_ghosts');
+                    if (store) ghosts = JSON.parse(store);
+                } catch (e) { console.error("Ghost storage error", e); }
+
+                // 2. Render Ghosts
+                const ghostGroup = new THREE.Group();
+                ghostGroup.name = "ghost_trails";
+
+                ghosts.forEach((ghostPath, i) => {
+                    if (ghostPath.length < 2) return;
+                    const pts = ghostPath.map(p => new THREE.Vector3(p.x, p.y, p.z));
+                    const curve = new THREE.CatmullRomCurve3(pts);
+                    const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(50));
+                    const mat = new THREE.LineBasicMaterial({
+                        color: 0x00ddff,
+                        transparent: true,
+                        opacity: 0.1 + (Math.random() * 0.2) // Faint ghosts
+                    });
+                    const line = new THREE.Line(geo, mat);
+                    ghostGroup.add(line);
+                });
+                activeGroup.add(ghostGroup);
+
+                // 3. Current User Trail (The "Live" Ghost)
+                const currentTrailGeo = new THREE.BufferGeometry();
+                const currentMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+                const currentLine = new THREE.Line(currentTrailGeo, currentMat);
+                currentLine.name = "live_trail";
+                // Store raw points in userdata
+                currentLine.userData.points = [];
+                currentLine.userData.lastSaveTime = Date.now();
+                activeGroup.add(currentLine);
+
+                const lbl = createLabel("YOU ARE NOT ALONE", "#00ddff");
+                lbl.position.y = 60;
+                activeGroup.add(lbl);
+            }
+
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'neural') {
+                const gain = p1 / 200;
+                waveBands.forEach((band, idx) => {
+                    const cluster = activeGroup.getObjectByName("cluster_" + band.id);
+                    const hudEl = document.getElementById("band-" + band.id);
+                    const isActive = p1 >= (idx * 20) && p1 < ((idx + 1) * 20);
+
+                    if (hudEl) {
+                        if (isActive) hudEl.classList.add('active');
+                        else hudEl.classList.remove('active');
+                    }
+
+                    if (cluster) {
+                        const neurons = cluster.getObjectByName("neurons");
+                        const synapses = cluster.getObjectByName("synapses");
+                        const pulse = Math.sin(time * band.range[1] * 0.5) * gain;
+
+                        if (neurons) {
+                            neurons.material.size = 2 + pulse * 5;
+                            neurons.material.opacity = 0.5 + pulse;
+                        }
+                        if (synapses) {
+                            synapses.material.opacity = 0.05 + pulse * 0.2;
+                            synapses.rotation.y += dt * 0.1;
+                        }
+                    }
+                });
+            } else if (currentMode === 'gravity') {
+                const s1 = activeGroup.getObjectByName("bh1");
+                const s2 = activeGroup.getObjectByName("bh2");
+                const grid = activeGroup.getObjectByName("grid");
+                if (s1 && s2 && grid) {
+                    const r = 40 + Math.sin(time * 0.5) * 10;
+                    const speed = 4 + (p1 / 50);
+                    s1.position.set(Math.cos(time * speed) * r, 0, Math.sin(time * speed) * r);
+                    s2.position.set(-Math.cos(time * speed) * r, 0, -Math.sin(time * speed) * r);
+
+                    const pos = grid.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        const px = pos.getX(i);
+                        const pz = pos.getZ(i);
+                        const d1 = Math.sqrt((px - s1.position.x) ** 2 + (pz - s1.position.z) ** 2);
+                        const d2 = Math.sqrt((px - s2.position.x) ** 2 + (pz - s2.position.z) ** 2);
+                        // Quadrupole ripple math
+                        const h = (Math.sin(d1 * 0.15 - time * 10) / (d1 + 5) + Math.sin(d2 * 0.15 - time * 10) / (d2 + 5)) * 1000 * (p1 / 100);
+                        pos.setY(i, h - 50 / (d1 + 5) - 50 / (d2 + 5));
+                    }
+                    pos.needsUpdate = true;
+                }
+            } else if (currentMode === 'pilot') {
+                const droplet = activeGroup.getObjectByName("droplet");
+                const surf = activeGroup.getObjectByName("surface");
+                if (droplet && surf) {
+                    const speed = 2;
+                    const r = 60;
+                    droplet.position.x = Math.cos(time * speed) * r;
+                    droplet.position.z = Math.sin(time * speed) * r;
+                    droplet.position.y = 2 + Math.abs(Math.sin(time * 12)) * 15;
+
+                    const pos = surf.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        const px = pos.getX(i);
+                        const pz = pos.getZ(i);
+                        const d1 = Math.sqrt((px - droplet.position.x) ** 2 + (pz - droplet.position.z) ** 2);
+                        const d2 = Math.sqrt(px ** 2 + pz ** 2); // Central mode
+                        const h = (Math.sin(d1 * 0.2 - time * 15) / (d1 + 10) * 150) + (Math.sin(d2 * 0.1) * 2);
+                        pos.setY(i, h * (p1 / 100));
+                    }
+                    pos.needsUpdate = true;
+                }
+            } else if (currentMode === 'cymatics') {
+                const plate = activeGroup.getObjectByName("chladni_plate");
+                if (plate) {
+                    const pos = plate.geometry.attributes.position;
+                    const freq = p1 / 20;
+                    for (let i = 0; i < pos.count; i++) {
+                        const x = pos.getX(i);
+                        const z = pos.getZ(i);
+
+                        // Chladni Standing Wave Equation
+                        // sin(n*x)*sin(m*y) - sin(m*x)*sin(n*y) = 0
+                        const n = freq, m = freq * 0.5;
+                        const amp = Math.sin(n * x * 0.05) * Math.sin(m * z * 0.05) + Math.sin(m * x * 0.05) * Math.sin(n * z * 0.05);
+
+                        // Particles drift toward nodes (amp approx 0)
+                        const drift = 0.1;
+                        pos.setX(i, x + (Math.random() - 0.5) * 0.5);
+                        pos.setZ(i, z + (Math.random() - 0.5) * 0.5);
+
+                        // Vertical "vibration" based on distance from node
+                        pos.setY(i, amp * 5);
+                    }
+                }
+            } else if (currentMode === 'social') {
+                const liveLine = activeGroup.getObjectByName("live_trail");
+                if (liveLine) {
+                    const pts = liveLine.userData.points;
+
+                    // Add point based on interaction or just mouse movement?
+                    // We don't have mouse pos here easily without raycasting.
+                    // Let's use the CAMERA rotation state (drag state) as the "Path" in phase space?
+                    // Or maybe just a wandering orbit that the user modulates?
+
+                    // Let's visualize the "Drag State" as a 3D path.
+                    // x, y mapped from rotationY, rotationX
+                    if (window.globalDrag) {
+                        const rX = window.globalDrag.rotationX;
+                        const rY = window.globalDrag.rotationY;
+
+                        // Map rotation to 3D sphere surface
+                        const r = 50;
+                        const x = r * Math.sin(rY) * Math.cos(rX);
+                        const y = r * Math.sin(rX);
+                        const z = r * Math.cos(rY) * Math.cos(rX);
+
+                        // Add point if far enough from last
+                        const newPt = new THREE.Vector3(x, y, z);
+                        if (pts.length === 0 || pts[pts.length - 1].distanceTo(newPt) > 2) {
+                            pts.push(newPt);
+                            if (pts.length > 200) pts.shift(); // Keep visual trail short-ish
+
+                            // RECORDING LOGIC
+                            // We accumulate a "Session Path" separately for storage
+                            if (!liveLine.userData.sessionPath) liveLine.userData.sessionPath = [];
+                            liveLine.userData.sessionPath.push({ x: x, y: y, z: z });
+                        }
+
+                        liveLine.geometry.setFromPoints(pts);
+                    }
+
+                    // SAVE LOGIC (Every 5 seconds)
+                    if (Date.now() - liveLine.userData.lastSaveTime > 5000) {
+                        try {
+                            const storePath = liveLine.userData.sessionPath;
+                            if (storePath && storePath.length > 10) {
+                                // Downsample for storage
+                                const simplePath = storePath.filter((_, i) => i % 10 === 0);
+
+                                let ghosts = [];
+                                const existing = localStorage.getItem('waveism_ghosts');
+                                if (existing) ghosts = JSON.parse(existing);
+
+                                // Reset stored path so we don't save duplicates, but keep visual trail
+                                // Actually, we want to append this segment.
+                                // Simplified approach: Just keep last 5 ghosts total.
+                                ghosts.push(simplePath);
+                                if (ghosts.length > 5) ghosts.shift();
+
+                                localStorage.setItem('waveism_ghosts', JSON.stringify(ghosts));
+                                liveLine.userData.sessionPath = []; // Clear buffer
+                                liveLine.userData.lastSaveTime = Date.now();
+                                // console.log("Saved Ghost Segment");
+                            }
+                        } catch (e) { }
+                    }
+                }
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 400 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

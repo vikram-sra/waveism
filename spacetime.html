@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space-Time | Relativistic Manifolds</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.relativity-tab {
+            color: #feeb2c;
+        }
+
+        .theory-tab.relativity-tab.active {
+            background: rgba(254, 235, 44, 0.1);
+            color: #feeb2c;
+            box-shadow: inset 0 0 15px rgba(254, 235, 44, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(254, 235, 44, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(254, 235, 44, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(254, 235, 44, 0.05) 1px, rgba(254, 235, 44, 0.05) 2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE MINKOWSKI METRIC INTERFACE</div>
+    <div class="manifold-glitch"></div>
+
+    <div class="system-status">
+        [ COORDINATES: LORENTZ COVARIANT ]<br>
+        [ METRIC: (-+++) SIGNATURE ]<br>
+        [ CAUSALITY: ENFORCED BY c ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab relativity-tab active" data-theory="block-universe">The 4D Loaf</button>
+        <button class="theory-tab" data-theory="light-cone">Light Cone</button>
+        <button class="theory-tab" data-theory="gravity">General Relativity</button>
+        <button class="theory-tab" data-theory="dilation">Time Dilation</button>
+        <button class="theory-tab" data-theory="twin">Twin Paradox</button>
+        <button class="theory-tab" data-theory="time-spiral">Time Spiral</button>
+        <button class="theory-tab" data-theory="einstein-sr">Lorentz Scissoring</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Velocity (β)</div>
+            <div class="param-value" id="param1-value">0.80c</div>
+            <input type="range" class="param-slider" id="param1-slider" min="0" max="99" value="80">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Sim Intensity</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Phase Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Minkowski Light Cone</div>
+        <div class="theory-year" id="theory-year">The Geometry of Causality (1908)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Invariant Interval</div>
+            <div class="equation" id="equation">ds² = c²dt² - dx² - dy² - dz²</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Relativistic Manifold Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Geometric Invariants</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('spacetime');
+
+        let scene, camera, renderer, currentMode = 'light-cone';
+        let activeGroup;
+        let p1 = 0.8, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'block-universe': {
+                name: 'The Block Universe', year: 'Eternalism, 1915',
+                equation: 'M⁴ = R³ × T',
+                facts: [{ text: 'Past exists', status: 'yes' }, { text: 'Future exists', status: 'yes' }],
+                description: 'The "Meatloaf" of Reality. Relativity implies that the past, present, and future exist simultaneously as a solid 4D block. Your "Now" is just a 3D slice cutting through the loaf like a CT scan.',
+                concepts: [
+                    { term: 'Eternalism', definition: 'The philosophical view that all points in time are equally "real".' },
+                    { term: 'World-Tube', definition: 'An object is not a 3D shape, but a 4D worm stretching from birth to death.' }
+                ],
+                physics: 'In Waveism, the Block Universe is the standing wave pattern of the entire cycle. We "experience" motion only because our consciousness is a traveling phase-front.'
+            },
+            'light-cone': {
+                name: 'Light Cone Topology', year: 'Hermann Minkowski, 1908',
+                equation: 'ds² = 0 [The Photon Path]',
+                facts: [{ text: 'Absolute Future', status: 'yes' }, { text: 'Causal Horizon', status: 'yes' }],
+                description: 'The geometry of causal possibility. Light defines a 45° boundary in flat spacetime; anything outside this cone is "Absolute Elsewhere"—regions of space that can never be reached or known by the observer at the origin.',
+                concepts: [
+                    { term: 'Worldline', definition: 'The unique path of an object through 4D spacetime.' },
+                    { term: 'Null Geodesic', definition: 'The trajectory of light that stays on the surface of the cone.' },
+                    { term: 'Timelike Path', definition: 'Trajectories of massive objects strictly inside the light cone.' }
+                ],
+                physics: 'In Waveism, the Light Cone is the coherence boundary of the cosmic signal. It represents the speed at which phase-information can propagate through the vacuum substrate.'
+            },
+            'gravity': {
+                name: 'Einstein Field Geometry', year: 'Albert Einstein, 1915',
+                equation: 'G_μν = 8πG/c⁴ T_μν',
+                facts: [{ text: 'Metric Warping', status: 'yes' }, { text: 'Geodesic Flow', status: 'yes' }],
+                description: 'General Relativity shows that mass-energy density curves the 4D manifold. Gravity is not a force, but the straightest possible path (geodesic) through a distorted geometric substrate.',
+                concepts: [
+                    { term: 'Equivalence Principle', definition: 'Gravity and acceleration are locally indistinguishable.' },
+                    { term: 'Ricci Curvature', definition: 'The mathematical measure of how spacetime volume deviates from flatness.' },
+                    { term: 'Flamm Paraboloid', definition: 'A spatial cross-section of the Schwarzschild gravity well.' }
+                ],
+                physics: 'Gravity is the refractive index of the vacuum. Waves moving through high-density substrates slow down and curve, interpreted by the observer as gravitational pull.'
+            },
+            'dilation': {
+                name: 'Lorentz Time Dilation', year: 'Hendrik Lorentz, 1904',
+                equation: 'dt = γ dτ [Where γ = 1/√(1-β²)]',
+                facts: [{ text: 'Non-Simultaneous', status: 'yes' }, { text: 'Invariant c', status: 'yes' }],
+                description: 'Time is a relative dimension. As an object\'s velocity (β) approaches the speed of light, its interval through time stretches to preserve the absolute invariance of the speed of light.',
+                concepts: [
+                    { term: 'Proper Time (τ)', definition: 'The temporal duration measured by a clock moving along a worldline.' },
+                    { term: 'Length Contraction', definition: 'The reciprocal compression of space along the axis of motion.' },
+                    { term: 'Lorentz Gamma (γ)', definition: 'The factor by which time and space scale during relativistic transit.' }
+                ],
+                physics: 'Time dilation is the doppler-shift of the system\'s internal oscillatory frequency. A moving clock oscillates "slower" relative to the rest frame substrate.'
+            },
+            'twin': {
+                name: 'The Twin Paradox', year: 'Proper Time Asymmetry',
+                equation: '∫ dτ_stay > ∫ dτ_travel',
+                facts: [{ text: 'Real Physicality', status: 'yes' }, { text: 'Non-Inertial Path', status: 'yes' }],
+                description: 'One twin stays home (geodesic path), the other travels at high velocity and returns. Because the traveler accelerated (leaving the initial inertial frame), their path through the metric is physically shorter.',
+                concepts: [
+                    { term: 'Path Dependency', definition: 'Elapsed time depends on the specific worldline trajectory.' },
+                    { term: 'Space-Time Interval', definition: 'The invariant "distance" in 4D space, analogous to the Pythagorean theorem.' },
+                    { term: 'Frame Breaking', definition: 'Acceleration requires shifting between different Lorentz frames.' }
+                ],
+                physics: 'The "Stay" twin remains aligned with the local temporal manifold. The "Traveler" cuts across the phase-lines of the cosmos, returning with a phase-offset—resulting in younger age.'
+            },
+            'time-spiral': {
+                name: 'The Temporal Spiral', year: 'Non-Linear Chronostructure',
+                equation: 't(θ) = z / (2πb) [The Helix Path]',
+                facts: [{ text: 'Cyclicality', status: 'yes' }, { text: 'Entropy Drift', status: 'yes' }],
+                description: 'Visualizing time not as a line, but as a three-dimensional spiral. This model suggests that events repeat in a self-similar way (periodicity) while drifting along a linear progression, creating the "Spiral of History".',
+                concepts: [
+                    { term: 'Helical Time', definition: 'A model where time progress linearly while oscillating circularly.' },
+                    { term: 'Event-Horizon Drift', definition: 'The gradual increase in radius representing the expansion of causal memory.' },
+                    { term: 'Return Period', definition: 'The phase-offset after one full rotation where self-similarity peaks.' }
+                ],
+                physics: 'In Waveism, the Time Spiral is the "Twist" of the vacuum. It represents a system where energy is recycled through oscillations while moving forward in coordinate time.'
+            },
+            'einstein-sr': {
+                name: 'Lorentz Scissoring', year: 'Special Relativity Axes',
+                equation: 'x\' = γ(x - vt), t\' = γ(t - vx/c²)',
+                facts: [{ text: 'Frame Invariance', status: 'yes' }, { text: 'Relative Now', status: 'yes' }],
+                description: 'A visual proof of the Lorentz transformation. As velocity increases, the space and time axes swap and "scissor" toward the 45° light line, proving that "now" is entirely dependent on motion.',
+                concepts: [
+                    { term: 'Hyperbolic Rotation', definition: 'A Lorentz boost is a rotation in Minkowski space by an imaginary angle.' },
+                    { term: 'Relativity of Simultaneity', definition: 'Two events that are simultaneous in one frame are not in another.' },
+                    { term: 'Calibration Isotherms', definition: 'The grid lines denoting equal units of proper space and time.' }
+                ],
+                physics: 'This scissoring is the geometric representation of phase-coherence alignment. The observer\'s "Now" slice rotates through the substrate to maintain signal speed.'
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 50);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 1.5);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00ffff, 2, 100);
+            pointLight.position.set(20, 20, 20);
+            scene.add(pointLight);
+
+            setupGraphics();
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v / 100; updateParamDisplay(); },
+                formatter: v => (v / 100).toFixed(2) + 'c'
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, {
+                initialRotationX: 0.5,
+                initialRotationY: -0.4
+            });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 0.7 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (window.clickPrevented) { window.clickPrevented = false; return; }
+                drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('block-universe');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function createLabel(text, color = "#ffffff") {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            // High-res canvas for crisp text
+            canvas.width = 512;
+            canvas.height = 128;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = color;
+            ctx.font = 'bold 36px JetBrains Mono, monospace'; // Slightly smaller font
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 256, 64);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(16, 4, 1); // Wider default scale
+            return sprite;
+        }
+
+        function setupGraphics() { }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            if (currentMode === 'light-cone') valEl.innerText = "Slice: " + p1.toFixed(2);
+            else if (currentMode === 'gravity') valEl.innerText = "Mass: " + (p1 * 10).toFixed(1) + "M";
+            else if (currentMode === 'dilation') valEl.innerText = "β: " + p1.toFixed(2) + "c";
+            else if (currentMode === 'twin') valEl.innerText = "Max β: " + p1.toFixed(2) + "c";
+            else if (currentMode === 'einstein-sr') valEl.innerText = "β: " + p1.toFixed(2) + "c";
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 0;
+
+            if (mode === 'light-cone') {
+                const res = 128, h = 60; // Increased scale and resolution
+
+                // 1. THE CAUSAL HORIZON (MULTI-LAYERED HOLOGRAPHY)
+                const horizonGroup = new THREE.Group();
+                const colors = [0x00ffff, 0x0088ff, 0x0044ff];
+                colors.forEach((col, i) => {
+                    const fGeo = new THREE.ConeGeometry(h * (1 - i * 0.02), h, res, 1, true);
+                    const fMat = new THREE.MeshPhongMaterial({
+                        color: col,
+                        transparent: true,
+                        opacity: 0.1 / (i + 1),
+                        side: THREE.DoubleSide,
+                        blending: THREE.AdditiveBlending,
+                        shininess: 100,
+                        emissive: col,
+                        emissiveIntensity: 0.2
+                    });
+                    const fCone = new THREE.Mesh(fGeo, fMat);
+                    fCone.position.y = h / 2;
+                    fCone.name = "horizon_future_" + i;
+                    horizonGroup.add(fCone);
+
+                    const pCone = fCone.clone();
+                    pCone.material = fMat.clone();
+                    pCone.material.color.setHex(0xffaa00);
+                    pCone.material.emissive.setHex(0xffaa00);
+                    pCone.position.y = -h / 2;
+                    pCone.rotation.x = Math.PI;
+                    pCone.name = "horizon_past_" + i;
+                    horizonGroup.add(pCone);
+                });
+                activeGroup.add(horizonGroup);
+
+                // 2. NULL-PATH PHOTON STREAM (Particles screaming at c)
+                const rayCount = 500; // 5x more particles
+                const rayGeo = new THREE.BufferGeometry();
+                const rayPos = new Float32Array(rayCount * 3);
+                const rayVels = new Float32Array(rayCount);
+                const rayColors = new Float32Array(rayCount * 3);
+                for (let i = 0; i < rayCount; i++) {
+                    rayVels[i] = Math.random() * h;
+                    rayColors[i * 3] = 0; rayColors[i * 3 + 1] = 1; rayColors[i * 3 + 2] = 1;
+                }
+                rayGeo.setAttribute('position', new THREE.BufferAttribute(rayPos, 3));
+                rayGeo.setAttribute('color', new THREE.BufferAttribute(rayColors, 3));
+                const rayMat = new THREE.PointsMaterial({
+                    size: 0.2,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.6,
+                    blending: THREE.AdditiveBlending
+                });
+                const rayPoints = new THREE.Points(rayGeo, rayMat);
+                rayPoints.name = "null_stream";
+                rayPoints.userData.velocities = rayVels;
+                activeGroup.add(rayPoints);
+
+                // 3. CAUSALITY RIPPLES (Expanding Wavefronts)
+                const pulses = new THREE.Group();
+                pulses.name = "causality_pulses";
+                for (let i = 0; i < 6; i++) {
+                    const rGeo = new THREE.TorusGeometry(1, 0.02, 16, 200);
+                    const rMat = new THREE.MeshBasicMaterial({
+                        color: 0x00ffff,
+                        transparent: true,
+                        opacity: 0,
+                        blending: THREE.AdditiveBlending
+                    });
+                    const ring = new THREE.Mesh(rGeo, rMat);
+                    ring.rotation.x = Math.PI / 2;
+                    ring.userData.offset = i * (h / 6);
+                    pulses.add(ring);
+                }
+                activeGroup.add(pulses);
+
+                // 4. THE METRIC LATTICE (Warped Grid)
+                const lattice = new THREE.Group();
+                lattice.name = "metric_lattice";
+                const latticeGeo = new THREE.PlaneGeometry(h * 3, h * 3, 40, 40);
+                const latticeMat = new THREE.MeshBasicMaterial({
+                    color: 0x00ffff,
+                    transparent: true,
+                    opacity: 0.03,
+                    wireframe: true,
+                    blending: THREE.AdditiveBlending
+                });
+                const plane = new THREE.Mesh(latticeGeo, latticeMat);
+                plane.rotation.x = Math.PI / 2;
+                lattice.add(plane);
+
+                // Floating Origin Markers
+                for (let i = 0; i < 20; i++) {
+                    const ang = Math.random() * Math.PI * 2;
+                    const r = 20 + Math.random() * 80;
+                    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.1 }));
+                    dot.position.set(Math.cos(ang) * r, 0, Math.sin(ang) * r);
+                    lattice.add(dot);
+                }
+                activeGroup.add(lattice);
+
+                // 5. CAUSAL EVENT (THE 'NOW' CORE)
+                const coreGroup = new THREE.Group();
+                coreGroup.name = "now_core";
+                const core = new THREE.Mesh(
+                    new THREE.SphereGeometry(1.2, 32, 32),
+                    new THREE.MeshStandardMaterial({
+                        color: 0xffffff,
+                        emissive: 0x00ffff,
+                        emissiveIntensity: 2,
+                        metalness: 1,
+                        roughness: 0
+                    })
+                );
+                coreGroup.add(core);
+
+                const halo = new THREE.Mesh(
+                    new THREE.SphereGeometry(2, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2 })
+                );
+                coreGroup.add(halo);
+                activeGroup.add(coreGroup);
+
+                // 6. ADAPTIVE WORLDLINE (GEODESIC FILAMENT)
+                const wlPoints = [];
+                const wlEchoes = new THREE.Group();
+                wlEchoes.name = "temporal_echoes";
+                for (let i = 0; i <= 50; i++) {
+                    const ty = (i / 50) * h - h / 2;
+                    const tx = Math.sin(ty * 0.1) * (h * 0.15) + Math.cos(ty * 0.05) * 5;
+                    const tz = Math.cos(ty * 0.2) * 8;
+                    const p = new THREE.Vector3(tx, ty, tz);
+                    wlPoints.push(p);
+
+                    if (i % 5 === 0) {
+                        const echo = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 8), new THREE.MeshBasicMaterial({ color: 0xfeeb2c, transparent: true, opacity: 0.3 }));
+                        echo.position.copy(p);
+                        wlEchoes.add(echo);
+                    }
+                }
+                activeGroup.add(wlEchoes);
+
+                const curve = new THREE.CatmullRomCurve3(wlPoints);
+                const wlGeo = new THREE.TubeGeometry(curve, 200, 0.15, 8, false);
+                const wlMat = new THREE.MeshPhongMaterial({
+                    color: 0xfeeb2c,
+                    emissive: 0xfeeb2c,
+                    emissiveIntensity: 2,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                const worldline = new THREE.Mesh(wlGeo, wlMat);
+                worldline.name = "geodesic_worldline";
+                activeGroup.add(worldline);
+
+                // 7. LABELS & HUD TOPOLOGY
+                const axes = new THREE.Group();
+                const xLine = new THREE.Mesh(new THREE.BoxGeometry(h * 3, 0.02, 0.02), new THREE.MeshBasicMaterial({ color: 0x333333 }));
+                const zLine = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, h * 3), new THREE.MeshBasicMaterial({ color: 0x333333 }));
+                const tLine = new THREE.Mesh(new THREE.BoxGeometry(0.05, h * 2, 0.05), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 }));
+                axes.add(xLine, zLine, tLine);
+                activeGroup.add(axes);
+
+                const labelData = [
+                    { t: "ABSOLUTE FUTURE", p: [0, h * 0.75, 0], c: "#00ffff", w: 16, h: 4 },
+                    { t: "ABSOLUTE PAST", p: [0, -h * 0.75, 0], c: "#ffaa00", w: 16, h: 4 },
+                    { t: "HYPERBOLIC CAUSALITY", p: [h * 0.45, h * 0.45, 0], c: "#00ffff", w: 14, h: 3.5 },
+                    { t: "ABSOLUTE ELSEWHERE", p: [h * 0.9, 0, 0], c: "#ffffff", w: 16, h: 4 }
+                ];
+                labelData.forEach(l => {
+                    const lbl = createLabel(l.t, l.c);
+                    lbl.position.set(...l.p);
+                    lbl.scale.set(l.w, l.h, 1);
+                    activeGroup.add(lbl);
+                });
+
+                document.getElementById('param1-label').innerText = "Coordinate Time Scrub";
+
+                document.getElementById('param1-label').innerText = "Coordinate Time Scrub";
+
+            } else if (mode === 'block-universe') {
+                // THE 4D LOAF VISUALIZATION
+                // We render a long extrusion (The Loaf) and a transparent plane (The Now)
+
+                // 1. The Loaf (A complex 4D shape extruded in Z)
+                const shape = new THREE.Shape();
+                // Create an amorphous "Event" shape
+                const r = 20;
+                shape.moveTo(r, 0);
+                for (let i = 0; i <= Math.PI * 2; i += 0.5) {
+                    shape.lineTo(Math.cos(i) * r + Math.sin(i * 3) * 5, Math.sin(i) * r + Math.cos(i * 2) * 5);
+                }
+
+                const extrudeSettings = {
+                    steps: 100,
+                    depth: 200, // Time axis length
+                    bevelEnabled: false,
+                    curveSegments: 30
+                };
+
+                const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                // Center it
+                geometry.translate(0, 0, -100);
+                geometry.rotateX(Math.PI / 2); // Align Z as time? No, let's keep Z depth.
+                // Reset rotation
+                geometry.rotateX(-Math.PI / 2);
+
+                const material = new THREE.MeshPhongMaterial({
+                    color: 0xfeeb2c,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.1
+                });
+                const loaf = new THREE.Mesh(geometry, material);
+                loaf.name = "spacetime_loaf";
+                activeGroup.add(loaf);
+
+                // 2. The World Tubes (Individual Object Histories inside the loaf)
+                for (let i = 0; i < 5; i++) {
+                    const pathPts = [];
+                    for (let z = 0; z <= 200; z += 10) {
+                        pathPts.push(new THREE.Vector3(
+                            (Math.random() - 0.5) * 30 + Math.sin(z * 0.05 + i) * 10,
+                            (Math.random() - 0.5) * 30 + Math.cos(z * 0.05 + i) * 10,
+                            z - 100
+                        ));
+                    }
+                    const tube = new THREE.Mesh(
+                        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pathPts), 64, 1.5, 8, false),
+                        new THREE.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0.5 })
+                    );
+                    activeGroup.add(tube);
+                }
+
+                // 3. The "Now" Slicer
+                const slicerGeo = new THREE.PlaneGeometry(80, 80);
+                const slicerMat = new THREE.MeshPhongMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.2,
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending
+                });
+                const slicer = new THREE.Mesh(slicerGeo, slicerMat);
+                slicer.name = "now_slicer";
+                activeGroup.add(slicer);
+
+                const label = createLabel("THE ETERNAL NOW", "#ffffff");
+                label.name = "now_label";
+                activeGroup.add(label);
+
+                document.getElementById('param1-label').innerText = "Slice Time";
+            } else if (mode === 'gravity') {
+                const gridRes = 30, range = 40;
+                const points = [];
+                for (let i = -gridRes; i <= gridRes; i++) {
+                    for (let j = -gridRes; j <= gridRes; j++) {
+                        const x = (i / gridRes) * range;
+                        const z = (j / gridRes) * range;
+                        const r = Math.sqrt(x * x + z * z);
+                        const p = new THREE.Vector3(x, 0, z);
+                        points.push(p);
+                    }
+                }
+                const grid = new THREE.Group();
+                grid.name = "gravity_grid";
+                // Add internal meshes to represent the grid lines
+                const mat = new THREE.LineBasicMaterial({ color: 0xfeeb2c, transparent: true, opacity: 0.3 });
+                for (let i = -gridRes; i <= gridRes; i++) {
+                    const ptsH = [], ptsV = [];
+                    for (let j = -gridRes; j <= gridRes; j++) {
+                        ptsH.push(new THREE.Vector3((j / gridRes) * range, 0, (i / gridRes) * range));
+                        ptsV.push(new THREE.Vector3((i / gridRes) * range, 0, (j / gridRes) * range));
+                    }
+                    const lineH = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ptsH), mat);
+                    const lineV = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ptsV), mat);
+                    grid.add(lineH); grid.add(lineV);
+                }
+                activeGroup.add(grid);
+
+                const star = new THREE.Mesh(new THREE.SphereGeometry(3, 32, 32), new THREE.MeshPhongMaterial({ color: 0xffaa00, emissive: 0xff5500, emissiveIntensity: 1 }));
+                star.position.y = -5;
+                activeGroup.add(star);
+                document.getElementById('param1-label').innerText = "Mass Density";
+            } else if (mode === 'dilation' || mode === 'twin') {
+                // Time axis
+                const axisMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
+                const pts = [new THREE.Vector3(0, -30, 0), new THREE.Vector3(0, 30, 0)];
+                activeGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), axisMat));
+
+                function createClock(name, color, x) {
+                    const group = new THREE.Group();
+                    group.name = name;
+                    group.position.x = x;
+
+                    // Clock Face (Atomic Shell)
+                    const shell = new THREE.Mesh(
+                        new THREE.TorusGeometry(5, 0.2, 16, 100),
+                        new THREE.MeshPhongMaterial({ color: color, emissive: color, emissiveIntensity: 0.5 })
+                    );
+                    group.add(shell);
+
+                    // Ticks
+                    for (let i = 0; i < 12; i++) {
+                        const tick = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1, 0.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                        const angle = (i / 12) * Math.PI * 2;
+                        tick.position.set(Math.cos(angle) * 4.5, Math.sin(angle) * 4.5, 0);
+                        tick.rotation.z = angle;
+                        group.add(tick);
+                    }
+
+                    // Pulse/Hand
+                    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 4, 0.2), new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff }));
+                    hand.position.y = 2;
+                    const handPivot = new THREE.Group();
+                    handPivot.name = name + "_hand";
+                    handPivot.add(hand);
+                    group.add(handPivot);
+
+                    // Labels
+                    const lbl = createLabel(name.toUpperCase(), color);
+                    lbl.position.y = 8;
+                    group.add(lbl);
+
+                    return group;
+                }
+
+                activeGroup.add(createClock("observer", "#00ffff", -15));
+                activeGroup.add(createClock("traveller", "#feeb2c", 15));
+
+                document.getElementById('param1-label').innerText = (mode === 'dilation') ? "Velocity (β)" : "Peak Velocity";
+            } else if (mode === 'einstein-sr') {
+                const grid = new THREE.GridHelper(40, 20, 0x00ffff, 0x444444);
+                grid.rotation.x = Math.PI / 2;
+                activeGroup.add(grid);
+
+                const axisY = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 40), new THREE.MeshBasicMaterial({ color: 0xfeeb2c }));
+                axisY.name = "boost_t";
+                activeGroup.add(axisY);
+
+                const axisX = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 40), new THREE.MeshBasicMaterial({ color: 0xfeeb2c }));
+                axisX.rotation.z = Math.PI / 2;
+                axisX.name = "boost_x";
+                activeGroup.add(axisX);
+
+                document.getElementById('param1-label').innerText = "Relative Velocity";
+            } else if (mode === 'time-spiral') {
+                const spiralGroup = new THREE.Group();
+                spiralGroup.name = "spiral_root";
+
+                const points = [];
+                const count = 2000;
+                for (let i = 0; i < count; i++) {
+                    const t = (i / count) * 60; // 60 units high
+                    const r = 10 + Math.sin(t * 0.1) * 2;
+                    const x = Math.cos(t) * r;
+                    const z = Math.sin(t) * r;
+                    const y = t - 30; // Center at 0
+                    points.push(new THREE.Vector3(x, y, z));
+                }
+
+                const curve = new THREE.CatmullRomCurve3(points);
+                const geo = new THREE.TubeGeometry(curve, 200, 0.5, 8, false);
+                const mat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffff,
+                    emissive: 0x00ffff,
+                    emissiveIntensity: 0.5,
+                    transparent: true,
+                    opacity: 0.6,
+                    blending: THREE.AdditiveBlending
+                });
+                const spiral = new THREE.Mesh(geo, mat);
+                spiral.name = "time_helix";
+                spiralGroup.add(spiral);
+
+                // Add flowing particles
+                const pGeo = new THREE.BufferGeometry();
+                const pPos = new Float32Array(300 * 3);
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                const pMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+                const pts = new THREE.Points(pGeo, pMat);
+                pts.name = "spiral_particles";
+                spiralGroup.add(pts);
+
+                activeGroup.add(spiralGroup);
+                document.getElementById('param1-label').innerText = "Spiral Tension";
+            }
+
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'block-universe') {
+                const slicer = activeGroup.getObjectByName("now_slicer");
+                const label = activeGroup.getObjectByName("now_label");
+
+                // Slider (p1: 0..1) controls Z position
+                const zPos = (p1 - 0.5) * 200; // Range -100 to 100
+
+                if (slicer) {
+                    slicer.position.z = zPos;
+                    // Pulse the slicer
+                    slicer.material.opacity = 0.2 + Math.sin(time * 5) * 0.05;
+                }
+                if (label) {
+                    label.position.set(0, 50, zPos);
+                }
+            } else if (currentMode === 'light-cone') {
+                const h = 60;
+                const lattice = activeGroup.getObjectByName("metric_lattice");
+                const core = activeGroup.getObjectByName("now_core");
+                const rayPoints = activeGroup.getObjectByName("null_stream");
+                const pulses = activeGroup.getObjectByName("causality_pulses");
+
+                const ty = (p1 - 0.5) * h * 2;
+                if (lattice) lattice.position.y = ty;
+
+                if (core) {
+                    core.position.y = ty;
+                    core.position.x = Math.sin(ty * 0.1) * (h * 0.15) + Math.cos(ty * 0.05) * 5;
+                    core.position.z = Math.cos(ty * 0.2) * 8;
+                    core.scale.setScalar(1 + Math.sin(time * 5) * 0.1);
+                    core.children[0].material.emissiveIntensity = 2 + Math.sin(time * 10);
+                }
+
+                // Animate Null Stream (Particles screaming along c boundary)
+                if (rayPoints) {
+                    const pos = rayPoints.geometry.attributes.position.array;
+                    const vels = rayPoints.userData.velocities;
+                    for (let i = 0; i < vels.length; i++) {
+                        vels[i] = (vels[i] + dt * 20) % h;
+                        const dist = vels[i];
+                        const angle = (i / vels.length) * Math.PI * 2;
+                        pos[i * 3] = dist * Math.cos(angle + time * 0.1);
+                        pos[i * 3 + 1] = dist; // Future flow
+                        pos[i * 3 + 2] = dist * Math.sin(angle + time * 0.1);
+                    }
+                    rayPoints.geometry.attributes.position.needsUpdate = true;
+                }
+
+                // Animate Causality Ripples
+                if (pulses) {
+                    pulses.children.forEach((ring, i) => {
+                        let y = (time * 12 + ring.userData.offset) % h;
+                        ring.position.y = y;
+                        ring.scale.setScalar(y);
+                        ring.material.opacity = (1.0 - y / h) * 0.6;
+                    });
+                }
+
+                // Horizon Pulsation
+                for (let i = 0; i < 3; i++) {
+                    const fut = activeGroup.getObjectByName("horizon_future_" + i);
+                    if (fut) fut.material.opacity = (0.1 / (i + 1)) * (1 + Math.sin(time * 2 + i) * 0.5);
+                }
+
+            } else if (currentMode === 'time-spiral') {
+                const spiral = activeGroup.getObjectByName("time_helix");
+                const pts = activeGroup.getObjectByName("spiral_particles");
+                if (spiral) {
+                    spiral.rotation.y = time * 0.5;
+                    const s = 1 + Math.sin(time * 0.5) * 0.1;
+                    spiral.scale.set(s, 1, s);
+                }
+                if (pts) {
+                    const pos = pts.geometry.attributes.position.array;
+                    for (let i = 0; i < 300; i++) {
+                        const tOffset = (i / 300) * 60 + time * 10;
+                        const t = tOffset % 60;
+                        const r = 10 + Math.sin(t * 0.1) * 2;
+                        const noise = (Math.random() - 0.5) * 1.5;
+                        pos[i * 3] = Math.cos(t) * (r + noise);
+                        pos[i * 3 + 1] = t - 30;
+                        pos[i * 3 + 2] = Math.sin(t) * (r + noise);
+                    }
+                    pts.geometry.attributes.position.needsUpdate = true;
+                    pts.rotation.y = time * 0.5;
+                }
+            } else if (currentMode === 'gravity') {
+                const grid = activeGroup.getObjectByName("gravity_grid");
+                const mass = p1 * 15;
+                if (grid) {
+                    grid.children.forEach(line => {
+                        const pos = line.geometry.attributes.position;
+                        for (let i = 0; i < pos.count; i++) {
+                            const x = pos.getX(i);
+                            const z = pos.getZ(i);
+                            const r = Math.sqrt(x * x + z * z);
+                            const y = -mass / (r / 3 + 1);
+                            pos.setY(i, y);
+                        }
+                        pos.needsUpdate = true;
+                    });
+                }
+            } else if (currentMode === 'dilation') {
+                const beta = p1;
+                const gamma = 1 / Math.sqrt(Math.max(0.001, 1 - beta * beta));
+                const cRest = activeGroup.getObjectByName("observer_hand");
+                const cMov = activeGroup.getObjectByName("traveller_hand");
+                const traveler = activeGroup.getObjectByName("traveller");
+
+                if (cRest) cRest.rotation.z = -time * 2;
+                if (cMov) cMov.rotation.z = -time * 2 / gamma;
+
+                if (traveler) {
+                    // Lorentz Contraction: Object shortens in the direction of motion (X-axis)
+                    // We simulate travel on X, so it flattens.
+                    const stretch = 1 / gamma;
+                    traveler.scale.x = stretch;
+                    // Oscillate on Z to show 'speed' presence
+                    traveler.position.z = Math.sin(time * 10 * beta) * beta;
+                }
+            } else if (currentMode === 'twin') {
+                const beta = p1;
+                const gamma = 1 / Math.sqrt(Math.max(0.001, 1 - beta * beta));
+                const cRest = activeGroup.getObjectByName("observer_hand");
+                const cMov = activeGroup.getObjectByName("traveller_hand");
+                const traveler = activeGroup.getObjectByName("traveller");
+                const observer = activeGroup.getObjectByName("observer");
+
+                if (cRest) {
+                    cRest.rotation.z = -time * 2;
+                }
+                if (cMov) {
+                    cMov.rotation.z = -time * 2 / gamma;
+                }
+                if (traveler && observer) {
+                    const dist = 15;
+                    const travel = Math.sin(time) * dist;
+                    traveler.position.x = travel;
+                    traveler.scale.x = (beta > 0) ? (1 / (1 + (beta * Math.abs(Math.cos(time))))) : 1;
+                }
+            } else if (currentMode === 'einstein-sr') {
+                const beta = p1;
+                const angle = Math.atan(beta);
+                const tAxis = activeGroup.getObjectByName("boost_t");
+                const xAxis = activeGroup.getObjectByName("boost_x");
+                if (tAxis) tAxis.rotation.z = -angle;
+                if (xAxis) xAxis.rotation.z = Math.PI / 2 + angle;
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 80 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

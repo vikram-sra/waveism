@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wormholes | Metric Bridges</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.wormhole-tab {
+            color: #00ffff;
+        }
+
+        .theory-tab.wormhole-tab.active {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(0, 255, 255, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(0, 255, 255, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 255, 255, 0.05) 1px, rgba(0, 255, 255, 0.05) 2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE EINSTEIN-ROSEN BRIDGE MANIFOLD</div>
+    <div class="manifold-glitch"></div>
+
+    <div class="system-status">
+        [ THROAT RADIUS: b₀ ]<br>
+        [ EXOTIC MATTER: REQUIRED ]<br>
+        [ TOPOLOGY: NON-TRIVIAL ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab wormhole-tab active" data-theory="morris-thorne">Morris-Thorne</button>
+        <button class="theory-tab" data-theory="ellis">Ellis Drainhole</button>
+        <button class="theory-tab" data-theory="visser">Visser Thin-Shell</button>
+        <button class="theory-tab" data-theory="alcubierre">Warp Bubble</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Throat r₀</div>
+            <div class="param-value" id="param1-value">15.0</div>
+            <input type="range" class="param-slider" id="param1-slider" min="5" max="40" value="15">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Metric Tension</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Bridge Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Morris-Thorne Bridge</div>
+        <div class="theory-year" id="theory-year">Traversable Lorentzian Wormhole (1988)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Metric</div>
+            <div class="equation" id="equation">ds² = -e²Φ dt² + dl² + r²dΩ²</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Wormhole Topology Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Metric Invariants</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('wormhole');
+
+        let scene, camera, renderer, currentMode = 'morris-thorne';
+        let activeGroup;
+        let p1 = 15, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'morris-thorne': {
+                name: 'Morris-Thorne Metric', year: 'Morris & Thorne, 1988',
+                equation: 'z(r) = b₀ ln[...] [Embedding]',
+                facts: [{ text: 'Traversable', status: 'yes' }, { text: 'Exotic Matter', status: 'required' }],
+                description: 'The standard model for a shortcut through spacetime. Unlike Schwarzschild holes, this metric is designed to be traversable, meaning an observer can pass through the throat in finite proper time without being crushed by tidal forces.',
+                concepts: [
+                    { term: 'Throat b₀', definition: 'The minimum radius connecting two separate asymptotically flat regions.' },
+                    { term: 'Null Energy Condition', definition: 'A fundamental rule that must be violated by "negative energy" to keep the throat open.' },
+                    { term: 'Proper Distance l', definition: 'The physical length of the tunnel as experienced by the traveler.' }
+                ],
+                physics: 'In Waveism, a wormhole is a "Phase Tunnel"—a localized shortcut in the cosmic substrate where the wave-function maps one spatial coordinate directly onto another across the manifold.'
+            },
+            'ellis': {
+                name: 'Ellis Drainhole', year: 'Homer Ellis, 1973',
+                equation: 'z(r) = a acosh(r/a)',
+                facts: [{ text: 'Massless Bridge', status: 'yes' }, { text: 'Scalar-Tensor', status: 'yes' }],
+                description: 'First described as a "drainhole" in space, this solution represents a catenoid-shaped bridge connecting two sheets of space. It arises in theories where a scalar field interacts with gravity.',
+                concepts: [
+                    { term: 'Catenoid Geometry', definition: 'The minimal surface area formed by stretching a manifold between two points.' },
+                    { term: 'Phantom Matter', definition: 'A theoretical substance with negative kinetic energy used to support the drainhole.' }
+                ],
+                physics: 'The Ellis bridge represents a "Static Harmonic Node" in the vacuum. It is a stable, non-collapsing topological defect in the universal field.'
+            },
+            'visser': {
+                name: 'Visser Thin-Shell', year: 'Matt Visser, 1989',
+                equation: 'S_μν = Thin-Shell Stress',
+                facts: [{ text: 'Low Exotic Matter', status: 'yes' }, { text: 'Cut-and-Paste', status: 'yes' }],
+                description: 'A more economically "realistic" wormhole formed by taking two flat spacetimes and sewing them together at a thin spherical shell. This minimizes the volume of exotic matter needed to support the bridge.',
+                concepts: [
+                    { term: 'Junction Conditions', definition: 'The mathematical rules for sewing disparate spacetimes together.' },
+                    { term: 'Polyhedral Wormhole', definition: 'Visser’s extension where the shells form 3D shapes like cubes for even greater stability.' }
+                ],
+                physics: 'A "Metric Stitch". Waveism views this as a high-frequency interference boundary where two distinct regions of the substrate are forcefully synchronized.'
+            },
+            'alcubierre': {
+                name: 'Alcubierre Warp Drive', year: 'Miguel Alcubierre, 1994',
+                equation: 'v_s(t) = d|x_s|/dt',
+                facts: [{ text: 'Apparent FTL', status: 'yes' }, { text: 'Space Expansion', status: 'yes' }],
+                description: 'While not a wormhole, it uses similar metric-warping physics. It contracts space in front and expands it behind, allowing a ship to travel faster than light relative to distant stars while remaining stationary in its local "bubble".',
+                concepts: [
+                    { term: 'Warp Bubble', definition: 'The region of distorted spacetime that surounds and protects the traveler.' },
+                    { term: 'Tension Metric', definition: 'The extreme metric pressure required to "push" and "pull" space at FTL speeds.' }
+                ],
+                physics: 'Warp travel is "Metric Surfing"—creating a wave-pulse in the vacuum and riding its crest across the universe.'
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 200);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00ffff, 2, 500);
+            pointLight.position.set(50, 50, 50);
+            scene.add(pointLight);
+
+            setupGraphics();
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v; updateParamDisplay(); },
+                formatter: v => v.toFixed(1)
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, { initialRotationX: 0.2 });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 1.0 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (e.detail === 1) drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('morris-thorne');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function setupGraphics() { }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            valEl.innerText = p1.toFixed(1);
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 2;
+
+            const gridRes = 40;
+            const radius = 150;
+
+            const createWormholeMesh = (thickness) => {
+                const points = [];
+                for (let i = -gridRes; i <= gridRes; i++) {
+                    const l = (i / gridRes) * radius;
+                    const r = p1 + (l * l) / (radius * 0.5); // Simplified catenoid-ish
+                    points.push(new THREE.Vector2(r, l));
+                }
+                const geo = new THREE.LatheGeometry(points, 32);
+                const mat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffff,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.3,
+                    side: THREE.DoubleSide
+                });
+                return new THREE.Mesh(geo, mat);
+            };
+
+            if (mode === 'morris-thorne' || mode === 'ellis') {
+                const mesh = createWormholeMesh();
+                mesh.name = "bridge";
+                activeGroup.add(mesh);
+
+                const throatGeo = new THREE.TorusGeometry(p1, 0.5, 16, 100);
+                const throatMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8 });
+                const throat = new THREE.Mesh(throatGeo, throatMat);
+                throat.rotation.x = Math.PI / 2;
+                throat.name = "throat";
+                activeGroup.add(throat);
+            } else if (mode === 'visser') {
+                const mesh = createWormholeMesh();
+                mesh.material.wireframe = false;
+                mesh.material.opacity = 0.1;
+                activeGroup.add(mesh);
+
+                const shellGeo = new THREE.BoxGeometry(p1 * 3, 2, p1 * 3);
+                const shellMat = new THREE.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0.4 });
+                const shell = new THREE.Mesh(shellGeo, shellMat);
+                shell.name = "visser_shell";
+                activeGroup.add(shell);
+            } else if (mode === 'alcubierre') {
+                const sphereGeo = new THREE.SphereGeometry(20, 32, 32);
+                const sphereMat = new THREE.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0.1, wireframe: true });
+                const ship = new THREE.Mesh(sphereGeo, sphereMat);
+                activeGroup.add(ship);
+
+                const ringGeo = new THREE.TorusGeometry(30, 2, 16, 100);
+                const ringMat = new THREE.MeshPhongMaterial({ color: 0xfeeb2c, emissive: 0xfeeb2c });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.rotation.x = Math.PI / 2;
+                ring.name = "warp_ring";
+                activeGroup.add(ring);
+            }
+
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'morris-thorne' || currentMode === 'ellis') {
+                const bridge = activeGroup.getObjectByName("bridge");
+                if (bridge) {
+                    bridge.rotation.y += dt * 0.5;
+                    // Dynamic update of geometry based on p1
+                }
+            } else if (currentMode === 'alcubierre') {
+                const ring = activeGroup.getObjectByName("warp_ring");
+                if (ring) {
+                    ring.position.z = Math.sin(time * 2) * 5;
+                    ring.scale.setScalar(1 + Math.sin(time * 5) * 0.05);
+                }
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 250 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

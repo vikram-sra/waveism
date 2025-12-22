@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Epistemic Topology | The Unified Field</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Epistemic Specific Overrides */
+        body {
+            background: #000;
+            overflow: hidden;
+        }
+
+        #epistemic-surface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            display: none;
+            background: radial-gradient(circle at 50% 50%, #050a10 0%, #000 100%);
+            cursor: grab;
+            touch-action: none;
+        }
+
+        #wave-canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 5;
+            cursor: grab;
+        }
+
+        #epistemic-card {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(5, 8, 12, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            border-left: 2px solid #00ffff;
+            padding: 20px;
+            color: #e0f0ff;
+            font-family: 'Inter', sans-serif;
+            z-index: 50;
+            display: none;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #epistemic-card h2 {
+            font-family: 'JetBrains Mono';
+            color: #00ffff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+            padding-bottom: 5px;
+        }
+
+        #epistemic-card p {
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #8899aa;
+            margin-bottom: 0;
+        }
+
+        .node circle {
+            transition: all 0.3s ease;
+            stroke: rgba(0, 255, 255, 0.3);
+            stroke-width: 1px;
+            fill: #000;
+        }
+
+        .node:hover circle {
+            stroke: #fff;
+            stroke-width: 2px;
+            fill: rgba(0, 255, 255, 0.1);
+            filter: drop-shadow(0 0 8px #00ffff);
+        }
+
+        .node text {
+            font-family: 'JetBrains Mono';
+            font-size: 9px;
+            fill: rgba(0, 255, 255, 0.6);
+            pointer-events: none;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .node:hover text {
+            opacity: 1;
+            fill: #fff;
+        }
+
+        .link {
+            stroke: rgba(0, 255, 255, 0.1);
+            stroke-width: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+
+    <canvas id="wave-canvas"></canvas>
+    <div id="epistemic-surface"></div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-tabs">
+        <button class="theory-tab substrate active" data-theory="map">Epistemic Map</button>
+        <button class="theory-tab" data-theory="qft">QFT Foundation</button>
+        <button class="theory-tab" data-theory="pilot">Pilot Wave</button>
+        <button class="theory-tab" data-theory="neural">Neural Synchrony</button>
+        <button class="theory-tab" data-theory="social">Social Resonance</button>
+        <button class="theory-tab" data-theory="reality">Reality Perception</button>
+    </div>
+
+    <!-- CHRONOS CONTROL DECK (Top Left) -->
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label">CHRONOS</div>
+            <input type="range" class="param-slider time-travel" id="time-slider" min="-60" max="60" value="0"
+                step="0.1">
+            <div class="param-value" id="time-val">NOW</div>
+        </div>
+
+        <div class="param-group" id="eq-group">
+            <div class="param-label" id="eq-name">GRAVITY</div>
+            <input type="range" class="param-slider" id="eq-slider" min="0" max="100" value="50">
+            <div class="param-value" id="eq-val">50%</div>
+        </div>
+
+        <div class="param-group">
+            <div class="param-label">MAGNIFY</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="10" max="400" value="100">
+            <div class="param-value" id="zoom-value">1.0×</div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Epistemic Topology</div>
+        <div class="theory-year" id="theory-year">Unified Field Ontology</div>
+        <div class="equation-box">
+            <div class="equation-label">Formalism</div>
+            <div class="equation" id="equation">G = (V, E, Φ)</div>
+        </div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header"> <span class="info-modal-title">Ontological Report</span> <button
+                class="info-modal-close" id="info-close">×</button> </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Abstract</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Governing Physics</div>
+                <p id="info-physics" style="font-family:'JetBrains Mono'; font-size:0.75rem; color:#00ffff;"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Key Concepts</div>
+                <ul id="info-concepts"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="epistemic-card">
+        <h2 id="card-title"></h2>
+        <p id="card-body"></p>
+    </div>
+
+    <script>
+        document.getElementById('nav-container').innerHTML = renderMainNav('wave_theory');
+
+        let currentMode = 'map';
+        let zoomLevel = 1.0;
+        let simTime = 0;
+        let timeOffset = 0;
+        let eqParam = 0.5;
+        const modeParams = { map: 0.5, qft: 0.5, pilot: 0.5, neural: 0.5, social: 0.5 };
+
+        let svg, d3Sim, d3Node, d3Link, d3Zoom, d3Initialized = false;
+        let canvas, ctx, width, height, visualCenterY;
+        let zoomHandler, rotationHandler;
+
+        const ontology = {
+            nodes: [
+                { id: "REALITY", label: "REALITY", r: 40, group: 0, desc: "The Substrate (Hyperspace). The immutable, unified manifold from which all oscillation emerges." },
+                { id: "TIME", label: "TIME", r: 25, group: 4, desc: "The Entropic Gradient. Time is not fundamental but emergent; a statistical measure of phase-decoherence." },
+                { id: "P1", label: "Quantum", r: 18, group: 1, desc: "Fundamental physical resonance fields." },
+                { id: "P2", label: "Realism", r: 12, group: 1, desc: "Bohmian deterministic trajectories." },
+                { id: "C1", label: "Cognition", r: 18, group: 2, desc: "Predictive neural error minimization." },
+                { id: "C2", label: "Binding", r: 12, group: 2, desc: "Gamma-band temporal synchronization." },
+                { id: "S1", label: "Social", r: 18, group: 3, desc: "Memetic propagation fields." },
+                { id: "S2", label: "Entropy", r: 12, group: 3, desc: "Systemic disorder via incoherence." },
+                { id: "PERCEPTION", label: "PERCEPTION", r: 22, group: 2, desc: "The Filter. Reality is not seen as it is, but as a fitness-payoff reconstruction. $\Psi_{mind} = \int \text{Payoff}(x) dx$." }
+            ],
+            links: [
+                { source: "REALITY", target: "TIME", label: "Projection" },
+                { source: "REALITY", target: "P1" }, { source: "REALITY", target: "C1" }, { source: "REALITY", target: "S1" },
+                { source: "TIME", target: "S2", label: "Thermodynamics" }, { source: "TIME", target: "C2", label: "Perception" },
+                { source: "P1", target: "P2" }, { source: "C1", target: "C2" }, { source: "S1", target: "S2" },
+                { source: "P1", target: "C1" }, { source: "C1", target: "S1" },
+                { source: "C1", target: "PERCEPTION" }, { source: "REALITY", target: "PERCEPTION" }
+            ]
+        };
+
+        const theories = {
+            'map': {
+                name: 'Epistemic Topology', param: 'GRAVITY', equation: 'G = (V, E)', physics: 'Topology & Set Theory',
+                description: 'The causal mapping of first principles. All phenomena emerge from the relationships between these nodes.',
+                concepts: [
+                    { term: 'Nodes', definition: 'Ontological primitives (Reality, Time, Mind).' },
+                    { term: 'Edges', definition: 'Causal relationships and phase-locked flows.' }
+                ]
+            },
+            'qft': {
+                name: 'Quantum Field', param: 'EXCITATION', equation: 'ℒ = ½(∂φ)² - ½m²φ²', physics: 'Quantum Electrodynamics',
+                description: 'A 3D energy density field where particles are localized wave-packet excitations. The "Grid" represents the underlying lattice of the vacuum.',
+                concepts: [
+                    { term: 'Quantum Vacuum', definition: 'Not empty space, but a field with zero-point energy.' },
+                    { term: 'Particle-Field Duality', definition: 'A particle is a localized peak in the field amplitude.' },
+                    { term: 'Fluctuations', definition: 'Random variations in field strength that can spontaneously create virtual pairs.' }
+                ]
+            },
+            'pilot': {
+                name: 'Pilot Wave', param: 'GUIDANCE', equation: 'v = ∇S/m', physics: 'De Broglie-Bohm Theory',
+                description: 'A singular particle-wave duality where a point-like entity is guided by its own physical pilot wave. One "Pilot" per moment defines the path.',
+                concepts: [
+                    { term: 'Non-Locality', definition: 'The wave informs the particle of conditions at the slits instantly.' },
+                    { term: 'Quantum Equilibrium', definition: 'The state where particle distribution matches |ψ|².' },
+                    { term: '1-Pilot System', definition: 'Focusing on the singular relationship between the wave force and its subject.' }
+                ]
+            },
+            'neural': {
+                name: 'Neural Sync', param: 'COHERENCE', equation: 'Δw = η·pre·post', physics: '3D Oscillatory Dynamics',
+                description: 'Consciousness as a 3D phase-locked resonance across cerebral regions.',
+                concepts: [
+                    { term: 'Temporal Binding', definition: 'Unified perception emerged from 3D sync.' }
+                ]
+            },
+            'social': {
+                name: 'Social Resonance', param: 'INFLUENCE', equation: 'R0 > 1', physics: 'Network Contagion',
+                description: '3D spherical influence fields spreading memetic information.',
+                concepts: [
+                    { term: 'Memetic Field', definition: 'The abstract space of cultural ideas.' }
+                ]
+            },
+            'reality': {
+                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) \geq \text{Min}', physics: 'Interface Theory of Perception',
+                description: 'We do not perceive the substrate directly. Our senses provide a simplified "desktop interface" optimized for survival, not truth. $\mathcal{H}_{reality} \rightarrow \mathcal{H}_{mind}$',
+                concepts: [
+                    { term: 'Fitness Beats Truth', definition: 'Evolution selects for organisms that see payoffs, not objective reality.' },
+                    { term: 'Conscious Agents', definition: 'The fundamental primitives of the universe are experiencing agents, not particles.' }
+                ]
+            }
+        };
+
+        function init() {
+            initOrbUI(); initInfoModal(); initTheoryTabs(switchMode);
+            canvas = document.getElementById('wave-canvas');
+            ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            width = canvas.width;
+            height = canvas.height;
+            visualCenterY = height / 2;
+
+            initCanvasResize(canvas, (w, h) => {
+                width = w; height = h; visualCenterY = h / 2;
+                if (currentMode === 'map') resizeD3();
+            });
+
+            zoomHandler = initZoomHandler(canvas, { initialZoom: 1.0, minZoom: 0.1, maxZoom: 10.0 });
+            rotationHandler = initDragRotation(canvas, { initialRotationX: 0.6, initialRotationY: 0.5, autoRotate: false });
+
+            const tSlider = document.getElementById('time-slider');
+            const tVal = document.getElementById('time-val');
+            const eSlider = document.getElementById('eq-slider');
+            const eVal = document.getElementById('eq-val');
+            const zSlider = document.getElementById('zoom-slider');
+            const zVal = document.getElementById('zoom-value');
+
+            tSlider.addEventListener('input', e => {
+                timeOffset = parseFloat(e.target.value);
+                if (Math.abs(timeOffset) < 0.5) { tVal.innerText = 'NOW'; tVal.style.color = '#fff'; }
+                else if (timeOffset < 0) { tVal.innerText = `T${timeOffset.toFixed(1)}s`; tVal.style.color = '#ff4466'; }
+                else { tVal.innerText = `T+${timeOffset.toFixed(1)}s`; tVal.style.color = '#00ffff'; }
+            });
+
+            eSlider.addEventListener('input', e => {
+                eqParam = e.target.value / 100;
+                modeParams[currentMode] = eqParam;
+                eVal.innerText = Math.round(eqParam * 100) + '%';
+                if (currentMode === 'map' && d3Sim) {
+                    d3Sim.alpha(0.3).restart();
+                }
+            });
+
+            zSlider.addEventListener('input', e => {
+                zoomLevel = e.target.value / 100;
+                if (zoomHandler) zoomHandler.zoom = zoomLevel;
+                zVal.innerText = zoomLevel.toFixed(1) + '×';
+                if (currentMode === 'map' && svg) svg.call(d3Zoom.scaleTo, zoomLevel);
+            });
+
+            switchMode('map');
+            animate();
+        }
+
+        function switchMode(mode) {
+            modeParams[currentMode] = eqParam;
+            currentMode = mode;
+            eqParam = modeParams[mode];
+            document.getElementById('eq-slider').value = eqParam * 100;
+            document.getElementById('eq-val').innerText = Math.round(eqParam * 100) + '%';
+
+            if (mode !== 'map') {
+                zoomLevel = (mode === 'qft') ? 0.8 : 1.0;
+                if (zoomHandler) zoomHandler.zoom = zoomLevel;
+                document.getElementById('zoom-slider').value = zoomLevel * 100;
+                document.getElementById('zoom-value').innerText = zoomLevel.toFixed(1) + "×";
+            }
+
+            const t = theories[mode] || { name: mode, param: 'PARAM' };
+            updateInfoPanel(t);
+            updateInfoModalContent(t);
+            document.getElementById('eq-name').innerText = t.param || 'PARAM';
+
+            const mapEl = document.getElementById('epistemic-surface');
+            if (mode === 'map') {
+                mapEl.style.display = 'block'; canvas.style.opacity = '0';
+                if (!d3Initialized) initD3();
+                if (d3Sim) { d3Sim.alpha(0.3).restart(); }
+            } else {
+                mapEl.style.display = 'none'; canvas.style.opacity = '1';
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height);
+                // Reset unique states
+                if (mode === 'pilot') pilotState3D.p = { x: -300, y: 0, z: 0 }, pilotState3D.trail = [];
+            }
+        }
+
+        function initD3() {
+            d3Initialized = true;
+            const w = window.innerWidth; const h = window.innerHeight;
+            const container = d3.select("#epistemic-surface");
+            svg = container.append("svg").attr("width", w).attr("height", h);
+            const g = svg.append("g");
+            d3Zoom = d3.zoom().scaleExtent([0.2, 5]).on("zoom", e => g.attr("transform", e.transform));
+            svg.call(d3Zoom);
+            d3Sim = d3.forceSimulation(ontology.nodes)
+                .force("link", d3.forceLink(ontology.links).id(d => d.id).distance(120))
+                .force("charge", d3.forceManyBody().strength(-500))
+                .force("center", d3.forceCenter(w / 2, h / 2));
+
+            d3Link = g.append("g").selectAll("line").data(ontology.links).join("line").attr("class", "link");
+            d3Node = g.append("g").selectAll("g").data(ontology.nodes).join("g").attr("class", "node")
+                .call(d3.drag().on("start", e => { if (!e.active) d3Sim.alphaTarget(0.3).restart(); e.subject.fx = e.subject.x; e.subject.fy = e.subject.y; })
+                    .on("drag", e => { e.subject.fx = e.x; e.subject.fy = e.y; })
+                    .on("end", e => { if (!e.active) d3Sim.alphaTarget(0); e.subject.fx = null; e.subject.fy = null; }));
+            d3Node.append("circle").attr("r", d => d.r).attr("fill", "#000");
+            d3Node.append("text").attr("dy", d => d.r + 15).attr("text-anchor", "middle").text(d => d.label);
+            d3Node.on("mouseenter", (e, d) => {
+                const card = document.getElementById('epistemic-card');
+                document.getElementById('card-title').innerText = d.label; document.getElementById('card-body').innerText = d.desc;
+                card.style.display = 'block'; card.style.opacity = '1';
+            }).on("mouseleave", () => {
+                document.getElementById('epistemic-card').style.opacity = '0';
+            });
+            d3Sim.on("tick", () => {
+                const rx = rotationHandler ? rotationHandler.rotationX : 0.6;
+                const ry = rotationHandler ? rotationHandler.rotationY : 0.5;
+
+                d3Node.attr("transform", d => {
+                    const zNode = (d.group === 0) ? 50 : (d.group === 4 ? -50 : 0);
+                    const p = project3D(d.x - w / 2, d.y - h / 2, zNode, rx, ry, 0, 0, zoomLevel);
+                    d.px = p.x + w / 2; d.py = p.y + h / 2;
+                    return `translate(${d.px},${d.py}) scale(${p.scale})`;
+                });
+
+                d3Link.attr("x1", d => d.source.px).attr("y1", d => d.source.py)
+                    .attr("x2", d => d.target.px).attr("y2", d => d.target.py);
+            });
+        }
+        function resizeD3() { if (svg) { svg.attr("width", window.innerWidth).attr("height", window.innerHeight); d3Sim.force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2)).restart(); } }
+
+        // ============ 3D ENGINE ============
+        function animate() {
+            requestAnimationFrame(animate);
+            if (currentMode === 'map') return;
+
+            if (rotationHandler) {
+                rotationHandler.update();
+                if (currentMode === 'map' && d3Sim) d3Sim.alpha(0.01).restart();
+            }
+            if (zoomHandler) {
+                zoomLevel = zoomHandler.zoom;
+                const slider = document.getElementById('zoom-slider');
+                if (slider) slider.value = zoomLevel * 100;
+                const val = document.getElementById('zoom-value');
+                if (val) val.innerText = zoomLevel.toFixed(1) + '×';
+            }
+
+            width = canvas.width; height = canvas.height;
+            visualCenterY = height / 2;
+
+            if (isNaN(simTime)) simTime = 0;
+            simTime += 0.01;
+            const t = simTime + timeOffset;
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1.0;
+
+            // Fading trail for motion
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillRect(0, 0, width, height);
+
+            // NEON GLOW & ADDITIVE BLENDING
+            ctx.globalCompositeOperation = 'lighter';
+
+            ctx.translate(width / 2, visualCenterY);
+
+            const rx = rotationHandler.rotationX;
+            const ry = rotationHandler.rotationY;
+
+            if (currentMode === 'qft') drawQFT3D(t, rx, ry);
+            if (currentMode === 'pilot') drawPilot3D(t, rx, ry);
+            if (currentMode === 'neural') drawNeural3D(t, rx, ry);
+            if (currentMode === 'social') drawSocial3D(t, rx, ry);
+        }
+
+        // IMPROVED QFT: FIELD OF INTERACTING ENERGY EXCITATIONS
+        const qftParticles = [{ x: 0, y: 0, z: 0, vx: 2, vz: 1 }, { x: -100, y: 0, z: 50, vx: -1.5, vz: -2 }];
+        function drawQFT3D(t, rx, ry) {
+            const size = 600; const res = 14; const step = size / res;
+
+            // Update "Particle" excitations in the field
+            qftParticles.forEach(p => {
+                p.x += p.vx; p.z += p.vz;
+                if (Math.abs(p.x) > size / 2) p.vx *= -1;
+                if (Math.abs(p.z) > size / 2) p.vz *= -1;
+            });
+
+            // Draw field lattice
+            ctx.lineWidth = 1;
+            for (let z = -size / 2; z <= size / 2; z += step) {
+                ctx.beginPath();
+                for (let x = -size / 2; x <= size / 2; x += 15) {
+                    let y = 0;
+                    // Sum contributions from particle excitations (Local Excitations)
+                    qftParticles.forEach(p => {
+                        const d = Math.sqrt((x - p.x) ** 2 + (z - p.z) ** 2);
+                        y += Math.sin(d * 0.04 - t * 6) * 45 * Math.exp(-d * 0.01) * eqParam;
+                    });
+
+                    // Add background vacuum fluctuations (The "Sea")
+                    y += Math.sin(x * 0.02 + t * 2) * Math.cos(z * 0.02 + t * 2) * 10 * eqParam;
+
+                    // OBSERVER EFFECT: Superposition Drift
+                    const drift = rotationHandler ? (rotationHandler.inactivityFactor * 50) : 0;
+                    const dx = (Math.random() - 0.5) * drift;
+                    const dy = (Math.random() - 0.5) * drift;
+                    const dz = (Math.random() - 0.5) * drift;
+
+                    // Project with drift
+                    const p = project3D(x + dx, y + dy, z + dz, rx, ry, 0, 0, zoomLevel);
+
+                    // Draw Point (Neon Glow)
+                    if (p.z > -300) {
+                        const pointAlpha = (p.scale * 0.8 * (1 - Math.abs(z) / 400));
+                        ctx.fillStyle = ColorUtils.hsl(280 + (y * 2), 100, 70, pointAlpha);
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.scale * 1.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    // Intensity based on amplitude
+                    const alpha = 0.1 + Math.abs(y) / 100;
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+
+                    if (x === -size / 2) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            // Draw cross-lattice for 3D volume feel
+            for (let x = -size / 2; x <= size / 2; x += step) {
+                ctx.beginPath();
+                for (let z = -size / 2; z <= size / 2; z += 15) {
+                    let y = 0; qftParticles.forEach(p => {
+                        const d = Math.sqrt((x - p.x) ** 2 + (z - p.z) ** 2);
+                        y += Math.sin(d * 0.04 - t * 6) * 45 * Math.exp(-d * 0.01) * eqParam;
+                    });
+                    y += Math.sin(x * 0.02 + t * 2) * Math.cos(z * 0.02 + t * 2) * 10 * eqParam;
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                    if (z === -size / 2) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        // IMPROVED PILOT WAVE: SINGLE DETERMINISTIC PILOT SYSTEM
+        const pilotState3D = { trail: [], p: { x: -500, y: 0, z: 0 }, v: { x: 4, y: 0, z: 0 } };
+        function drawPilot3D(t, rx, ry) {
+            const gap = 80 + (eqParam * 160);
+            const slits = [{ x: -200, z: -100 }, { x: -200, z: 100 }];
+
+            // 1. Visualize the Guidance Potential (The Physical Pilot Wave)
+            ctx.strokeStyle = 'rgba(0, 255, 180, 0.06)';
+            ctx.lineWidth = 1;
+            const gridSize = 500; const res = 14;
+            for (let z = -gridSize; z <= gridSize; z += gridSize / res) {
+                ctx.beginPath();
+                for (let x = -gridSize; x <= gridSize; x += 30) {
+                    let w = 0; slits.forEach(s => { const d = Math.hypot(x - s.x, z - s.z); w += Math.sin(d / gap * 2 * Math.PI - t * 5); });
+                    const p = project3D(x, w * 30, z, rx, ry, 0, 0, zoomLevel);
+                    if (x === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            // 2. Focused Singular Guidance Logic (Moment-by-Moment)
+            const px = pilotState3D.p.x; const pz = pilotState3D.p.z;
+            const getWave = (x, z) => {
+                let w = 0; slits.forEach(s => { const d = Math.hypot(x - s.x, z - s.z); w += Math.sin(d / gap * 2 * Math.PI - t * 5); });
+                return w;
+            };
+
+            // Calculate gradient at current position to determine Z-drift
+            const gradZ = (getWave(px, pz + 2) - getWave(px, pz - 2)) * 12;
+            const gradX = (getWave(px + 2, pz) - getWave(px - 2, pz)) * 5;
+
+            pilotState3D.p.x += 3.8 + gradX * 0.1;
+            pilotState3D.p.z += gradZ * 0.8;
+            pilotState3D.p.y = getWave(px, pz) * 30;
+
+            if (pilotState3D.p.x > 500) {
+                pilotState3D.p = { x: -500, y: 0, z: (Math.random() - 0.5) * 150 };
+                pilotState3D.trail = [];
+            }
+
+            pilotState3D.trail.push({ ...pilotState3D.p });
+            if (pilotState3D.trail.length > 180) pilotState3D.trail.shift();
+
+            // Render Path Coherence
+            ctx.strokeStyle = '#00ffaa'; ctx.lineWidth = 2.5; ctx.beginPath();
+            pilotState3D.trail.forEach((p, i) => {
+                const pt = project3D(p.x, p.y, p.z, rx, ry, 0, 0, zoomLevel);
+                if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+            });
+            ctx.stroke();
+
+            // Render Particle (The Actualized Moment)
+            const node = project3D(pilotState3D.p.x, pilotState3D.p.y, pilotState3D.p.z, rx, ry, 0, 0, zoomLevel);
+            ctx.fillStyle = '#fff'; ctx.shadowBlur = 20; ctx.shadowColor = '#00ffaa';
+            ctx.beginPath(); ctx.arc(node.x, node.y, 6 * node.scale, 0, 6.28); ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Guidance Vector Visualization
+            const vecEnd = project3D(pilotState3D.p.x + 25, pilotState3D.p.y, pilotState3D.p.z + gradZ * 8, rx, ry, 0, 0, zoomLevel);
+            ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(node.x, node.y); ctx.lineTo(vecEnd.x, vecEnd.y); ctx.stroke();
+        }
+
+        function drawNeural3D(t, rx, ry) {
+            const count = 15 + Math.floor(eqParam * 50); const r = 200;
+            for (let i = 0; i < count; i++) {
+                const phi = Math.acos(-1 + (2 * i) / count); const theta = Math.sqrt(count * Math.PI) * phi + t;
+                const x = r * Math.sin(phi) * Math.cos(theta); const y = r * Math.sin(phi) * Math.sin(theta); const z = r * Math.cos(phi);
+                const pulse = (Math.sin(t * 8 - i) + 1) / 2;
+                const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                const center = project3D(0, 0, 0, rx, ry, 0, 0, zoomLevel);
+                ctx.strokeStyle = `rgba(0, 255, 255, ${0.1 + pulse * 0.5})`; ctx.lineWidth = p.scale;
+                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(center.x, center.y); ctx.stroke();
+                ctx.fillStyle = `rgba(0, 255, 255, ${0.3 + pulse * 0.7})`; ctx.beginPath(); ctx.arc(p.x, p.y, 5 * p.scale, 0, 6.28); ctx.fill();
+            }
+            const core = project3D(0, 0, 0, rx, ry, 0, 0, zoomLevel);
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(core.x, core.y, 10 * core.scale, 0, 6.28); ctx.fill();
+        }
+
+        function drawSocial3D(t, rx, ry) {
+            const radius = 200 + eqParam * 250; const points = 18;
+            ctx.globalCompositeOperation = 'screen';
+            for (let i = 0; i < points; i++) {
+                const a1 = (i / points) * Math.PI * 2 + t; const a2 = (i / points) * Math.PI + t * 0.5;
+                const x = Math.cos(a1) * Math.sin(a2) * radius; const y = Math.sin(a1) * Math.sin(a2) * radius; const z = Math.cos(a2) * radius;
+                const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 120 * p.scale);
+                grad.addColorStop(0, `rgba(255, 120, 50, ${0.4 * p.scale})`); grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(p.x, p.y, 120 * p.scale, 0, 6.28); ctx.fill();
+            }
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

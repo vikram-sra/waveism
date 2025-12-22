@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expansion | Cosmic Metric Manifold</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.cosmic-tab {
+            color: #00ffaa;
+        }
+
+        .theory-tab.cosmic-tab.active {
+            background: rgba(0, 255, 170, 0.1);
+            color: #00ffaa;
+            box-shadow: inset 0 0 15px rgba(0, 255, 170, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(0, 255, 170, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(0, 255, 170, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03;
+            background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 255, 170, 0.05) 1px, rgba(0, 255, 170, 0.05) 2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE Λ-CDM EXPANSION METRIC INTERFACE</div>
+    <div class="manifold-glitch"></div>
+
+    <div class="system-status">
+        [ H₀ ESTIMATE: 72.1 KM/S/MPC ]<br>
+        [ SCALE FACTOR: a(t) STRETCHING ]<br>
+        [ HORIZON: ESCEDING ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-nav-header">
+        <div class="theory-nav-title">EXPLORE MODES</div>
+        <div class="theory-nav-desc">Choose a simulation mode below to change the visualization</div>
+    </div>
+    <div class="theory-tabs">
+        <button class="theory-tab cosmic-tab active" data-theory="hubble">Hubble Flow</button>
+        <button class="theory-tab" data-theory="redshift">Metric Redshift</button>
+        <button class="theory-tab" data-theory="cmb">Last Scattering</button>
+        <button class="theory-tab" data-theory="timeline">Light-Cone History</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Expansion (H₀)</div>
+            <div class="param-value" id="param1-value">72</div>
+            <input type="range" class="param-slider" id="param1-slider" min="50" max="150" value="72">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Simulation Rate</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Cosmic Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Hubble-Lemaître Flow</div>
+        <div class="theory-year" id="theory-year">Expanding Metric Geometry (1929)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Hubble Law</div>
+            <div class="equation" id="equation">v = H₀ × d</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Expansion Physics Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Metric Invariants</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('expansion');
+
+        let scene, camera, renderer, currentMode = 'hubble';
+        let activeGroup;
+        let p1 = 0.72, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'hubble': {
+                name: 'Hubble-Lemaître Flow', year: 'Edwin Hubble, 1929',
+                equation: 'v = H₀ d',
+                facts: [{ text: 'Universal Recession', status: 'yes' }, { text: 'Metric Stretching', status: 'yes' }],
+                description: 'The discovery that galaxies are moving away from us at speeds proportional to their distance. This is not galaxies moving *through* space, but space itself expanding between them.',
+                concepts: [
+                    { term: 'Hubble Constant (H₀)', definition: 'The rate of expansion, currently estimated around 70 km/s/Mpc.' },
+                    { term: 'Comoving Distance', definition: 'The distance between two objects that remains constant despite the expansion of space.' },
+                    { term: 'Peculiar Velocity', definition: 'A galaxy\'s actual motion through the local cluster, separate from the Hubble flow.' }
+                ],
+                physics: 'In Waveism, expansion is the "Phasing Out" of the vacuum. The wavelength of the cosmic substrate is physically stretching, increasing the distance between constructive interference nodes.'
+            },
+            'redshift': {
+                name: 'Metric Redshift (z)', year: 'Spectroscopic Dilation',
+                equation: '1 + z = λ_obs / λ_emit',
+                facts: [{ text: 'Photon Stretching', status: 'yes' }, { text: 'Metric Dilation', status: 'yes' }],
+                description: 'As light travels through expanding space, its wavelength is physically stretched. A blue photon emitted billions of years ago arrives as a red photon today, carrying the record of the universe\'s growth.',
+                concepts: [
+                    { term: 'Scale Factor a(t)', definition: 'A dimensionless number representing the relative expansion of the universe.' },
+                    { term: 'Cosmological Time Dilation', definition: 'Processes in distant galaxies (like Supernovae) appear to run slower by a factor of (1+z).' }
+                ],
+                physics: 'Light is a wave in the metric. If the metric stretches, the wave MUST stretch with it. Redshift is the Doppler-effect of existence itself.'
+            },
+            'cmb': {
+                name: 'Last Scattering Surface', year: 'CMB Sky (380,000 BB)',
+                equation: 'T ≈ 2.73 K',
+                facts: [{ text: 'Opaque to Transparent', status: 'yes' }, { text: 'Frozen Acoustic Waves', status: 'yes' }],
+                description: 'The Cosmic Microwave Background. The oldest light in the universe, emitted when the early hot soup of plasma cooled enough for atoms to form, allowing photons to finally fly free.',
+                concepts: [
+                    { term: 'Recombination', definition: 'The moment electrons and protons formed hydrogen atoms.' },
+                    { term: 'Acoustic Oscillations', definition: 'Pressure waves in the early plasma that seeded the formation of all galaxies.' },
+                    { term: 'Anisotropy', definition: 'Tiny temperature fluctuations (1 part in 100,000) that reveal the early distribution of matter.' }
+                ],
+                physics: 'The CMB is the "Base Frequency" of the universe. It is the snapshot of the initial wave-conditions before gravitational collapse began to structure the cosmos.'
+            },
+            'timeline': {
+                name: 'Spacetime Cone History', year: 'Friedmann-Lemaître Epochs',
+                equation: 'H² = (8πG/3)ρ - k/a²',
+                facts: [{ text: 'Big Bang Apex', status: 'yes' }, { text: 'Acceleration Era', status: 'yes' }],
+                description: 'The holographic history of the universe. From the high-energy density of the Big Bang to the matter-dominated era, and finally into the current era of Dark Energy-driven acceleration.',
+                concepts: [
+                    { term: 'Radiation Era', definition: 'The first few thousand years where light controlled the expansion.' },
+                    { term: 'Dark Energy (Λ)', definition: 'The unknown pressure that is currently causing expansion to accelerate.' },
+                    { term: 'Particle Horizon', definition: 'The limit of the observable universe—the furthest distance light could have traveled to us.' }
+                ],
+                physics: 'The cosmic timeline is a diverging manifold. We exist on the accelerating outer edge of a wave-pulse that began 13.8 billion years ago.'
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 200);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x00ffff, 2, 500);
+            pointLight.position.set(50, 50, 50);
+            scene.add(pointLight);
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v / 100; updateParamDisplay(); },
+                formatter: v => v.toFixed(2)
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, { initialRotationX: 0.2 });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 1.0 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                if (window.clickPrevented) { window.clickPrevented = false; return; }
+                drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('hubble');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function setupGraphics() { }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            if (currentMode === 'hubble') valEl.innerText = (p1 * 100).toFixed(0) + " km/s/Mpc";
+            else if (currentMode === 'redshift') valEl.innerText = "z = " + (p1 * 10).toFixed(1);
+            else if (currentMode === 'cmb') valEl.innerText = "Freq: " + (p1 * 100).toFixed(0);
+            else if (currentMode === 'timeline') valEl.innerText = (p1 * 13.8).toFixed(1) + " Gyr";
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+
+            if (mode === 'hubble') {
+                const geo = new THREE.SphereGeometry(1, 8, 8);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa, emissive: 0x006644 });
+                for (let i = 0; i < 300; i++) {
+                    const m = new THREE.Mesh(geo, mat);
+                    m.position.set(
+                        (Math.random() - 0.5) * 200,
+                        (Math.random() - 0.5) * 200,
+                        (Math.random() - 0.5) * 200
+                    );
+                    m.userData.basePos = m.position.clone();
+                    activeGroup.add(m);
+                }
+            } else if (mode === 'redshift') {
+                const curve = new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(-100, 0, 0),
+                    new THREE.Vector3(100, 0, 0)
+                ]);
+                const geo = new THREE.TubeGeometry(curve, 100, 0.5, 8, false);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa, wireframe: true });
+                const wave = new THREE.Mesh(geo, mat);
+                wave.name = "wave";
+                activeGroup.add(wave);
+            } else if (mode === 'cmb') {
+                const geo = new THREE.SphereGeometry(100, 64, 64);
+                const mat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffaa,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const sphere = new THREE.Mesh(geo, mat);
+                activeGroup.add(sphere);
+
+                const cloudGeo = new THREE.BufferGeometry();
+                const count = 5000;
+                const pos = new Float32Array(count * 3);
+                const cols = new Float32Array(count * 3);
+                for (let i = 0; i < count; i++) {
+                    const r = 100;
+                    const phi = Math.random() * Math.PI;
+                    const theta = Math.random() * Math.PI * 2;
+                    pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                    pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                    pos[i * 3 + 2] = r * Math.cos(phi);
+
+                    const noise = Math.sin(phi * 5) * Math.cos(theta * 5);
+                    cols[i * 3] = noise > 0 ? 1 : 0.2;
+                    cols[i * 3 + 1] = 0.5;
+                    cols[i * 3 + 2] = noise < 0 ? 1 : 0.2;
+                }
+                cloudGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                cloudGeo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+                const points = new THREE.Points(cloudGeo, new THREE.PointsMaterial({ size: 1, vertexColors: true }));
+                activeGroup.add(points);
+            } else if (mode === 'timeline') {
+                const coneGeo = new THREE.CylinderGeometry(100, 0.1, 200, 32, 1, true);
+                const coneMat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffaa,
+                    transparent: true,
+                    opacity: 0.2,
+                    side: THREE.DoubleSide,
+                    wireframe: true
+                });
+                const cone = new THREE.Mesh(coneGeo, coneMat);
+                cone.rotation.x = -Math.PI / 2;
+                activeGroup.add(cone);
+
+                const nowLabel = new THREE.Mesh(new THREE.TorusGeometry(100, 0.5, 16, 100), new THREE.MeshBasicMaterial({ color: 0x00ffaa }));
+                nowLabel.rotation.x = -Math.PI / 2;
+                nowLabel.position.z = 100;
+                activeGroup.add(nowLabel);
+            }
+
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateTheoryHeader(theories[mode].name, theories[mode].description);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'hubble') {
+                const scale = 1 + (time * p1 * 0.1);
+                activeGroup.children.forEach(m => {
+                    if (m.userData.basePos) {
+                        m.position.copy(m.userData.basePos).multiplyScalar(scale);
+                        if (m.position.length() > 300) {
+                            m.position.copy(m.userData.basePos).multiplyScalar(0.1);
+                        }
+                    }
+                });
+            } else if (currentMode === 'redshift') {
+                const wave = activeGroup.getObjectByName("wave");
+                if (wave) {
+                    const scale = 1 + (p1 * 2);
+                    wave.scale.set(1, scale, scale);
+                    wave.rotation.x += dt;
+                }
+            } else if (currentMode === 'cmb') {
+                activeGroup.rotation.y += dt * 0.2;
+            } else if (currentMode === 'timeline') {
+                // Pulse along timeline
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 300 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

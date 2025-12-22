@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hole | Event Horizon Manifold</title>
+    <link rel="stylesheet" href="components/shared.css">
+    <script src="components/shared.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: transparent;
+        }
+
+        .theory-tab.bh-tab {
+            color: #ff5500;
+        }
+
+        .theory-tab.bh-tab.active {
+            background: rgba(255, 85, 0, 0.1);
+            color: #ff5500;
+            box-shadow: inset 0 0 15px rgba(255, 85, 0, 0.2);
+        }
+
+        #cinematic-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            color: rgba(255, 85, 0, 0.4);
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        .system-status {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono';
+            font-size: 0.55rem;
+            color: rgba(255, 85, 0, 0.4);
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .manifold-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.05;
+            background: repeating-linear-gradient(45deg, transparent, transparent 1px, #ff5500 1px, #ff5500 2px);
+        }
+
+
+
+        .singularity-readout {
+            position: fixed;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono';
+            font-size: 0.6rem;
+            color: #ff5500;
+            letter-spacing: 0.4em;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #lensing-distortion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40vh;
+            height: 40vh;
+            border-radius: 50%;
+            z-index: 5;
+            pointer-events: none;
+            display: none;
+            /* The Lensing Effect */
+            backdrop-filter: hue-rotate(90deg) invert(1) blur(4px);
+            -webkit-backdrop-filter: hue-rotate(90deg) invert(1) blur(4px);
+            background: radial-gradient(circle, transparent 30%, rgba(255, 85, 0, 0.1) 70%);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
+            mix-blend-mode: hard-light;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-stars"></div>
+    <div id="three-container"></div>
+    <div id="cinematic-overlay">PHD-GRADE SINGULARITY METRIC SUBSURFACE</div>
+    <div class="manifold-glow"></div>
+    <div id="lensing-distortion"></div>
+    <div class="singularity-readout" id="readout">ρ → ∞ | r → rₛ</div>
+
+    <div class="system-status">
+        [ SCHWARZSCHILD RADIUS: CALCULATING ]<br>
+        [ EVENT HORIZON: STABLE ]<br>
+        [ HAWKING FLUX: DETECTED ]
+    </div>
+
+    <div id="nav-container"></div>
+
+    <div class="theory-tabs">
+        <button class="theory-tab bh-tab active" data-theory="schwarzschild">Schwarzschild</button>
+        <button class="theory-tab" data-theory="kerr">Kerr Ergosurface</button>
+        <button class="theory-tab" data-theory="accretion">Accretion Disk</button>
+        <button class="theory-tab" data-theory="lensing">Photon Sphere</button>
+        <button class="theory-tab" data-theory="hawking">Hawking Decay</button>
+    </div>
+
+    <div class="params-panel">
+        <div class="param-group">
+            <div class="param-label" id="param1-label">Mass (M☉)</div>
+            <div class="param-value" id="param1-value">10</div>
+            <input type="range" class="param-slider" id="param1-slider" min="1" max="100" value="30">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Simulation Speed</div>
+            <div class="param-value" id="speed-value">1.0×</div>
+            <input type="range" class="param-slider" id="speed-slider" min="0" max="250" value="100">
+        </div>
+        <div class="param-group">
+            <div class="param-label">Event Zoom</div>
+            <div class="param-value" id="zoom-value">1.0×</div>
+            <input type="range" class="param-slider" id="zoom-slider" min="30" max="400" value="100">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="theory-name" id="theory-name">Schwarzschild Solution</div>
+        <div class="theory-year" id="theory-year">The Geometry of Compression (1916)</div>
+        <div class="equation-box">
+            <div class="equation-label">The Schwarzschild Metric</div>
+            <div class="equation" id="equation">ds² = -(1-rₛ/r)dt² + (1-rₛ/r)⁻¹dr²</div>
+        </div>
+        <div class="theory-facts" id="theory-facts"></div>
+    </div>
+
+    <button class="info-btn" id="info-btn">ⓘ</button>
+    <div class="info-modal" id="info-modal">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Singularity Physics Protocol</span>
+            <button class="info-modal-close" id="info-close">×</button>
+        </div>
+        <div class="info-modal-body">
+            <div class="info-section">
+                <div class="info-section-title">Axiomatic Description</div>
+                <p id="info-description"></p>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Key Manifolds</div>
+                <ul id="info-concepts"></ul>
+            </div>
+            <div class="info-section">
+                <div class="info-section-title">Waveism Interconnect</div>
+                <p id="info-physics"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE SETUP ============
+        document.getElementById('nav-container').innerHTML = renderMainNav('blackhole');
+
+        let scene, camera, renderer, currentMode = 'schwarzschild';
+        let activeGroup;
+        let p1 = 0.3, timeScale = 1.0, time = 0;
+        let smoothedZoom = 1.0;
+
+        const theories = {
+            'schwarzschild': {
+                name: 'Schwarzschild Singularly', year: 'Karl Schwarzschild, 1916',
+                equation: 'rₛ = 2GM/c²',
+                facts: [{ text: 'Stationary', status: 'yes' }, { text: 'Perfect Sphere', status: 'yes' }],
+                description: 'The prototypical black hole. It describes the gravitational field outside a non-rotating, spherical mass. At the event horizon, space and time essentially swap roles; every future worldline leads inevitably to the singularity.',
+                concepts: [
+                    { term: 'Event Horizon', definition: 'The "point of no return" where the escape velocity exactly equals c.' },
+                    { term: 'Coordinate Singularity', definition: 'The horizon is a mathematical artifact of specific coordinates, whereas the center is a physical geometric breakdown.' },
+                    { term: 'Photon Sphere', definition: 'A region at 1.5 rₛ where light orbits the black hole in a circle.' }
+                ],
+                physics: 'In Waveism, a Black Hole is a phase-singularity. The wave-coherence of spacetime diverges to infinity, creating a permanent hole in the cosmic interference pattern.'
+            },
+            'kerr': {
+                name: 'Kerr Rotating Metric', year: 'Roy Kerr, 1963',
+                equation: 'Δ = r² - 2Mr + a²',
+                facts: [{ text: 'Frame-Dragging', status: 'yes' }, { text: 'Ergosphere', status: 'yes' }],
+                description: 'The most realistic model for astrophysical black holes. Because the hole rotates, it twists the surrounding spacetime fabric into a vortex—a process known as the Lense-Thirring effect.',
+                concepts: [
+                    { term: 'Ergosphere', definition: 'A region where you can still escape, but you are forced to rotate with the hole regardless of your propulsion.' },
+                    { term: 'Penrose Process', definition: 'A theoretical method of extracting energy from the rotational momentum of the black hole.' },
+                    { term: 'Cauchy Horizon', definition: 'The inner event horizon beyond which predictability in general relativity fails.' }
+                ],
+                physics: 'Rotation introduces a vortex in the wave-substrate. The ergosphere is where the phase-velocity of the substrate exceeds the speed of light in the opposite direction.'
+            },
+            'accretion': {
+                name: 'Relativistic Accretion', year: 'Keplerian Friction',
+                equation: 'L = η Ṁ c²',
+                facts: [{ text: 'X-Ray Intense', status: 'yes' }, { text: 'Plasma Flow', status: 'yes' }],
+                description: 'A brilliant disk of superheated plasma spiraling into the abyss. Friction converts gravitational potential energy into radiation with up to 42% efficiency—dwarfing nuclear fusion.',
+                concepts: [
+                    { term: 'ISCO', definition: 'Innermost Stable Circular Orbit. Inside this radius, particles fall directly into the hole.' },
+                    { term: 'Eddington Limit', definition: 'The maximum luminosity a black hole can reach before radiation pressure pushes infalling matter away.' }
+                ],
+                physics: 'Accretion is the breakdown of wave-packets into high-frequency thermal noise. The disk is a macroscopic realization of the metric\'s extreme refractive index.'
+            },
+            'lensing': {
+                name: 'Einstein Rings & Shadow', year: 'Nucl. Deflection',
+                equation: 'θ ≈ 4GM/c²b',
+                facts: [{ text: 'Self-Lensing', status: 'yes' }, { text: 'Geodesic Bend', status: 'yes' }],
+                description: 'The intense gravity redirects light rays. We see the back of the accretion disk "lifted" over the hole, and distant stars warped into rings. The "Shadow" is the absence of any light rays that have fallen past the horizon.',
+                concepts: [
+                    { term: 'Shadow Diameter', definition: 'Mathematically ≈ 5.2 times the Schwarzschild radius due to lensing.' },
+                    { term: 'Gravitational Redshift', definition: 'Light losing energy as it climbs out of the well, shifting its frequency toward red.' }
+                ],
+                physics: 'Lensing is the ultimate demonstration of space as a medium. Gravity acts as a lens with infinite power, focalizing the cosmic wavefield into an Einstein Ring.'
+            },
+            'hawking': {
+                name: 'Hawking Evaporation', year: 'Stephen Hawking, 1974',
+                equation: 'T_H = ℏc³ / (8πGMk)',
+                facts: [{ text: 'Quantum Decay', status: 'yes' }, { text: 'Virtual Pairs', status: 'yes' }],
+                description: 'A quantum breakdown at the horizon. Virtual particle pairs are separated; one falls in, the other escapes. Over aeons, the black hole loses mass and eventually explodes in a final burst of gamma rays.',
+                concepts: [
+                    { term: 'Information Paradox', definition: 'The question of whether information encoded in the infalling matter is lost forever.' },
+                    { term: 'Bekenstein-Hawking Entropy', definition: 'Black hole entropy is proportional to its surface area, not its volume.' }
+                ],
+                physics: 'Hawking radiation is the leakage of wave-energy from the trapped singularity. It represents the thermodynamic limit of the Waveism vacuum.'
+            }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 0, 80);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x444444, 1.5);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xff5500, 3, 200);
+            pointLight.position.set(20, 20, 20);
+            scene.add(pointLight);
+
+            setupGraphics();
+
+            initParamSlider('param1-slider', 'param1-value', {
+                onChange: v => { p1 = v / 100; updateParamDisplay(); },
+                formatter: v => v
+            });
+            initParamSlider('speed-slider', 'speed-value', {
+                onChange: v => timeScale = v / 100,
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+            initParamSlider('zoom-slider', 'zoom-value', {
+                onChange: v => { if (window.zoomControl) window.zoomControl.zoom = v / 100; },
+                formatter: v => (v / 100).toFixed(1) + '×'
+            });
+
+            const drag = initDragRotation(renderer.domElement, { initialRotationX: 0.4 });
+            window.globalDrag = drag;
+            const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 1.0 });
+            window.zoomControl = zoomControl;
+
+            renderer.domElement.addEventListener('mouseup', (e) => {
+                // Simplified click detection using the internal shared.js logic or custom
+                if (e.detail === 1) drag.autoRotate = !drag.autoRotate;
+            });
+
+            initTheoryTabs(mode => switchMode(mode));
+            initInfoModal();
+            switchMode('schwarzschild');
+            animate(drag, zoomControl);
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function setupGraphics() { }
+
+        function updateParamDisplay() {
+            const valEl = document.getElementById('param1-value');
+            if (currentMode === 'schwarzschild') valEl.innerText = (p1 * 100).toFixed(0) + " M☉";
+            else if (currentMode === 'kerr') valEl.innerText = "Spin: " + p1.toFixed(2);
+            else if (currentMode === 'accretion') valEl.innerText = "Density: " + (p1 * 100).toFixed(0);
+            else if (currentMode === 'lensing') valEl.innerText = "Precision: " + (p1 * 100).toFixed(0);
+            else if (currentMode === 'hawking') valEl.innerText = "Decay: " + (p1 * 100).toFixed(0);
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
+
+            activeGroup = new THREE.Group();
+            activeGroup.position.y = 2;
+
+            // Reset Overlay
+            document.getElementById('lensing-distortion').style.display = (mode === 'lensing') ? 'block' : 'none';
+
+            // EVENT HORIZON (Common to many modes)
+            const rs = 15;
+            const ehGeo = new THREE.SphereGeometry(rs, 64, 64);
+            const ehMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const horizon = new THREE.Mesh(ehGeo, ehMat);
+            activeGroup.add(horizon);
+
+            // GLOW
+            const glowGeo = new THREE.SphereGeometry(rs * 1.02, 32, 32);
+            const glowMat = new THREE.MeshBasicMaterial({ color: 0xff3300, transparent: true, opacity: 0.3, side: THREE.BackSide });
+            const glow = new THREE.Mesh(glowGeo, glowMat);
+            activeGroup.add(glow);
+
+            if (mode === 'schwarzschild') {
+                const wellMat = new THREE.LineBasicMaterial({ color: 0xff5500, transparent: true, opacity: 0.2 });
+                for (let i = 0; i < 10; i++) {
+                    const r = rs + i * 5;
+                    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.05, 16, 100), wellMat);
+                    ring.rotation.x = Math.PI / 2;
+                    activeGroup.add(ring);
+                }
+            } else if (mode === 'kerr') {
+                const ergoMat = new THREE.MeshBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.1 });
+                const ergo = new THREE.Mesh(new THREE.SphereGeometry(rs * 1.5, 32, 32), ergoMat);
+                ergo.scale.y = 0.7;
+                ergo.name = "ergo";
+                activeGroup.add(ergo);
+                const particles = new THREE.BufferGeometry();
+                const pCount = 8000;
+                const pos = new Float32Array(pCount * 3);
+                const colors = new Float32Array(pCount * 3);
+
+                for (let i = 0; i < pCount; i++) {
+                    // Logarithmic spiral distribution
+                    const angle = Math.random() * Math.PI * 2;
+                    const r = rs * 1.5 + Math.pow(Math.random(), 2) * rs * 8; // More density near center
+
+                    pos[i * 3] = r * Math.cos(angle);
+                    pos[i * 3 + 1] = (Math.random() - 0.5) * (r * 0.1); // Thicker outer disk
+                    pos[i * 3 + 2] = r * Math.sin(angle);
+
+                    // Doppler Redshift/Blueshift simulation based on side
+                    const isReceding = pos[i * 3] > 0; // Simplified
+                    const temp = 1 - (r - rs * 1.5) / (rs * 8);
+
+                    colors[i * 3] = 1.0; // Red base
+                    colors[i * 3 + 1] = isReceding ? temp * 0.3 : temp * 0.8; // Blue-shift left, Red-shift right
+                    colors[i * 3 + 2] = isReceding ? 0 : temp * 0.4;
+                }
+                particles.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const pMat = new THREE.PointsMaterial({ size: 0.3, vertexColors: true, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending });
+                const disk = new THREE.Points(particles, pMat);
+                disk.name = "disk";
+                activeGroup.add(disk);
+
+                // RELATIVISTIC JETS
+                if (mode === 'accretion') {
+                    const jetGeo = new THREE.CylinderGeometry(1, 8, 80, 16, 4, true);
+                    const jetMat = new THREE.MeshBasicMaterial({
+                        color: 0xaa00ff,
+                        transparent: true,
+                        opacity: 0.1,
+                        side: THREE.DoubleSide,
+                        blending: THREE.AdditiveBlending,
+                        depthWrite: false
+                    });
+                    const jet1 = new THREE.Mesh(jetGeo, jetMat);
+                    jet1.position.y = 40;
+                    activeGroup.add(jet1);
+
+                    const jet2 = jet1.clone();
+                    jet2.rotation.x = Math.PI;
+                    jet2.position.y = -40;
+                    activeGroup.add(jet2);
+
+                    // Core brightness
+                    const coreGeo = new THREE.CylinderGeometry(0.5, 4, 70, 8, 1, true);
+                    const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending });
+                    const core1 = new THREE.Mesh(coreGeo, coreMat);
+                    core1.position.y = 35;
+                    activeGroup.add(core1);
+                    const core2 = core1.clone();
+                    core2.rotation.x = Math.PI;
+                    core2.position.y = -35;
+                    activeGroup.add(core2);
+                }
+
+            } else if (mode === 'hawking') {
+                const dotsGeo = new THREE.BufferGeometry();
+                const dots = new Float32Array(300 * 3);
+                dotsGeo.setAttribute('position', new THREE.BufferAttribute(dots, 3));
+                const dotsMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.5 });
+                const points = new THREE.Points(dotsGeo, dotsMat);
+                points.name = "radiation";
+                activeGroup.add(points);
+            }
+
+            if (window.globalDrag) {
+                activeGroup.rotation.y = window.globalDrag.rotationY;
+                activeGroup.rotation.x = window.globalDrag.rotationX;
+            }
+
+            scene.add(activeGroup);
+            updateInfoPanel(theories[mode]);
+            updateInfoModalContent(theories[mode]);
+            updateParamDisplay();
+        }
+
+        function updateSim() {
+            const dt = 0.01 * timeScale;
+            time += dt;
+
+            if (currentMode === 'kerr') {
+                const ergo = activeGroup.getObjectByName("ergo");
+                if (ergo) {
+                    ergo.rotation.y += dt * 2 * p1;
+                    ergo.scale.y = 0.7 - (p1 * 0.2);
+                }
+            } else if (currentMode === 'accretion' || currentMode === 'lensing') {
+                const disk = activeGroup.getObjectByName("disk");
+                if (disk) {
+                    const pos = disk.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        let x = pos.getX(i);
+                        let z = pos.getZ(i);
+                        let r = Math.sqrt(x * x + z * z);
+                        let theta = Math.atan2(z, x);
+
+                        theta += (1 / (r * 0.1)) * dt * 2;
+
+                        let nx = r * Math.cos(theta);
+                        let nz = r * Math.sin(theta);
+                        let ny = 0;
+
+                        // Lensing warp at the back
+                        if (currentMode === 'lensing' && nz < 0) {
+                            ny = (15 / r) * 10;
+                        }
+
+                        pos.setXY(i, nx, ny);
+                        pos.setZ(i, nz);
+                    }
+                    pos.needsUpdate = true;
+                }
+
+                if (currentMode === 'lensing') {
+                    const lens = document.getElementById('lensing-distortion');
+                    if (lens) {
+                        const s = 1 + Math.sin(time * 2) * 0.1;
+                        lens.style.transform = `translate(-50%, -50%) scale(${s})`;
+                        lens.style.backdropFilter = `hue-rotate(${time * 50}deg) invert(1) blur(${4 + Math.sin(time) * 2}px)`;
+                    }
+                }
+
+            } else if (currentMode === 'hawking') {
+                const rad = activeGroup.getObjectByName("radiation");
+                if (rad) {
+                    const pos = rad.geometry.attributes.position;
+                    for (let i = 0; i < pos.count; i++) {
+                        let x = pos.getX(i);
+                        let y = pos.getY(i);
+                        let z = pos.getZ(i);
+                        let r = Math.sqrt(x * x + y * y + z * z);
+
+                        if (r < 15 || r > 80) {
+                            const theta = Math.random() * Math.PI * 2;
+                            const phi = Math.random() * Math.PI;
+                            pos.setXYZ(i, 15 * Math.sin(phi) * Math.cos(theta), 15 * Math.sin(phi) * Math.sin(theta), 15 * Math.cos(phi));
+                        } else {
+                            const speed = 0.5 + p1;
+                            pos.setXYZ(i, x * (1 + dt * speed / r), y * (1 + dt * speed / r), z * (1 + dt * speed / r));
+                        }
+                    }
+                    pos.needsUpdate = true;
+                }
+            }
+        }
+
+        function animate(drag, zoomControl) {
+            requestAnimationFrame(() => animate(drag, zoomControl));
+            updateSim();
+
+            const targetZoom = zoomControl.zoom;
+            smoothedZoom += (targetZoom - smoothedZoom) * 0.1;
+            camera.position.z = 80 / smoothedZoom;
+
+            const zSlider = document.getElementById('zoom-slider');
+            if (zSlider && !zSlider.matches(':active')) zSlider.value = smoothedZoom * 100;
+            document.getElementById('zoom-value').innerText = smoothedZoom.toFixed(1) + '×';
+
+            if (activeGroup) {
+                drag.update();
+                activeGroup.rotation.y = drag.rotationY;
+                activeGroup.rotation.x = drag.rotationX;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
