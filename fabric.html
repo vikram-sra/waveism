@@ -222,6 +222,8 @@
             pointLight.position.set(5, 5, 5);
             scene.add(pointLight);
 
+            createStarField(scene); // Add global starfield
+
             setupGraphics();
 
             // Input handlers
@@ -366,6 +368,9 @@
         function animate(drag, zoomControl) {
             requestAnimationFrame(() => animate(drag, zoomControl));
             time += 0.01 * timeScale;
+
+            const stars = scene.getObjectByName("global_starfield");
+            updateStarField(stars, time, drag);
 
             // Interaction State
             targetZoom = zoomControl.zoom;

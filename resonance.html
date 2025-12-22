@@ -325,6 +325,8 @@
             renderer.setClearColor(0x000000, 0);
             document.getElementById('three-container').appendChild(renderer.domElement);
 
+            createStarField(scene); // Add 3D Starfield
+
             const ambientLight = new THREE.AmbientLight(0x444444, 2);
             scene.add(ambientLight);
             const pointLight = new THREE.PointLight(0x00ffff, 2, 500);
@@ -727,6 +729,9 @@
         function animate(drag, zoomControl) {
             requestAnimationFrame(() => animate(drag, zoomControl));
             updateSim();
+
+            const stars = scene.getObjectByName("global_starfield");
+            updateStarField(stars, time, drag);
 
             const targetZoom = zoomControl.zoom;
             smoothedZoom += (targetZoom - smoothedZoom) * 0.1;

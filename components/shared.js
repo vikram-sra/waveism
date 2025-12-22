@@ -49,88 +49,145 @@ function renderMainNav(activeId) {
     </div>`;
 }
 
-// ============ FACTUAL STAR BACKGROUND ============
-async function initStarField(containerId) {
+// ============ PREMIUM 2D PARALLAX STARFIELD ============
+let globalStarfield2D = null;
+function createStarField(scene, count = 200) {
+    if (!globalStarfield2D) globalStarfield2D = init2DStarfield('background-stars');
+    return null;
+}
+
+function init2DStarfield(containerId) {
     const container = document.getElementById(containerId);
-    if (!container || !window.THREE) return;
+    if (!container) return null;
 
-    try {
-        const response = await fetch('assets/stars_data.json');
-        const starData = await response.json();
+    // Ensure container is clean
+    container.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    Object.assign(canvas.style, {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        pointerEvents: 'none'
+    });
+    container.appendChild(canvas);
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        container.appendChild(renderer.domElement);
+    const ctx = canvas.getContext('2d');
+    let width, height;
 
-        const geometry = new THREE.BufferGeometry();
-        const posArr = new Float32Array(starData.length * 3);
-        const colArr = new Float32Array(starData.length * 3);
-        const sizeArr = new Float32Array(starData.length);
+    const layers = [
+        { count: 150, size: 0.8, speed: 0.02, opacity: 0.3, stars: [] },
+        { count: 80, size: 1.5, speed: 0.05, opacity: 0.5, stars: [] },
+        { count: 30, size: 2.5, speed: 0.1, opacity: 0.7, stars: [] }
+    ];
 
-        starData.forEach((star, i) => {
-            posArr[i * 3] = star.x * 5;
-            posArr[i * 3 + 1] = star.y * 5;
-            posArr[i * 3 + 2] = star.z * 5;
+    function resize() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-            const color = new THREE.Color(star.color || 0xffffff);
-            colArr[i * 3] = color.r;
-            colArr[i * 3 + 1] = color.g;
-            colArr[i * 3 + 2] = color.b;
-
-            sizeArr[i] = Math.max(1.5, 5 - star.mag);
-        });
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
-        geometry.setAttribute('size', new THREE.BufferAttribute(sizeArr, 1));
-
-        const material = new THREE.PointsMaterial({
-            size: 2,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
-        });
-
-        const starPoints = new THREE.Points(geometry, material);
-        scene.add(starPoints);
-
-        // Random cluster/view on refresh
-        camera.position.set(
-            (Math.random() - 0.5) * 500,
-            (Math.random() - 0.5) * 500,
-            1000 + Math.random() * 500
-        );
-        camera.lookAt(0, 0, 0);
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Sync with Global Drag if available
-            if (window.globalDrag) {
-                // Subtle follow-through for the star field
-                starPoints.rotation.y = window.globalDrag.rotationY * 0.2 + (Date.now() * 0.00005);
-                starPoints.rotation.x = window.globalDrag.rotationX * 0.2 + (Date.now() * 0.00002);
-            } else {
-                starPoints.rotation.y += 0.0001;
-                starPoints.rotation.x += 0.00005;
+        // Re-generate stars on resize to fit new dimensions
+        layers.forEach(layer => {
+            layer.stars = [];
+            for (let i = 0; i < layer.count; i++) {
+                layer.stars.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    size: (Math.random() * 0.4 + 0.6) * layer.size,
+                    color: ['#ffffff', '#00ffff', '#ffdd00', '#ff00ff'][Math.floor(Math.random() * 4)]
+                });
             }
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
         });
-    } catch (e) {
-        console.warn("StarField Load failed:", e);
     }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    const state = {
+        ctx,
+        layers,
+        offsetX: 0,
+        offsetY: 0,
+        targetOffsetX: 0,
+        targetOffsetY: 0,
+        activeDrag: null,
+        factorX: window.innerWidth / (Math.PI * 2),
+        factorY: window.innerHeight / (Math.PI * 2) // Approximate vertical FOV factor
+    };
+
+    // Update factors on resize
+    window.addEventListener('resize', () => {
+        state.factorX = window.innerWidth / (Math.PI * 2);
+        state.factorY = window.innerHeight / (Math.PI * 2);
+    });
+
+    function animate(time) {
+        const t = time * 0.001;
+        if (state.activeDrag) {
+            // Immersive Rotation: 2PI rotation = 1 full screen width scroll
+            state.targetOffsetX = state.activeDrag.rotationY * state.factorX;
+            state.targetOffsetY = state.activeDrag.rotationX * state.factorY;
+        }
+
+        // Smooth interpolation
+        state.offsetX += (state.targetOffsetX - state.offsetX) * 0.1;
+        state.offsetY += (state.targetOffsetY - state.offsetY) * 0.1;
+
+        const w = window.innerWidth, h = window.innerHeight;
+        ctx.clearRect(0, 0, w, h);
+
+        // Subtle drift for "alive" feel
+        const driftX = t * 1.5, driftY = t * 0.8;
+
+        state.layers.forEach(layer => {
+            ctx.globalAlpha = layer.opacity;
+            layer.stars.forEach(star => {
+                // Parallax math: (Position + Offset) % ScreenSize
+                let sx = (star.x - (state.offsetX * layer.size * 0.5) + driftX * layer.speed) % w;
+                let sy = (star.y + (state.offsetY * layer.size * 0.5) + driftY * layer.speed) % h;
+
+                // Handle negative wrap
+                if (sx < 0) sx += w;
+                if (sy < 0) sy += h;
+
+                ctx.beginPath();
+                const r = star.size * 2.5;
+                const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
+                grad.addColorStop(0, star.color);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.arc(sx, sy, r, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.fillStyle = '#fff';
+                ctx.arc(sx, sy, star.size * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        });
+        requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+    return state;
+}
+
+function updateStarField(dummy, time, drag = null) {
+    if (!globalStarfield2D) return;
+    if (drag) globalStarfield2D.activeDrag = drag;
+}
+
+// Standalone version for pages like index.html or wave_theory.html
+function initGlobalStarField(containerId) {
+    if (!globalStarfield2D) {
+        globalStarfield2D = init2DStarfield(containerId);
+    }
+    return globalStarfield2D;
 }
 
 // ============ OSCILLOSCOPE HEADER ============
@@ -726,6 +783,9 @@ function initOrbUI() {
             cancelAutoHide();
         }
     };
+
+    // Listen for custom interaction events (e.g. scroll)
+    window.addEventListener('ui-interaction', cancelAutoHide);
     // Zen Mode Logic
     const toggleUI = () => {
         if (orb.dataset.dragged === "true") {
@@ -757,7 +817,7 @@ function initOrbUI() {
     document.addEventListener('click', onInteract);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'h') {
+        if (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'x') {
             cancelAutoHide();
             const isOpen = document.body.classList.toggle('ui-open');
             orb.classList.toggle('active', isOpen);
@@ -802,19 +862,72 @@ function initNavSlider() {
 
     const maxScroll = (items.length - 1) * itemHeight;
 
+    // Inject Scroll Indicators
+    const upArrow = document.createElement('div');
+    upArrow.className = 'nav-scroll-indicator up';
+    upArrow.innerHTML = '▲'; // or use SVG/Icon
+    container.parentElement.appendChild(upArrow);
+
+    const downArrow = document.createElement('div');
+    downArrow.className = 'nav-scroll-indicator down';
+    downArrow.innerHTML = '▼';
+    container.parentElement.appendChild(downArrow);
+
+    // Inject Counter
+    const counter = document.createElement('div');
+    counter.className = 'nav-counter';
+    container.parentElement.appendChild(counter);
+
+    // Arrow Logic
+    const stepScroll = (dir) => {
+        targetScroll = clampScroll(targetScroll + (dir * itemHeight));
+        requestAnimationFrame(updateWheel);
+        snapTimer = setTimeout(snapToNearest, 150); // Ensure clean snap
+        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
+    };
+
+    upArrow.addEventListener('click', (e) => { e.stopPropagation(); stepScroll(-1); });
+    downArrow.addEventListener('click', (e) => { e.stopPropagation(); stepScroll(1); });
+
     // Physics Loop
     const updateWheel = () => {
         if (Math.abs(currentScroll - targetScroll) > 0.5) {
-            currentScroll += (targetScroll - currentScroll) * 0.15;
-
-            // Audio Tick on transition boundaries
+            currentScroll += (targetScroll - currentScroll) * 0.08; // Smoother physics
+            // Audio Tick logic...
             const nearestItem = Math.round(currentScroll / itemHeight);
             if (nearestItem !== lastCenterIndex) {
                 lastCenterIndex = nearestItem;
-
-                // Wave color logic removed since icons are deleted
             }
         }
+
+        // Update Arrow Visibility
+        upArrow.style.opacity = currentScroll <= 5 ? '0' : '';
+        upArrow.style.pointerEvents = currentScroll <= 5 ? 'none' : 'auto';
+
+        downArrow.style.opacity = currentScroll >= maxScroll - 5 ? '0' : '';
+        downArrow.style.pointerEvents = currentScroll >= maxScroll - 5 ? 'none' : 'auto';
+
+        // Update Counter
+        const totalItems = items.length;
+        const currentIdx = Math.max(1, Math.min(totalItems, Math.round(currentScroll / itemHeight) + 1));
+        counter.textContent = `${currentIdx}/${totalItems}`;
+
+        // Directional Coloring (Purple towards active item)
+        const activePos = activeIdx * itemHeight;
+        const threshold = 30; // buffer
+
+        if (currentScroll > activePos + threshold) {
+            upArrow.classList.add('active-direction');
+            downArrow.classList.remove('active-direction');
+        } else if (currentScroll < activePos - threshold) {
+            downArrow.classList.add('active-direction');
+            upArrow.classList.remove('active-direction');
+        } else {
+            // Near active item
+            upArrow.classList.remove('active-direction');
+            downArrow.classList.remove('active-direction');
+        }
+
         items.forEach((item, i) => {
             const itemPos = i * itemHeight;
             const dist = itemPos - currentScroll;
@@ -845,9 +958,6 @@ function initNavSlider() {
             item.style.transform = `translateY(${dist}px) translateZ(${z}px) rotateX(${rotateX}deg) scale(${scale})`;
             item.style.opacity = opacity;
             item.style.zIndex = Math.round(100 - absNormDist * 10);
-
-            // Highlight Logic REMOVED per user request
-            // Only the persistent .active item (current page) remains purple.
         });
 
         // Continue loop if moving
@@ -868,6 +978,7 @@ function initNavSlider() {
 
     const onWheel = (e) => {
         e.preventDefault();
+        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
         targetScroll = clampScroll(targetScroll + e.deltaY * 0.5);
         requestAnimationFrame(updateWheel); // Ensure loop is running
 
@@ -885,6 +996,10 @@ function initNavSlider() {
     };
 
     const startDrag = (e) => {
+        // Ignore if clicking arrows
+        if (e.target.closest('.nav-scroll-indicator')) return;
+
+        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
         isDragging = true;
         startY = e.touches ? e.touches[0].clientY : e.clientY;
         startScroll = currentScroll;
@@ -896,6 +1011,7 @@ function initNavSlider() {
 
     const moveDrag = (e) => {
         if (!isDragging) return;
+        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
         const y = e.touches ? e.touches[0].clientY : e.clientY;
         const delta = startY - y; // Drag up = positive scroll (move down list)
         targetScroll = clampScroll(startScroll + delta * 1.5); // 1.5x speed
@@ -919,6 +1035,7 @@ function initNavSlider() {
     // Click to Navigate logic
     items.forEach((item, i) => {
         item.addEventListener('click', (e) => {
+            window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
             // Keep default link behavior IF it is the center item
             const itemScroll = i * itemHeight;
             if (Math.abs(currentScroll - itemScroll) > 20) {

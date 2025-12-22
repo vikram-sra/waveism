@@ -589,6 +589,8 @@
             }, 100);
         });
 
+        const indexStars = initGlobalStarField('background-stars');
+
         // Infinite Scroll Teleport
         let isTeleporting = false;
         reel.addEventListener('scroll', () => {
@@ -606,6 +608,11 @@
                 isTeleporting = true;
                 reel.scrollLeft = W;
                 setTimeout(() => isTeleporting = false, 50);
+            }
+
+            // Sync Stars with Scroll
+            if (indexStars) {
+                indexStars.targetOffsetX = (reel.scrollLeft / reel.scrollWidth) * window.innerWidth * 0.5;
             }
         });
 

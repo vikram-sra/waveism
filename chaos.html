@@ -290,6 +290,7 @@
             scene.add(pointLight);
 
             setupGraphics();
+            createStarField(scene); // Add 3D Starfield
 
             // Improved control state: Click to pause ROTATION, slider for SIMULATION
             const drag = initDragRotation(renderer.domElement, {
@@ -570,6 +571,9 @@
             const dt = 0.01 * timeScale;
             time += dt;
             updateSim(dt);
+
+            const stars = scene.getObjectByName("global_starfield");
+            updateStarField(stars, time, drag);
 
             targetZoom = zoomControl.zoom;
             smoothedZoom += (targetZoom - smoothedZoom) * 0.1;

@@ -200,6 +200,8 @@
             pointLight.position.set(100, 100, 100);
             scene.add(pointLight);
 
+            createStarField(scene); // Add 3D Starfield
+
             initParamSlider('param1-slider', 'param1-value', {
                 onChange: v => { p1 = v; updateParamDisplay(); },
                 formatter: v => (v / 10).toFixed(1) + 'Δp'
@@ -439,6 +441,9 @@
         function animate(drag, zoomControl) {
             requestAnimationFrame(() => animate(drag, zoomControl));
             updateSim();
+
+            const stars = scene.getObjectByName("global_starfield");
+            updateStarField(stars, time, drag);
 
             const targetZoom = zoomControl.zoom;
             smoothedZoom += (targetZoom - smoothedZoom) * 0.1;

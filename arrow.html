@@ -222,6 +222,8 @@
             spotLight.position.set(10, 10, 10);
             scene.add(spotLight);
 
+            createStarField(scene); // Add global starfield
+
             setupGraphics();
 
             initParamSlider('param1-slider', 'param1-value', {
@@ -374,6 +376,9 @@
         function animate(drag, zoomControl) {
             requestAnimationFrame(() => animate(drag, zoomControl));
             time += 0.01 * timeScale;
+
+            const stars = scene.getObjectByName("global_starfield");
+            updateStarField(stars, time, drag);
 
             // Interaction State
             targetZoom = zoomControl.zoom;
