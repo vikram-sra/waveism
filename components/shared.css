@@ -39,11 +39,10 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
-    opacity: 0.8;
-    background: #000;
-    /* Fallback for transparency */
+    opacity: 0.9;
+    background: transparent;
 }
 
 #three-container {
@@ -52,9 +51,9 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0;
-    /* RESTORE BACKGROUND DEPTH */
-    background: radial-gradient(circle at center, rgba(5, 12, 20, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+    z-index: 1;
+    /* REDUCED OVERLAY OPACITY FOR STARFIELD VISIBILITY */
+    background: radial-gradient(circle at center, rgba(5, 12, 20, 0.1) 0%, rgba(0, 0, 0, 0.6) 100%);
 }
 
 body>canvas {
@@ -74,23 +73,19 @@ canvas:active {
 .main-nav-container {
     position: fixed;
     top: 50%;
-    right: 20px;
-    /* Moved to Right */
+    right: 15px;
+    /* Closer to edge */
     transform: translateY(-50%) perspective(1000px) rotateY(-8deg);
     /* 3D Perspective */
     z-index: 110;
-    width: 180px;
+    width: 80px;
+    /* Wider hit area for touch */
     height: 350px;
-    /* Increased for horizontal text */
     background: transparent;
     border: none;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    /* Align to right edge */
-    /* Masking for the "instrument" look */
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    align-items: center;
     pointer-events: auto;
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 20px 0;
@@ -128,6 +123,90 @@ canvas:active {
     border: none;
     backdrop-filter: none;
     padding: 0;
+    /* Mask moved here to allow arrows outside if needed, or included */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+/* Scroll Indicators */
+.nav-scroll-indicator {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    color: rgba(0, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 120;
+    transition: all 0.2s;
+    animation: navPulse 2s infinite;
+}
+
+
+.nav-scroll-indicator.active-direction {
+    color: #bf40bf !important;
+    text-shadow: 0 0 10px rgba(191, 64, 191, 0.8), 0 0 20px rgba(191, 64, 191, 0.4);
+    opacity: 1 !important;
+    transform: translateX(-50%) scale(1.1);
+}
+
+body:not(.ui-open) .nav-scroll-indicator {
+    display: none !important;
+}
+
+.nav-counter {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: auto;
+    bottom: -35px;
+    /* Moved to bottom center */
+    transform: none;
+    /* Remove rotation */
+    width: 100%;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(0, 255, 255, 0.4);
+    pointer-events: none;
+    transition: opacity 0.3s;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+body:not(.ui-open) .nav-counter {
+    display: none !important;
+}
+
+.nav-scroll-indicator:hover {
+    color: #fff;
+    transform: translateX(-50%) scale(1.2);
+}
+
+.nav-scroll-indicator.up {
+    top: -5px;
+}
+
+.nav-scroll-indicator.down {
+    bottom: -5px;
+}
+
+@keyframes navPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translateX(-50%) translateY(2px);
+    }
 }
 
 .main-nav:active {
@@ -196,18 +275,18 @@ canvas:active {
     margin: 0;
     pointer-events: none;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     width: 100%;
-    padding-right: 20px;
 }
 
 .nav-label {
-    /* Horizontal Text Style */
-    writing-mode: horizontal-tb;
+    /* Vertical Text Style */
+    writing-mode: vertical-rl;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
+    /* Increased from 0.7rem */
     letter-spacing: 2px;
     text-transform: uppercase;
     color: inherit;
@@ -216,15 +295,16 @@ canvas:active {
     border: none;
     padding: 0;
     white-space: nowrap;
-    margin-left: 10px;
+    margin: 0;
 }
 
 .nav-scale {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.5rem;
+    font-size: 0.65rem;
+    /* Increased from 0.5rem */
     color: rgba(0, 255, 255, 0.4);
-    writing-mode: horizontal-tb;
-    margin-bottom: 0;
+    writing-mode: vertical-rl;
+    margin-bottom: 5px;
     opacity: 0.8;
 }
 
@@ -232,9 +312,9 @@ canvas:active {
 .main-nav-tab.home-btn {
     opacity: 0.5;
     font-size: 1.2rem;
-    writing-mode: horizontal-tb;
-    justify-content: flex-end;
-    padding-right: 20px;
+    writing-mode: vertical-rl;
+    justify-content: center;
+    padding: 0;
 }
 
 /* ============ THEORY TABS (SUB-NAVIGATION) ============ */
@@ -360,6 +440,7 @@ canvas:active {
 }
 
 .theory-name {
+    font-family: 'JetBrains Mono', monospace;
     font-size: 1.4rem;
     font-weight: 600;
     /* Bolder */
@@ -372,6 +453,7 @@ canvas:active {
 }
 
 .theory-year {
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.85rem;
     font-weight: 400;
     color: rgba(0, 255, 255, 0.8);
@@ -426,6 +508,7 @@ canvas:active {
 }
 
 .equation-label {
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
     color: rgba(0, 255, 255, 0.3);
     text-transform: uppercase;

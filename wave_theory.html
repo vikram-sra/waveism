@@ -10,10 +10,17 @@
         body {
             background: #000 !important;
         }
+
+        #background-stars {
+            z-index: 1 !important;
+            opacity: 1 !important;
+        }
     </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="components/hamiltonian_physics.js"></script>
+    <script src="components/physics_ontology.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
@@ -23,18 +30,7 @@
             overflow: hidden;
         }
 
-        #epistemic-surface {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 10;
-            display: none;
-            background: radial-gradient(circle at 50% 50%, #050a10 0%, #000 100%);
-            cursor: grab;
-            touch-action: none;
-        }
+
 
         #wave-canvas {
             display: block;
@@ -45,78 +41,47 @@
             height: 100vh;
             z-index: 5;
             cursor: grab;
+            background: transparent !important;
         }
 
         #epistemic-card {
             position: fixed;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 500px;
-            background: rgba(5, 8, 12, 0.9);
-            border: 1px solid rgba(0, 255, 255, 0.15);
-            border-left: 2px solid #00ffff;
-            padding: 20px;
-            color: #e0f0ff;
+            top: 140px;
+            right: 20px;
+            width: 280px;
+            max-width: 320px;
+            background: rgba(5, 8, 12, 0.75);
+            border: 1px solid rgba(100, 150, 200, 0.2);
+            border-left: 2px solid rgba(150, 180, 220, 0.5);
+            padding: 12px 16px;
+            color: #c0d0e0;
             font-family: 'Inter', sans-serif;
             z-index: 50;
             display: none;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            border-radius: 4px;
         }
 
         #epistemic-card h2 {
             font-family: 'JetBrains Mono';
-            color: #00ffff;
-            font-size: 0.8rem;
+            color: rgba(180, 200, 230, 0.9);
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 8px;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
-            padding-bottom: 5px;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(100, 150, 200, 0.15);
+            padding-bottom: 4px;
+            font-weight: 500;
         }
 
         #epistemic-card p {
-            font-size: 0.8rem;
-            line-height: 1.6;
-            color: #8899aa;
+            font-size: 0.7rem;
+            line-height: 1.5;
+            color: rgba(140, 160, 180, 0.85);
             margin-bottom: 0;
-        }
-
-        .node circle {
-            transition: all 0.3s ease;
-            stroke: rgba(0, 255, 255, 0.3);
-            stroke-width: 1px;
-            fill: #000;
-        }
-
-        .node:hover circle {
-            stroke: #fff;
-            stroke-width: 2px;
-            fill: rgba(0, 255, 255, 0.1);
-            filter: drop-shadow(0 0 8px #00ffff);
-        }
-
-        .node text {
-            font-family: 'JetBrains Mono';
-            font-size: 11px;
-            fill: rgba(0, 255, 255, 0.6);
-            pointer-events: none;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .node:hover text {
-            opacity: 1;
-            fill: #fff;
-        }
-
-        .link {
-            stroke: rgba(0, 255, 255, 0.1);
-            stroke-width: 1px;
         }
     </style>
 </head>
@@ -125,7 +90,6 @@
     <div id="background-stars"></div>
 
     <canvas id="wave-canvas"></canvas>
-    <div id="epistemic-surface"></div>
 
     <div id="nav-container"></div>
 
@@ -194,6 +158,19 @@
         <p id="card-body"></p>
     </div>
 
+    <!-- Energy Monitor Panel -->
+    <div id="energy-panel"
+        style="position: fixed; top: 120px; right: 20px; background: rgba(5, 8, 12, 0.9); border: 1px solid rgba(0, 255, 255, 0.2); padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #00ffff; backdrop-filter: blur(8px); z-index: 40; display: none;">
+        <div
+            style="font-weight: bold; margin-bottom: 6px; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 4px;">
+            PHYSICS MONITOR</div>
+        <div>KE: <span id="kinetic-energy">0.00</span></div>
+        <div>PE: <span id="potential-energy">0.00</span></div>
+        <div>Total: <span id="total-energy">0.00</span></div>
+        <div>Drift: <span id="energy-drift">0.00%</span></div>
+        <canvas id="energy-graph" width="200" height="80" style="margin-top: 8px; display: block;"></canvas>
+    </div>
+
     <script>
         document.getElementById('nav-container').innerHTML = renderMainNav('wave_theory');
 
@@ -204,31 +181,33 @@
         let eqParam = 0.5;
         const modeParams = { map: 0.5, qft: 0.5, pilot: 0.5, neural: 0.5, social: 0.5 };
 
-        let svg, d3Sim, d3Node, d3Link, d3Zoom, d3Initialized = false;
+        // initGlobalStarField('background-stars'); // Using inline canvas stars instead
+
+
+        let map3DState = null;
         let canvas, ctx, width, height, visualCenterY;
         let zoomHandler, rotationHandler;
+        let mouseX = 0, mouseY = 0;
+        let hoveredNode = null;
 
-        const ontology = {
-            nodes: [
-                { id: "REALITY", label: "REALITY", r: 40, group: 0, desc: "The Substrate (Hyperspace). The immutable, unified manifold from which all oscillation emerges." },
-                { id: "TIME", label: "TIME", r: 25, group: 4, desc: "The Entropic Gradient. Time is not fundamental but emergent; a statistical measure of phase-decoherence." },
-                { id: "P1", label: "Quantum", r: 18, group: 1, desc: "Fundamental physical resonance fields." },
-                { id: "P2", label: "Realism", r: 12, group: 1, desc: "Bohmian deterministic trajectories." },
-                { id: "C1", label: "Cognition", r: 18, group: 2, desc: "Predictive neural error minimization." },
-                { id: "C2", label: "Binding", r: 12, group: 2, desc: "Gamma-band temporal synchronization." },
-                { id: "S1", label: "Social", r: 18, group: 3, desc: "Memetic propagation fields." },
-                { id: "S2", label: "Entropy", r: 12, group: 3, desc: "Systemic disorder via incoherence." },
-                { id: "PERCEPTION", label: "PERCEPTION", r: 22, group: 2, desc: "The Filter. Reality is not seen as it is, but as a fitness-payoff reconstruction. $\Psi_{mind} = \int \text{Payoff}(x) dx$." }
-            ],
-            links: [
-                { source: "REALITY", target: "TIME", label: "Projection" },
-                { source: "REALITY", target: "P1" }, { source: "REALITY", target: "C1" }, { source: "REALITY", target: "S1" },
-                { source: "TIME", target: "S2", label: "Thermodynamics" }, { source: "TIME", target: "C2", label: "Perception" },
-                { source: "P1", target: "P2" }, { source: "C1", target: "C2" }, { source: "S1", target: "S2" },
-                { source: "P1", target: "C1" }, { source: "C1", target: "S1" },
-                { source: "C1", target: "PERCEPTION" }, { source: "REALITY", target: "PERCEPTION" }
-            ]
-        };
+        // Node dragging state
+        let draggedNode = null;
+        let isDraggingNode = false;
+        let dragStartPos = { x: 0, y: 0 };
+        let nodeDragOffset = { x: 0, y: 0, z: 0 };
+
+        // Debug visualization toggles (press F for force vectors, V for velocity, H for influence field)
+        let showForceVectors = false;
+        let showVelocityField = false;
+        let showInfluenceField = false;
+
+        // Physics-based ontology loaded from physics_ontology.js
+        const ontology = initializeLayeredPositions(PHYSICS_ONTOLOGY);
+
+        // Set radius for all nodes BEFORE Hamiltonian system creation
+        ontology.nodes.forEach(node => {
+            if (!node.r) node.r = 18; // Default radius for visibility
+        });
 
         const theories = {
             'map': {
@@ -286,19 +265,82 @@
             canvas = document.getElementById('wave-canvas');
             ctx = canvas.getContext('2d');
 
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            width = canvas.width;
-            height = canvas.height;
+            // Low-resolution canvas for MAXIMUM SPEED
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            width = rect.width;
+            height = rect.height;
             visualCenterY = height / 2;
 
             initCanvasResize(canvas, (w, h) => {
+                canvas.width = w;
+                canvas.height = h;
                 width = w; height = h; visualCenterY = h / 2;
-                if (currentMode === 'map') resizeD3();
             });
 
             zoomHandler = initZoomHandler(canvas, { initialZoom: 1.0, minZoom: 0.1, maxZoom: 10.0 });
             rotationHandler = initDragRotation(canvas, { initialRotationX: 0.6, initialRotationY: 0.5, autoRotate: false });
+
+            // Mouse tracking for hover detection and node dragging
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                // Simple mouse coordinates - no DPR scaling needed
+                mouseX = e.clientX - rect.left;
+                mouseY = e.clientY - rect.top;
+
+                // Handle node dragging
+                if (isDraggingNode && draggedNode && map3DState) {
+                    e.preventDefault();
+                    const rx = rotationHandler.rotationX;
+                    const ry = rotationHandler.rotationY;
+
+                    // Convert mouse movement to 3D position change
+                    const dx = (e.movementX) / zoomLevel;
+                    const dy = -(e.movementY) / zoomLevel;
+
+                    // Apply rotation to movement
+                    const cosY = Math.cos(-ry);
+                    const sinY = Math.sin(-ry);
+                    const newX = dx * cosY;
+                    const newZ = dx * sinY;
+
+                    draggedNode.position.x += newX;
+                    draggedNode.position.y += dy;
+                    draggedNode.position.z += newZ;
+
+                    // Zero out velocity when dragging
+                    draggedNode.velocity.x = 0;
+                    draggedNode.velocity.y = 0;
+                    draggedNode.velocity.z = 0;
+                }
+            });
+
+            // Node drag start
+            canvas.addEventListener('mousedown', (e) => {
+                if (currentMode === 'map' && hoveredNode && e.button === 0) {
+                    e.preventDefault();
+                    isDraggingNode = true;
+                    draggedNode = hoveredNode;
+                    dragStartPos = { x: mouseX, y: mouseY };
+                    canvas.style.cursor = 'grabbing';
+
+                    // Prevent rotation while dragging node
+                    if (rotationHandler) {
+                        rotationHandler.isDragging = false;
+                    }
+                }
+            });
+
+            // Node drag end
+            canvas.addEventListener('mouseup', (e) => {
+                if (isDraggingNode) {
+                    isDraggingNode = false;
+                    draggedNode = null;
+                    canvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
+                }
+            });
 
             const tSlider = document.getElementById('time-slider');
             const tVal = document.getElementById('time-val');
@@ -318,16 +360,28 @@
                 eqParam = e.target.value / 100;
                 modeParams[currentMode] = eqParam;
                 eVal.innerText = Math.round(eqParam * 100) + '%';
-                if (currentMode === 'map' && d3Sim) {
-                    d3Sim.alpha(0.3).restart();
-                }
             });
 
             zSlider.addEventListener('input', e => {
                 zoomLevel = e.target.value / 100;
                 if (zoomHandler) zoomHandler.zoom = zoomLevel;
                 zVal.innerText = zoomLevel.toFixed(1) + '×';
-                if (currentMode === 'map' && svg) svg.call(d3Zoom.scaleTo, zoomLevel);
+            });
+
+            // Debug visualization keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'f') {
+                    showForceVectors = !showForceVectors;
+                    console.log('Force vectors:', showForceVectors ? 'ON' : 'OFF');
+                }
+                if (e.key.toLowerCase() === 'v') {
+                    showVelocityField = !showVelocityField;
+                    console.log('Velocity field:', showVelocityField ? 'ON' : 'OFF');
+                }
+                if (e.key.toLowerCase() === 'h') {
+                    showInfluenceField = !showInfluenceField;
+                    console.log('Influence field:', showInfluenceField ? 'ON' : 'OFF');
+                }
             });
 
             switchMode('map');
@@ -353,72 +407,471 @@
             updateInfoModalContent(t);
             document.getElementById('eq-name').innerText = t.param || 'PARAM';
 
-            const mapEl = document.getElementById('epistemic-surface');
             if (mode === 'map') {
-                mapEl.style.display = 'block'; canvas.style.opacity = '0';
-                if (!d3Initialized) initD3();
-                if (d3Sim) { d3Sim.alpha(0.3).restart(); }
+                canvas.style.opacity = '1';
+                if (!map3DState) initMap3D();
             } else {
-                mapEl.style.display = 'none'; canvas.style.opacity = '1';
+                canvas.style.opacity = '1';
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height);
                 // Reset unique states
-                if (mode === 'pilot') pilotState3D.p = { x: -300, y: 0, z: 0 }, pilotState3D.trail = [];
+                if (mode === 'pilot') pilotState3D.particles = [];
             }
         }
 
-        function initD3() {
-            d3Initialized = true;
-            const w = window.innerWidth; const h = window.innerHeight;
-            const container = d3.select("#epistemic-surface");
-            svg = container.append("svg").attr("width", w).attr("height", h);
-            const g = svg.append("g");
-            d3Zoom = d3.zoom().scaleExtent([0.2, 5]).on("zoom", e => g.attr("transform", e.transform));
-            svg.call(d3Zoom);
-            d3Sim = d3.forceSimulation(ontology.nodes)
-                .force("link", d3.forceLink(ontology.links).id(d => d.id).distance(120))
-                .force("charge", d3.forceManyBody().strength(-500))
-                .force("center", d3.forceCenter(w / 2, h / 2));
-
-            d3Link = g.append("g").selectAll("line").data(ontology.links).join("line").attr("class", "link");
-            d3Node = g.append("g").selectAll("g").data(ontology.nodes).join("g").attr("class", "node")
-                .call(d3.drag().on("start", e => { if (!e.active) d3Sim.alphaTarget(0.3).restart(); e.subject.fx = e.subject.x; e.subject.fy = e.subject.y; })
-                    .on("drag", e => { e.subject.fx = e.x; e.subject.fy = e.y; })
-                    .on("end", e => { if (!e.active) d3Sim.alphaTarget(0); e.subject.fx = null; e.subject.fy = null; }));
-            d3Node.append("circle").attr("r", d => d.r).attr("fill", "#000");
-            d3Node.append("text").attr("dy", d => d.r + 15).attr("text-anchor", "middle").text(d => d.label);
-            d3Node.on("mouseenter", (e, d) => {
-                const card = document.getElementById('epistemic-card');
-                document.getElementById('card-title').innerText = d.label; document.getElementById('card-body').innerText = d.desc;
-                card.style.display = 'block'; card.style.opacity = '1';
-            }).on("mouseleave", () => {
-                document.getElementById('epistemic-card').style.opacity = '0';
+        // ============ 3D EPISTEMIC MAP INITIALIZATION (HAMILTONIAN) ============
+        function initMap3D() {
+            // Create Hamiltonian system
+            const hamiltonianSystem = new HamiltonianSystem({
+                k_coulomb: 1500,
+                k_spring: 0.1,
+                k_damping: 0.03
             });
-            d3Sim.on("tick", () => {
-                const rx = rotationHandler ? rotationHandler.rotationX : 0.6;
-                const ry = rotationHandler ? rotationHandler.rotationY : 0.5;
 
-                d3Node.attr("transform", d => {
-                    const zNode = (d.group === 0) ? 50 : (d.group === 4 ? -50 : 0);
-                    const p = project3D(d.x - w / 2, d.y - h / 2, zNode, rx, ry, 0, 0, zoomLevel);
-                    d.px = p.x + w / 2; d.py = p.y + h / 2;
-                    return `translate(${d.px},${d.py}) scale(${p.scale})`;
+            // Add all nodes from ontology
+            ontology.nodes.forEach(node => {
+                hamiltonianSystem.addNode(node);
+            });
+
+            // Add all links
+            ontology.links.forEach(link => {
+                hamiltonianSystem.addLink(link.source, link.target, {
+                    label: link.label,
+                    type: link.type,
+                    restLength: link.restLength || 120,
+                    stiffness: link.stiffness || 0.1,
+                    informationFlow: link.informationFlow || 0,
+                    channelCapacity: link.channelCapacity || 1.0
                 });
+            });
 
-                d3Link.attr("x1", d => d.source.px).attr("y1", d => d.source.py)
-                    .attr("x2", d => d.target.px).attr("y2", d => d.target.py);
+            map3DState = {
+                hamiltonian: hamiltonianSystem,
+                nodes: hamiltonianSystem.nodes,
+                links: hamiltonianSystem.links,
+                initialized: true,
+                energyDisplay: { visible: false }
+            };
+
+            // Set radius for all nodes (needed for rendering spheres)
+            map3DState.nodes.forEach(node => {
+                if (!node.r) node.r = 18; // Default radius for visibility
             });
         }
-        function resizeD3() { if (svg) { svg.attr("width", window.innerWidth).attr("height", window.innerHeight); d3Sim.force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2)).restart(); } }
+
+        // ============ 3D GRAPH PHYSICS UPDATE (HAMILTONIAN) ============
+        function updateMap3D(deltaTime) {
+            if (!map3DState || !map3DState.hamiltonian) return;
+
+            const dt = Math.min(deltaTime, 0.016); // Cap at 60fps
+
+            // Update Hamiltonian system with gravity parameter
+            map3DState.hamiltonian.update(dt, {
+                gravityStrength: eqParam * 0.05,
+                enableDamping: true
+            });
+        }
+
+        // ============ 3D GRAPH RENDERING (ENHANCED) ============
+        function drawMap3D(t, rx, ry) {
+            if (!map3DState) return;
+
+            // Project all nodes to screen space using Hamiltonian node positions
+            map3DState.nodes.forEach(node => {
+                const p = project3D(node.position.x, node.position.y, node.position.z, rx, ry, 0, 0, zoomLevel);
+                node.px = p.x;
+                node.py = p.y;
+                node.pz = p.z;
+                node.scale = p.scale;
+            });
+
+            // Sort nodes by depth (back to front for proper occlusion)
+            const sortedNodes = [...map3DState.nodes].sort((a, b) => a.pz - b.pz);
+
+            // Check for hover with smooth transition - increased radius
+            let newHoveredNode = null;
+            const hoverRadius = 70; // Much larger for easier interaction
+            for (let i = sortedNodes.length - 1; i >= 0; i--) {
+                const node = sortedNodes[i];
+                const dx = mouseX - (node.px + width / 2);
+                const dy = mouseY - (node.py + visualCenterY);
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < node.r * node.scale + hoverRadius) {
+                    newHoveredNode = node;
+                    break;
+                }
+            }
+
+            // Smooth hover transition
+            if (newHoveredNode !== hoveredNode) {
+                hoveredNode = newHoveredNode;
+
+                // Update cursor for drag affordance
+                if (!isDraggingNode) {
+                    canvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
+                }
+
+                // Update info card
+                const card = document.getElementById('epistemic-card');
+                if (hoveredNode) {
+                    document.getElementById('card-title').innerText = hoveredNode.label;
+                    document.getElementById('card-body').innerText = hoveredNode.desc;
+                    card.style.display = 'block';
+                    setTimeout(() => card.style.opacity = '1', 10);
+                } else {
+                    card.style.opacity = '0';
+                    setTimeout(() => { if (!hoveredNode) card.style.display = 'none'; }, 300);
+                }
+            }
+
+            // Render links first
+            ctx.lineWidth = 2;
+            map3DState.links.forEach(link => {
+                const isHighlighted = hoveredNode && (link.source === hoveredNode || link.target === hoveredNode);
+                const avgZ = (link.source.pz + link.target.pz) / 2;
+                const depthAlpha = Math.max(0.2, Math.min(0.8, (avgZ + 400) / 800));
+                const alpha = isHighlighted ? 0.9 : depthAlpha;
+
+                ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(link.source.px, link.source.py);
+                ctx.lineTo(link.target.px, link.target.py);
+                ctx.stroke();
+            });
+
+            // Enhanced information flow particles with directionality
+            map3DState.links.forEach((link, linkIndex) => {
+                const isHighlighted = hoveredNode && (link.source === hoveredNode || link.target === hoveredNode);
+                const infoFlow = link.informationFlow || 0.5;
+                const showParticles = isHighlighted || infoFlow > 0.3;
+
+                if (showParticles) {
+                    // Speed based on information flow rate
+                    const speed = 0.3 + infoFlow * 0.7;
+                    const flowProgress = (t * speed + linkIndex * 0.3) % 1;
+                    const px = link.source.px + (link.target.px - link.source.px) * flowProgress;
+                    const py = link.source.py + (link.target.py - link.source.py) * flowProgress;
+                    const pz = link.source.pz + (link.target.pz - link.source.pz) * flowProgress;
+                    const particleDepth = Math.max(0.3, Math.min(1, (pz + 400) / 800));
+
+                    // Particle size based on information flow
+                    const particleSize = 3 + infoFlow * 4;
+
+                    // Color based on information type
+                    let color = infoFlow > 0.7 ? '#00ffff' : infoFlow > 0.4 ? '#44ff88' : '#8888ff';
+
+                    // Proper hex to RGB conversion
+                    const r = parseInt(color.slice(1, 3), 16);
+                    const g = parseInt(color.slice(3, 5), 16);
+                    const b = parseInt(color.slice(5, 7), 16);
+
+                    const grad = ctx.createRadialGradient(px, py, 0, px, py, particleSize);
+                    grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${particleDepth * 0.9})`);
+                    grad.addColorStop(1, 'transparent');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(px, py, particleSize, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Directional arrow for higher info flow
+                    if (infoFlow > 0.5) {
+                        const arrowSize = 6;
+                        const dx = link.target.px - link.source.px;
+                        const dy = link.target.py - link.source.py;
+                        const angle = Math.atan2(dy, dx);
+
+                        ctx.save();
+                        ctx.translate(px, py);
+                        ctx.rotate(angle);
+                        ctx.fillStyle = `rgba(255, 255, 255, ${particleDepth * 0.6})`;
+                        ctx.beginPath();
+                        ctx.moveTo(arrowSize, 0);
+                        ctx.lineTo(-arrowSize / 2, -arrowSize / 2);
+                        ctx.lineTo(-arrowSize / 2, arrowSize / 2);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+
+                // Mutual information display on hover
+                if (isHighlighted && link.channelCapacity) {
+                    const midX = (link.source.px + link.target.px) / 2;
+                    const midY = (link.source.py + link.target.py) / 2;
+                    ctx.font = '9px "JetBrains Mono", monospace';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.textAlign = 'center';
+                    const infoText = `I=${(infoFlow * 100).toFixed(0)}%`;
+                    ctx.fillText(infoText, midX, midY - 8);
+                }
+            });
+
+
+            // Render nodes with enhanced effects
+            sortedNodes.forEach(node => {
+                const isHovered = node === hoveredNode;
+                const x = node.px;
+                const y = node.py;
+                const radius = node.r * node.scale;
+                const depthAlpha = Math.max(0.3, Math.min(1, (node.pz + 400) / 800));
+
+                // Pulsing animation based on node layer (ontological depth) - subtle
+                const pulseSpeed = 1.5 + (node.layer || 0) * 0.2;
+                const pulsePhase = Math.sin(t * pulseSpeed + (node.layer || 0) * Math.PI / 3);
+                const pulseScale = isHovered ? 1.1 : (1 + pulsePhase * 0.04);
+
+                // Natural, muted colors with reduced glow
+                const glowRadius = radius * pulseScale * (isHovered ? 2.0 : 1.5);
+                const color = node.color || '#00ffff';
+
+                // Outer glow - more visible
+                const outerGrad = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+                outerGrad.addColorStop(0, `${color}${Math.floor(depthAlpha * 0.6 * 255).toString(16).padStart(2, '0')}`);
+                outerGrad.addColorStop(0.5, `${color}${Math.floor(depthAlpha * 0.3 * 255).toString(16).padStart(2, '0')}`);
+                outerGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = outerGrad;
+                ctx.beginPath();
+                ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Inner glow - brighter
+                const innerGlowRadius = radius * pulseScale * 1.2;
+                const innerGrad = ctx.createRadialGradient(x, y, 0, x, y, innerGlowRadius);
+                innerGrad.addColorStop(0, `${color}${Math.floor(depthAlpha * 0.8 * 255).toString(16).padStart(2, '0')}`);
+                innerGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = innerGrad;
+                ctx.beginPath();
+                ctx.arc(x, y, innerGlowRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Node core with gradient - brighter
+                const coreGrad = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, 0, x, y, radius * pulseScale);
+                if (isHovered) {
+                    coreGrad.addColorStop(0, `rgba(255, 255, 255, ${depthAlpha * 0.9})`);
+                    coreGrad.addColorStop(0.7, color);
+                    coreGrad.addColorStop(1, `rgba(0, 0, 0, ${depthAlpha * 0.8})`);
+                } else {
+                    coreGrad.addColorStop(0, `${color}${Math.floor(depthAlpha * 0.8 * 255).toString(16).padStart(2, '0')}`);
+                    coreGrad.addColorStop(0.6, `${color}${Math.floor(depthAlpha * 0.5 * 255).toString(16).padStart(2, '0')}`);
+                    coreGrad.addColorStop(1, `rgba(0, 0, 0, ${depthAlpha * 0.7})`);
+                }
+                ctx.fillStyle = coreGrad;
+                ctx.beginPath();
+                ctx.arc(x, y, radius * pulseScale, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Node border - more visible
+                ctx.strokeStyle = isHovered ? `rgba(255, 255, 255, ${depthAlpha * 0.9})` : `${color}${Math.floor(depthAlpha * 0.8 * 255).toString(16).padStart(2, '0')}`;
+                ctx.lineWidth = isHovered ? 3 : 2;
+                ctx.beginPath();
+                ctx.arc(x, y, radius * pulseScale, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Label with shadow for better readability
+                const fontSize = Math.max(9, 11 * node.scale * (isHovered ? 1.2 : 1));
+                ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
+                ctx.fillStyle = isHovered ? '#ffffff' : `rgba(0, 255, 255, ${depthAlpha * 0.9})`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+
+                // Text shadow for depth
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+
+                ctx.fillText(node.label, x, y + radius * pulseScale + 6);
+
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            });
+
+            // ============ DEBUG VISUALIZATIONS ============
+
+            // Force vector visualization
+            if (showForceVectors && map3DState.hamiltonian) {
+                ctx.lineWidth = 2;
+                map3DState.nodes.forEach(node => {
+                    // Calculate net force
+                    const accel = node.acceleration;
+                    const force = {
+                        x: accel.x * node.mass,
+                        y: accel.y * node.mass,
+                        z: accel.z * node.mass
+                    };
+                    const forceMag = Math.sqrt(force.x * force.x + force.y * force.y + force.z * force.z);
+
+                    if (forceMag > 0.1) {
+                        const scale = 50;  // Visual scaling
+                        const fx = force.x * scale;
+                        const fy = -force.y * scale; // Flip Y for screen coords
+
+                        // Draw force arrow
+                        ctx.strokeStyle = `rgba(255, 100, 100, 0.8)`;
+                        ctx.beginPath();
+                        ctx.moveTo(node.px, node.py);
+                        ctx.lineTo(node.px + fx, node.py + fy);
+                        ctx.stroke();
+
+                        // Arrowhead
+                        const angle = Math.atan2(fy, fx);
+                        const headLen = 8;
+                        ctx.fillStyle = `rgba(255, 100, 100, 0.8)`;
+                        ctx.beginPath();
+                        ctx.moveTo(node.px + fx, node.py + fy);
+                        ctx.lineTo(node.px + fx - headLen * Math.cos(angle - Math.PI / 6),
+                            node.py + fy - headLen * Math.sin(angle - Math.PI / 6));
+                        ctx.lineTo(node.px + fx - headLen * Math.cos(angle + Math.PI / 6),
+                            node.py + fy - headLen * Math.sin(angle + Math.PI / 6));
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                });
+            }
+
+            // Velocity field visualization
+            if (showVelocityField) {
+                ctx.lineWidth = 1.5;
+                map3DState.nodes.forEach(node => {
+                    const vel = node.velocity;
+                    const velMag = Math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
+
+                    if (velMag > 0.5) {
+                        const scale = 30;
+                        const vx = vel.x * scale;
+                        const vy = -vel.y * scale;
+
+                        // Color by speed
+                        const hue = Math.min(120, velMag * 2);  // Green to red
+                        ctx.strokeStyle = `hsla(${hue}, 80%, 60%, 0.7)`;
+                        ctx.beginPath();
+                        ctx.moveTo(node.px, node.py);
+                        ctx.lineTo(node.px + vx, node.py + vy);
+                        ctx.stroke();
+                    }
+                });
+            }
+
+            // Influence field visualization (continuous hover field)
+            if (showInfluenceField) {
+                const influenceRadius = 150;
+                const centerX = mouseX - width / 2;
+                const centerY = mouseY - visualCenterY;
+
+                // Draw influence circles
+                for (let r = 30; r < influenceRadius; r += 30) {
+                    const alpha = 1 - (r / influenceRadius);
+                    ctx.strokeStyle = `rgba(100, 200, 255, ${alpha * 0.3})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                // Show influence on nodes
+                map3DState.nodes.forEach(node => {
+                    const dx = node.px - centerX;
+                    const dy = node.py - centerY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < influenceRadius) {
+                        const influence = 1 - (dist / influenceRadius);
+                        const glowSize = node.r * node.scale * (1 + influence * 0.5);
+
+                        const grad = ctx.createRadialGradient(node.px, node.py, 0, node.px, node.py, glowSize);
+                        grad.addColorStop(0, `rgba(100, 200, 255, ${influence * 0.3})`);
+                        grad.addColorStop(1, 'transparent');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath();
+                        ctx.arc(node.px, node.py, glowSize, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+            }
+        }
+
+
+        // ============ ENERGY VISUALIZATION ============
+        function updateEnergyDisplay() {
+            if (!map3DState || !map3DState.hamiltonian) return;
+
+            const ham = map3DState.hamiltonian;
+            const panel = document.getElementById('energy-panel');
+
+            // Toggle visibility with 'E' key
+            document.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'e') {
+                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                }
+            }, { once: false });
+
+            if (panel.style.display === 'none') return;
+
+            // Update numerical values
+            document.getElementById('kinetic-energy').textContent = ham.kineticEnergy.toFixed(2);
+            document.getElementById('potential-energy').textContent = ham.potentialEnergy.toFixed(2);
+            document.getElementById('total-energy').textContent = ham.totalEnergy.toFixed(2);
+            const drift = (ham.getEnergyDrift() * 100).toFixed(3);
+            const driftElement = document.getElementById('energy-drift');
+            driftElement.textContent = drift + '%';
+            driftElement.style.color = parseFloat(drift) > 1 ? '#ff4466' : '#00ff00';
+
+            // Draw energy history graph
+            const graphCanvas = document.getElementById('energy-graph');
+            if (!graphCanvas) return;
+            const ctx = graphCanvas.getContext('2d');
+            const w = graphCanvas.width;
+            const h = graphCanvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (ham.energyHistory.length < 2) return;
+
+            // Find energy range for scaling
+            const energies = ham.energyHistory.map(e => e.total);
+            const maxE = Math.max(...energies);
+            const minE = Math.min(...energies);
+            const range = maxE - minE || 1;
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = (h / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // Draw energy traces
+            const drawTrace = (data, color) => {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                data.forEach((e, i) => {
+                    const x = (i / (data.length - 1)) * w;
+                    const y = h - ((e - minE) / range) * h;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            };
+
+            drawTrace(ham.energyHistory.map(e => e.total), '#00ffff');
+            drawTrace(ham.energyHistory.map(e => e.kinetic), '#ff00ff');
+            drawTrace(ham.energyHistory.map(e => e.potential), '#ffff00');
+        }
 
         // ============ 3D ENGINE ============
         function animate() {
             requestAnimationFrame(animate);
-            if (currentMode === 'map') return;
 
             if (rotationHandler) {
                 rotationHandler.update();
-                if (currentMode === 'map' && d3Sim) d3Sim.alpha(0.01).restart();
             }
             if (zoomHandler) {
                 zoomLevel = zoomHandler.zoom;
@@ -439,22 +892,67 @@
             ctx.globalCompositeOperation = 'source-over';
             ctx.globalAlpha = 1.0;
 
-            // Fading trail for motion
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            // Get rotation values FIRST before using them
+            const rx = rotationHandler ? rotationHandler.rotationX : 0;
+            const ry = rotationHandler ? rotationHandler.rotationY : 0;
+
+            // Draw rotating starfield background
+            ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, width, height);
+
+            // Draw stars with parallax based on rotation
+            if (!window.stars) {
+                window.stars = Array.from({ length: 300 }, () => ({
+                    x: (Math.random() - 0.5) * 2000,
+                    y: (Math.random() - 0.5) * 2000,
+                    z: Math.random() * 1000,
+                    brightness: 0.3 + Math.random() * 0.7
+                }));
+            }
+
+            window.stars.forEach(star => {
+                // Apply rotation to stars for parallax effect
+                const rotatedX = star.x * Math.cos(ry) - star.z * Math.sin(ry);
+                const rotatedZ = star.x * Math.sin(ry) + star.z * Math.cos(ry);
+                const rotatedY = star.y * Math.cos(rx) - rotatedZ * Math.sin(rx);
+                const finalZ = star.y * Math.sin(rx) + rotatedZ * Math.cos(rx);
+
+                if (finalZ > 0) {
+                    const scale = 500 / (finalZ + 500);
+                    const sx = width / 2 + rotatedX * scale;
+                    const sy = height / 2 + rotatedY * scale;
+                    const size = scale * 2;
+                    const alpha = star.brightness * scale;
+
+                    ctx.fillStyle = `rgba(200, 220, 255, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
 
             // NEON GLOW & ADDITIVE BLENDING
             ctx.globalCompositeOperation = 'lighter';
 
             ctx.translate(width / 2, visualCenterY);
 
-            const rx = rotationHandler.rotationX;
-            const ry = rotationHandler.rotationY;
-
-            if (currentMode === 'qft') drawQFT3D(t, rx, ry);
-            if (currentMode === 'pilot') drawPilot3D(t, rx, ry);
-            if (currentMode === 'neural') drawNeural3D(t, rx, ry);
-            if (currentMode === 'social') drawSocial3D(t, rx, ry);
+            if (currentMode === 'map') {
+                // Update physics at 30fps for better performance, render at 60fps  
+                if (!window.lastPhysicsUpdate) window.lastPhysicsUpdate = 0;
+                const now = performance.now();
+                if (now - window.lastPhysicsUpdate > 33) {
+                    updateMap3D(0.033);
+                    window.lastPhysicsUpdate = now;
+                }
+                drawMap3D(t, rx, ry);
+                updateEnergyDisplay();
+            } else {
+                if (currentMode === 'qft') drawQFT3D(t, rx, ry);
+                if (currentMode === 'pilot') drawPilot3D(t, rx, ry);
+                if (currentMode === 'neural') drawNeural3D(t, rx, ry);
+                if (currentMode === 'social') drawSocial3D(t, rx, ry);
+                if (currentMode === 'reality') drawReality3D(t, rx, ry);
+            }
         }
 
         // IMPROVED QFT: FIELD OF INTERACTING ENERGY EXCITATIONS
@@ -527,67 +1025,261 @@
             }
         }
 
-        // IMPROVED PILOT WAVE: SINGLE DETERMINISTIC PILOT SYSTEM
-        const pilotState3D = { trail: [], p: { x: -500, y: 0, z: 0 }, v: { x: 4, y: 0, z: 0 } };
-        function drawPilot3D(t, rx, ry) {
-            const gap = 80 + (eqParam * 160);
-            const slits = [{ x: -200, z: -100 }, { x: -200, z: 100 }];
 
-            // 1. Visualize the Guidance Potential (The Physical Pilot Wave)
-            ctx.strokeStyle = 'rgba(0, 255, 180, 0.06)';
-            ctx.lineWidth = 1;
-            const gridSize = 500; const res = 14;
-            for (let z = -gridSize; z <= gridSize; z += gridSize / res) {
-                ctx.beginPath();
-                for (let x = -gridSize; x <= gridSize; x += 30) {
-                    let w = 0; slits.forEach(s => { const d = Math.hypot(x - s.x, z - s.z); w += Math.sin(d / gap * 2 * Math.PI - t * 5); });
-                    const p = project3D(x, w * 30, z, rx, ry, 0, 0, zoomLevel);
-                    if (x === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        // REDESIGNED PILOT WAVE: Beautiful Quantum Interference & Trajectories
+        const pilotState3D = {
+            particles: [],
+            barrier: { x: 0, width: 20, slitWidth: 60, slitSeparation: 200 }
+        };
+
+        // Initialize multiple particles
+        function initPilotParticles() {
+            if (pilotState3D.particles.length === 0) {
+                const numParticles = 8;
+                for (let i = 0; i < numParticles; i++) {
+                    pilotState3D.particles.push({
+                        x: -600,
+                        y: 0,
+                        z: (Math.random() - 0.5) * 300,
+                        trail: [],
+                        phase: Math.random() * Math.PI * 2,
+                        speed: 3.5 + Math.random() * 1.5
+                    });
                 }
+            }
+        }
+
+        function drawPilot3D(t, rx, ry) {
+            initPilotParticles();
+
+            const slitGap = 80 + (eqParam * 160);
+            const barrier = pilotState3D.barrier;
+            const slit1 = { x: barrier.x, z: -barrier.slitSeparation / 2 };
+            const slit2 = { x: barrier.x, z: barrier.slitSeparation / 2 };
+
+            // ========== 1. DRAW BEAUTIFUL WAVE FIELD ==========
+            const gridSize = 700;
+            const gridRes = 20;
+
+            // Function to calculate wave amplitude at any point
+            const getWaveAmplitude = (x, z, time) => {
+                let amplitude = 0;
+                const wavelength = slitGap;
+
+                // Interference from both slits
+                const d1 = Math.hypot(x - slit1.x, z - slit1.z);
+                const d2 = Math.hypot(x - slit2.x, z - slit2.z);
+
+                // Wave contribution from each slit with proper phase
+                amplitude += Math.sin((d1 / wavelength) * 2 * Math.PI - time * 4) * Math.exp(-d1 * 0.001);
+                amplitude += Math.sin((d2 / wavelength) * 2 * Math.PI - time * 4) * Math.exp(-d2 * 0.001);
+
+                // Add source wave from left
+                if (x < barrier.x - 50) {
+                    const sourcePhase = (x * 0.015 - time * 4);
+                    amplitude += Math.sin(sourcePhase) * 0.5 * Math.exp((x + 600) * 0.002);
+                }
+
+                return amplitude;
+            };
+
+            // Draw wave field as a beautiful 3D surface with color-coded amplitude
+            for (let z = -gridSize; z <= gridSize; z += gridSize / gridRes) {
+                ctx.beginPath();
+                let prevAlpha = 0;
+
+                for (let x = -gridSize; x <= gridSize; x += 25) {
+                    const amplitude = getWaveAmplitude(x, z, t);
+                    const y = amplitude * 40;
+
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+
+                    // Color based on amplitude (blue for negative, cyan for positive)
+                    const normalizedAmp = (amplitude + 2) / 4; // Normalize to 0-1
+                    const hue = 180 + normalizedAmp * 60; // Blue to cyan
+                    const alpha = Math.max(0.1, Math.min(0.6, Math.abs(amplitude) * 0.3));
+
+                    ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha})`;
+
+                    if (x === -gridSize) {
+                        ctx.moveTo(p.x, p.y);
+                    } else {
+                        ctx.lineTo(p.x, p.y);
+                    }
+                    prevAlpha = alpha;
+                }
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
 
-            // 2. Focused Singular Guidance Logic (Moment-by-Moment)
-            const px = pilotState3D.p.x; const pz = pilotState3D.p.z;
-            const getWave = (x, z) => {
-                let w = 0; slits.forEach(s => { const d = Math.hypot(x - s.x, z - s.z); w += Math.sin(d / gap * 2 * Math.PI - t * 5); });
-                return w;
-            };
+            // Cross-grid for depth
+            for (let x = -gridSize; x <= gridSize; x += gridSize / gridRes) {
+                ctx.beginPath();
+                for (let z = -gridSize; z <= gridSize; z += 25) {
+                    const amplitude = getWaveAmplitude(x, z, t);
+                    const y = amplitude * 40;
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
 
-            // Calculate gradient at current position to determine Z-drift
-            const gradZ = (getWave(px, pz + 2) - getWave(px, pz - 2)) * 12;
-            const gradX = (getWave(px + 2, pz) - getWave(px - 2, pz)) * 5;
-
-            pilotState3D.p.x += 3.8 + gradX * 0.1;
-            pilotState3D.p.z += gradZ * 0.8;
-            pilotState3D.p.y = getWave(px, pz) * 30;
-
-            if (pilotState3D.p.x > 500) {
-                pilotState3D.p = { x: -500, y: 0, z: (Math.random() - 0.5) * 150 };
-                pilotState3D.trail = [];
+                    if (z === -gridSize) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                const sampleAmp = getWaveAmplitude(x, 0, t);
+                const normalizedAmp = (sampleAmp + 2) / 4;
+                const hue = 180 + normalizedAmp * 60;
+                const alpha = Math.max(0.05, Math.min(0.4, Math.abs(sampleAmp) * 0.2));
+                ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
             }
 
-            pilotState3D.trail.push({ ...pilotState3D.p });
-            if (pilotState3D.trail.length > 180) pilotState3D.trail.shift();
+            // ========== 2. DRAW BARRIER WITH SLITS ==========
+            const barrierHeight = 150;
 
-            // Render Path Coherence
-            ctx.strokeStyle = '#00ffaa'; ctx.lineWidth = 2.5; ctx.beginPath();
-            pilotState3D.trail.forEach((p, i) => {
-                const pt = project3D(p.x, p.y, p.z, rx, ry, 0, 0, zoomLevel);
-                if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+            // Draw barrier segments (avoiding slits)
+            const drawBarrierSegment = (zStart, zEnd) => {
+                ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                const p1 = project3D(barrier.x, -barrierHeight, zStart, rx, ry, 0, 0, zoomLevel);
+                const p2 = project3D(barrier.x, barrierHeight, zStart, rx, ry, 0, 0, zoomLevel);
+                const p3 = project3D(barrier.x, barrierHeight, zEnd, rx, ry, 0, 0, zoomLevel);
+                const p4 = project3D(barrier.x, -barrierHeight, zEnd, rx, ry, 0, 0, zoomLevel);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.lineTo(p3.x, p3.y);
+                ctx.lineTo(p4.x, p4.y);
+                ctx.closePath();
+                ctx.stroke();
+
+                // Fill with gradient
+                const grad = ctx.createLinearGradient(p1.x, p1.y, p3.x, p3.y);
+                grad.addColorStop(0, 'rgba(255, 80, 80, 0.3)');
+                grad.addColorStop(1, 'rgba(255, 120, 120, 0.1)');
+                ctx.fillStyle = grad;
+                ctx.fill();
+            };
+
+            // Top barrier segment
+            drawBarrierSegment(slit2.z + barrier.slitWidth / 2, 400);
+            // Middle barrier segment
+            drawBarrierSegment(slit1.z + barrier.slitWidth / 2, slit2.z - barrier.slitWidth / 2);
+            // Bottom barrier segment
+            drawBarrierSegment(-400, slit1.z - barrier.slitWidth / 2);
+
+            // Highlight slits with glow
+            [slit1, slit2].forEach(slit => {
+                const p1 = project3D(slit.x, -barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                const p2 = project3D(slit.x, barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                const p3 = project3D(slit.x, barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                const p4 = project3D(slit.x, -barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.moveTo(p3.x, p3.y);
+                ctx.lineTo(p4.x, p4.y);
+                ctx.stroke();
             });
-            ctx.stroke();
 
-            // Render Particle (The Actualized Moment)
-            const node = project3D(pilotState3D.p.x, pilotState3D.p.y, pilotState3D.p.z, rx, ry, 0, 0, zoomLevel);
-            ctx.fillStyle = '#fff'; ctx.shadowBlur = 20; ctx.shadowColor = '#00ffaa';
-            ctx.beginPath(); ctx.arc(node.x, node.y, 6 * node.scale, 0, 6.28); ctx.fill();
-            ctx.shadowBlur = 0;
+            // ========== 3. UPDATE AND DRAW PARTICLES ==========
+            pilotState3D.particles.forEach((particle, idx) => {
+                // Calculate wave gradient for guidance
+                const px = particle.x;
+                const pz = particle.z;
+                const gradZ = (getWaveAmplitude(px, pz + 3, t) - getWaveAmplitude(px, pz - 3, t)) * 15;
+                const gradX = (getWaveAmplitude(px + 3, pz, t) - getWaveAmplitude(px - 3, pz, t)) * 2;
 
-            // Guidance Vector Visualization
-            const vecEnd = project3D(pilotState3D.p.x + 25, pilotState3D.p.y, pilotState3D.p.z + gradZ * 8, rx, ry, 0, 0, zoomLevel);
-            ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 1.5;
-            ctx.beginPath(); ctx.moveTo(node.x, node.y); ctx.lineTo(vecEnd.x, vecEnd.y); ctx.stroke();
+                // Update position based on wave guidance
+                particle.x += particle.speed + gradX * 0.15;
+                particle.z += gradZ * 0.6;
+                particle.y = getWaveAmplitude(px, pz, t) * 40;
+
+                // Reset if particle goes too far
+                if (particle.x > 700) {
+                    particle.x = -600;
+                    particle.z = (Math.random() - 0.5) * 300;
+                    particle.trail = [];
+                    particle.phase = Math.random() * Math.PI * 2;
+                }
+
+                // Add to trail
+                particle.trail.push({ x: particle.x, y: particle.y, z: particle.z });
+                if (particle.trail.length > 150) particle.trail.shift();
+
+                // Draw trail with fade effect
+                if (particle.trail.length > 1) {
+                    for (let i = 1; i < particle.trail.length; i++) {
+                        const prev = particle.trail[i - 1];
+                        const curr = particle.trail[i];
+                        const alpha = (i / particle.trail.length) * 0.8;
+
+                        const p1 = project3D(prev.x, prev.y, prev.z, rx, ry, 0, 0, zoomLevel);
+                        const p2 = project3D(curr.x, curr.y, curr.z, rx, ry, 0, 0, zoomLevel);
+
+                        // Color based on particle index for variety
+                        const hue = 160 + (idx * 30) % 80;
+                        ctx.strokeStyle = `hsla(${hue}, 90%, 70%, ${alpha})`;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw particle with glow
+                const pPos = project3D(particle.x, particle.y, particle.z, rx, ry, 0, 0, zoomLevel);
+                const particleSize = 5 * pPos.scale;
+                const hue = 160 + (idx * 30) % 80;
+
+                // Outer glow
+                const glowGrad = ctx.createRadialGradient(pPos.x, pPos.y, 0, pPos.x, pPos.y, particleSize * 3);
+                glowGrad.addColorStop(0, `hsla(${hue}, 100%, 70%, 0.6)`);
+                glowGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = glowGrad;
+                ctx.beginPath();
+                ctx.arc(pPos.x, pPos.y, particleSize * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core particle
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = `hsla(${hue}, 100%, 70%, 0.9)`;
+                ctx.beginPath();
+                ctx.arc(pPos.x, pPos.y, particleSize, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // ========== 4. DRAW WAVE INTENSITY VISUALIZATION ==========
+            // Show interference pattern on detection screen (right side)
+            const screenX = 500;
+            const screenSamples = 40;
+
+            for (let i = 0; i < screenSamples; i++) {
+                const z = -300 + (i / screenSamples) * 600;
+                const amplitude = getWaveAmplitude(screenX, z, t);
+                const intensity = Math.abs(amplitude);
+
+                const p1 = project3D(screenX, 0, z, rx, ry, 0, 0, zoomLevel);
+                const p2 = project3D(screenX + intensity * 50, 0, z, rx, ry, 0, 0, zoomLevel);
+
+                const alpha = Math.min(0.8, intensity * 0.5);
+                ctx.strokeStyle = `rgba(255, 200, 100, ${alpha})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+
+                // Dot at end
+                ctx.fillStyle = `rgba(255, 220, 150, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(p2.x, p2.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
         function drawNeural3D(t, rx, ry) {
@@ -618,6 +1310,94 @@
                 ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(p.x, p.y, 120 * p.scale, 0, 6.28); ctx.fill();
             }
             ctx.globalCompositeOperation = 'source-over';
+        }
+
+        // REALITY PERCEPTION: Interface vs Substrate
+        function drawReality3D(t, rx, ry) {
+            const gridSize = 400;
+            const spacing = 60;
+
+            // "The Substrate" - the underlying truth (wavy grid)
+            ctx.strokeStyle = 'rgba(100, 100, 255, 0.5)';
+            ctx.lineWidth = 1.5;
+            for (let x = -gridSize; x <= gridSize; x += spacing) {
+                ctx.beginPath();
+                for (let z = -gridSize; z <= gridSize; z += 20) {
+                    const y = Math.sin(x * 0.02 + t) * 40 + Math.cos(z * 0.02 + t) * 40;
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                    if (z === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            for (let z = -gridSize; z <= gridSize; z += spacing) {
+                ctx.beginPath();
+                for (let x = -gridSize; x <= gridSize; x += 20) {
+                    const y = Math.sin(x * 0.02 + t) * 40 + Math.cos(z * 0.02 + t) * 40;
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                    if (x === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            // "The Interface" - simplified perception layer (flat grid above)
+            const interfaceHeight = 100 + eqParam * 120;
+            ctx.strokeStyle = 'rgba(0, 255, 200, 0.8)';
+            ctx.lineWidth = 2.5;
+            for (let x = -gridSize; x <= gridSize; x += spacing) {
+                ctx.beginPath();
+                for (let z = -gridSize; z <= gridSize; z += 20) {
+                    const y = interfaceHeight;
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                    if (z === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            for (let z = -gridSize; z <= gridSize; z += spacing) {
+                ctx.beginPath();
+                for (let x = -gridSize; x <= gridSize; x += 20) {
+                    const y = interfaceHeight;
+                    const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+                    if (x === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            // Connection points showing fitness payoff
+            const samplePoints = 6;
+            for (let i = 0; i < samplePoints; i++) {
+                for (let j = 0; j < samplePoints; j++) {
+                    const x = -gridSize + (i / (samplePoints - 1)) * gridSize * 2;
+                    const z = -gridSize + (j / (samplePoints - 1)) * gridSize * 2;
+                    const ySubstrate = Math.sin(x * 0.02 + t) * 40 + Math.cos(z * 0.02 + t) * 40;
+                    const yInterface = interfaceHeight;
+
+                    const p1 = project3D(x, ySubstrate, z, rx, ry, 0, 0, zoomLevel);
+                    const p2 = project3D(x, yInterface, z, rx, ry, 0, 0, zoomLevel);
+
+                    // Dashed connection line
+                    ctx.strokeStyle = 'rgba(255, 255, 100, 0.5)';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Marker dots - brighter
+                    ctx.fillStyle = 'rgba(100, 255, 200, 0.9)';
+                    ctx.beginPath();
+                    ctx.arc(p2.x, p2.y, 5 * p2.scale, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = 'rgba(100, 100, 255, 0.9)';
+                    ctx.beginPath();
+                    ctx.arc(p1.x, p1.y, 5 * p1.scale, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
         }
 
         window.onload = init;
