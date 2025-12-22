@@ -350,9 +350,25 @@ function updateInfoModalContent(data) {
     const descEl = document.getElementById('info-description');
     const conceptsEl = document.getElementById('info-concepts');
     const physicsEl = document.getElementById('info-physics');
+    const quoteSection = document.getElementById('info-quote-section');
 
     if (descEl && data.description) descEl.textContent = data.description;
     if (physicsEl && data.physics) physicsEl.textContent = data.physics;
+
+    if (quoteSection) {
+        if (data.quote) {
+            quoteSection.innerHTML = `
+                <div class="info-section-title">Perspective</div>
+                <blockquote style="border-left: 2px solid #00ffff; padding-left: 15px; margin: 10px 0; font-style: italic; color: rgba(255,255,255,0.9);">
+                    "${data.quote.text}"
+                    <cite style="display: block; margin-top: 5px; font-style: normal; font-size: 0.7rem; color: #00ffff; opacity: 0.8;">— ${data.quote.author}</cite>
+                </blockquote>
+            `;
+            quoteSection.style.display = 'block';
+        } else {
+            quoteSection.style.display = 'none';
+        }
+    }
 
     if (conceptsEl && data.concepts) {
         conceptsEl.innerHTML = data.concepts.map(c =>
