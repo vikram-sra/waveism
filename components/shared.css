@@ -79,24 +79,42 @@ canvas:active {
 /* ============ MAIN NAVIGATION (Rolling Instrument) ============ */
 .main-nav-container {
     position: fixed;
-    top: 50%;
-    right: 15px;
-    /* Closer to edge */
-    transform: translateY(-50%) perspective(1000px) rotateY(-8deg);
-    /* 3D Perspective */
-    z-index: 110;
-    width: 80px;
-    /* Wider hit area for touch */
-    height: 350px;
-    background: transparent;
-    border: none;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 95vw;
+    height: 32px;
+    z-index: 10000;
+    /* Ultra-high to ensure clickability */
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 6px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    pointer-events: auto;
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 20px 0;
+    justify-content: center;
+    /* Center items if they don't overflow */
+    padding: 0 10px;
     opacity: 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    cursor: grab;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    pointer-events: auto;
+    transition: opacity 0.5s ease;
+}
+
+.main-nav-container::-webkit-scrollbar {
+    display: none;
+}
+
+.main-nav-container:active {
+    cursor: grabbing;
 }
 
 .main-nav-container.visible {
@@ -107,32 +125,13 @@ canvas:active {
     display: none !important;
 }
 
-.main-nav-container:hover {
-    transform: translateY(-50%) perspective(1000px) rotateY(-4deg);
-}
+
 
 
 
 #nav-oscilloscope {
     display: none;
     /* Hide oscilloscope for this mode to clean up visuals */
-}
-
-.main-nav {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    /* No flex here, we use abs positioning for wheel items */
-    perspective: 500px;
-    overflow: hidden;
-    cursor: grab;
-    background: transparent;
-    border: none;
-    backdrop-filter: none;
-    padding: 0;
-    /* Mask moved here to allow arrows outside if needed, or included */
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
 }
 
 /* Scroll Indicators */
@@ -150,6 +149,8 @@ canvas:active {
     cursor: pointer;
     z-index: 120;
     transition: all 0.2s;
+    pointer-events: auto;
+    /* Ensure clickable */
     animation: navPulse 2s infinite;
 }
 
@@ -226,35 +227,26 @@ body:not(.ui-open) .nav-counter {
 }
 
 .main-nav-tab {
-    position: absolute;
-    /* Key change for wheel */
-    left: 0;
-    width: 100%;
-    height: 40px;
-    /* Taller hit area */
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0;
+    width: auto;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Center everything */
-    text-decoration: none;
     color: rgba(255, 255, 255, 0.4);
-    transition: color 0.1s;
-    /* Fast color transition */
-    /* Default state: hidden/centered */
-    top: 50%;
-    margin-top: -20px;
-    /* Center offset */
-    transform-style: preserve-3d;
+    transition: all 0.2s ease;
+    transform-style: flat;
     user-select: none;
-    opacity: 0;
-    /* JS controls visibility */
-    pointer-events: none;
-    /* JS enables clicks on visible ones */
-
-    /* Reset previous styles */
+    opacity: 1;
+    /* Always visible in row */
+    pointer-events: auto;
     background: transparent;
     border: none;
-    padding: 0;
+    padding: 4px 10px;
+    /* Matches theory-tab */
 }
 
 .main-nav-tab::before {
@@ -265,6 +257,11 @@ body:not(.ui-open) .nav-counter {
 .main-nav-tab.visible {
     opacity: 1;
     pointer-events: auto;
+}
+
+/* Ensure the link inside is clickable and fills space */
+.main-nav-tab {
+    cursor: pointer !important;
 }
 
 .main-nav-tab.active {
@@ -289,39 +286,28 @@ body:not(.ui-open) .nav-counter {
 }
 
 .nav-label {
-    /* Vertical Text Style */
-    writing-mode: vertical-rl;
+    writing-mode: horizontal-tb;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
-    /* Increased from 0.7rem */
-    letter-spacing: 2px;
+    font-size: 0.52rem;
+    /* Exact match to theory-tab */
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: inherit;
-    /* Inherit active color */
-    background: transparent;
-    border: none;
-    padding: 0;
     white-space: nowrap;
     margin: 0;
 }
 
 .nav-scale {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    /* Increased from 0.5rem */
-    color: rgba(0, 255, 255, 0.4);
-    writing-mode: vertical-rl;
-    margin-bottom: 5px;
-    opacity: 0.8;
+    display: none;
+    /* Removed for hyper-compactness */
 }
 
 /* Home button special styling */
 .main-nav-tab.home-btn {
-    opacity: 0.5;
-    font-size: 1.2rem;
-    writing-mode: vertical-rl;
+    opacity: 0.8;
+    font-size: 0.65rem;
     justify-content: center;
-    padding: 0;
+    padding: 2px 10px;
 }
 
 /* ============ THEORY TABS (SUB-NAVIGATION) ============ */
@@ -353,7 +339,8 @@ body:not(.ui-open) .nav-counter {
 
 .theory-tabs {
     position: fixed;
-    top: 15px;
+    top: 52px;
+    /* 10px gap below main nav (10 + 32 + 10) */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -461,8 +448,10 @@ body:not(.ui-open) .nav-counter {
 
 .theory-year {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
+    font-size: 0.55rem;
+    /* Matches theory-tab */
     font-weight: 400;
+    /* Standard weight like theory-tab */
     color: rgba(0, 255, 255, 0.8);
     /* Brightened */
     margin-bottom: 5px;
@@ -470,19 +459,9 @@ body:not(.ui-open) .nav-counter {
 
 /* Mobile - Medium Override (Redundant but safe to keep for touch/font adjust) */
 @media (max-width: 700px) {
-    .main-nav {
+    .main-nav-container {
         top: 8px;
-        max-width: calc(100vw - 12px);
-    }
-
-    .main-nav-tab {
-        padding: 10px 14px;
-        font-size: 0.65rem;
-    }
-
-    .main-nav-tab.home-btn {
-        padding: 10px 14px;
-        font-size: 1rem;
+        max-width: 95vw;
     }
 
     .theory-tabs {
@@ -562,9 +541,10 @@ body:not(.ui-open) .nav-counter {
 /* ============ CHRONOS CONTROL DECK (TOP LEFT) ============ */
 .params-panel {
     position: fixed;
-    top: 85px;
-    left: 100px;
-    /* Shifted right to clear Tuning Fork Nav */
+    top: 95px;
+    /* Moved down to clear both navs */
+    left: 20px;
+    /* Aligned to side */
     bottom: auto;
     transform: none;
     width: 240px;

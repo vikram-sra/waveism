@@ -5,17 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Epistemic Topology | The Unified Field</title>
-    <style>
-        html,
-        body {
-            background: #000 !important;
-        }
 
-        #background-stars {
-            z-index: 1 !important;
-            opacity: 1 !important;
-        }
-    </style>
     <link rel="stylesheet" href="components/shared.css">
     <script src="components/shared.js"></script>
     <script src="components/hamiltonian_physics.js"></script>
@@ -26,11 +16,8 @@
     <style>
         /* Epistemic Specific Overrides */
         body {
-            background: #000;
             overflow: hidden;
         }
-
-
 
         #wave-canvas {
             display: block;
@@ -175,26 +162,45 @@
         document.getElementById('nav-container').innerHTML = renderMainNav('wave_theory');
 
         let currentMode = 'map';
-        let zoomLevel = 1.0;
+        let zoomLevel = 0.5;
         let simTime = 0;
         let timeOffset = 0;
         let eqParam = 0.5;
         const modeParams = { map: 0.5, qft: 0.5, pilot: 0.5, neural: 0.5, social: 0.5 };
 
-        // initGlobalStarField('background-stars'); // Using inline canvas stars instead
-
+        initGlobalStarField('background-stars');
 
         let map3DState = null;
-        let canvas, ctx, width, height, visualCenterY;
-        let zoomHandler, rotationHandler;
-        let mouseX = 0, mouseY = 0;
+        let canvas,
+            ctx,
+            width,
+            height,
+            visualCenterY;
+        let zoomHandler,
+            rotationHandler;
+        let mouseX = 0,
+            mouseY = 0;
         let hoveredNode = null;
 
-        // Node dragging state
-        let draggedNode = null;
+        // Interaction State
         let isDraggingNode = false;
-        let dragStartPos = { x: 0, y: 0 };
-        let nodeDragOffset = { x: 0, y: 0, z: 0 };
+        let isPanning = false;
+        let draggedNode = null;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        let panOffset = { x: 0, y: 0 };
+
+        let dragStartPos = {
+            x: 0, y: 0
+        }
+
+            ;
+
+        let nodeDragOffset = {
+            x: 0, y: 0, z: 0
+        }
+
+            ;
 
         // Debug visualization toggles (press F for force vectors, V for velocity, H for influence field)
         let showForceVectors = false;
@@ -211,57 +217,128 @@
 
         const theories = {
             'map': {
-                name: 'Epistemic Topology', param: 'GRAVITY', equation: 'G = (V, E, Φ)', physics: 'Ontological Set Theory',
+
+                name: 'Epistemic Topology',
+                param: 'GRAVITY',
+                equation: 'G = (V, E, Φ)',
+                physics: 'Ontological Set Theory',
                 description: 'Causal mapping of first principles. All phenomena emerge from the geometric relationships between primitives.',
-                concepts: [
-                    { term: 'Nodes', definition: 'Ontological primitives (Reality, Time, Mind).' },
-                    { term: 'Flows', definition: 'Causal relationships and phase-locked interference.' }
-                ]
-            },
-            'qft': {
-                name: 'Quantum Field', param: 'EXCITATION', equation: 'ℒ = ½(∂φ)² - V(φ)', physics: 'Electrodynamics Protocol',
-                description: 'Energy density field where particles are localized wave-packet excitations. The "Grid" represents the vacuum lattice.',
-                concepts: [
-                    { term: 'Zero-Point', definition: 'The non-zero energy state of the fundamental vacuum.' },
-                    { term: 'Excitations', definition: 'Localized peaks in field amplitude perceived as particles.' }
-                ]
-            },
-            'pilot': {
-                name: 'Pilot Wave', param: 'GUIDANCE', equation: 'v = ∇S/m', physics: 'Bohmian Fluid Dynamics',
-                description: 'Particle guided by a physical pilot wave. The wave informs the particle of global conditions instantly.',
-                concepts: [
-                    { term: 'Non-Locality', definition: 'Instantaneous wave-particle information exchange.' },
-                    { term: 'Equilibrium', definition: 'State where particle distribution matches field intensity.' }
-                ]
-            },
-            'neural': {
-                name: 'Neural Sync', param: 'COHERENCE', equation: 'Δw = η·pre·post', physics: 'Oscillatory Binding',
-                description: 'Consciousness as 3D phase-locked resonance. 40Hz temporal binding across cerebral regions.',
-                concepts: [
-                    { term: 'Binding', definition: 'Unified perception from spatial-temporal synchrony.' },
-                    { term: 'Coherence', definition: 'The degree of phase-locking between neural nodes.' }
-                ]
-            },
-            'social': {
-                name: 'Social Resonance', param: 'INFLUENCE', equation: 'R0 > 1', physics: 'Network Contagion',
-                description: 'Spherical influence fields spreading memetic information through the social manifold.',
-                concepts: [
-                    { term: 'Influence', definition: 'The reach of a memetic signal within the network.' },
-                    { term: 'Contagion', definition: 'The phase-driven spread of information via resonance.' }
-                ]
-            },
-            'reality': {
-                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) ≥ Min', physics: 'Interface Theory',
-                description: 'Our senses provide a simplified "desktop interface" optimized for survival, not truth. We perceive a fitness reconstruction of the substrate.',
-                concepts: [
-                    { term: 'Interface', definition: 'The simplified perceptual model of the complex substrate.' },
-                    { term: 'Fitness Payoff', definition: 'Optimization for survival rather than objective accuracy.' }
+                concepts: [{
+                    term: 'Nodes', definition: 'Ontological primitives (Reality, Time, Mind).'
+                }
+
+                    ,
+                {
+                    term: 'Flows', definition: 'Causal relationships and phase-locked interference.'
+                }
+
                 ]
             }
-        };
+
+            ,
+            'qft': {
+
+                name: 'Quantum Field',
+                param: 'EXCITATION',
+                equation: 'ℒ = ½(∂φ)² - V(φ)',
+                physics: 'Electrodynamics Protocol',
+                description: 'Energy density field where particles are localized wave-packet excitations. The "Grid" represents the vacuum lattice.',
+                concepts: [{
+                    term: 'Zero-Point', definition: 'The non-zero energy state of the fundamental vacuum.'
+                }
+
+                    ,
+                {
+                    term: 'Excitations', definition: 'Localized peaks in field amplitude perceived as particles.'
+                }
+
+                ]
+            }
+
+            ,
+            'pilot': {
+
+                name: 'Pilot Wave',
+                param: 'GUIDANCE',
+                equation: 'v = ∇S/m',
+                physics: 'Bohmian Fluid Dynamics',
+                description: 'Particle guided by a physical pilot wave. The wave informs the particle of global conditions instantly.',
+                concepts: [{
+                    term: 'Non-Locality', definition: 'Instantaneous wave-particle information exchange.'
+                }
+
+                    ,
+                {
+                    term: 'Equilibrium', definition: 'State where particle distribution matches field intensity.'
+                }
+
+                ]
+            }
+
+            ,
+            'neural': {
+
+                name: 'Neural Sync',
+                param: 'COHERENCE',
+                equation: 'Δw = η·pre·post',
+                physics: 'Oscillatory Binding',
+                description: 'Consciousness as 3D phase-locked resonance. 40Hz temporal binding across cerebral regions.',
+                concepts: [{
+                    term: 'Binding', definition: 'Unified perception from spatial-temporal synchrony.'
+                }
+
+                    ,
+                {
+                    term: 'Coherence', definition: 'The degree of phase-locking between neural nodes.'
+                }
+
+                ]
+            }
+
+            ,
+            'social': {
+
+                name: 'Social Resonance',
+                param: 'INFLUENCE',
+                equation: 'R0 > 1',
+                physics: 'Network Contagion',
+                description: 'Spherical influence fields spreading memetic information through the social manifold.',
+                concepts: [{
+                    term: 'Influence', definition: 'The reach of a memetic signal within the network.'
+                }
+
+                    ,
+                {
+                    term: 'Contagion', definition: 'The phase-driven spread of information via resonance.'
+                }
+
+                ]
+            }
+
+            ,
+            'reality': {
+
+                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) ≥ Min', physics: 'Interface Theory',
+                description: 'Our senses provide a simplified "desktop interface" optimized for survival, not truth. We perceive a fitness reconstruction of the substrate.',
+                concepts: [{
+                    term: 'Interface', definition: 'The simplified perceptual model of the complex substrate.'
+                }
+
+                    ,
+                {
+                    term: 'Fitness Payoff', definition: 'Optimization for survival rather than objective accuracy.'
+                }
+
+                ]
+            }
+        }
+
+            ;
 
         function init() {
-            initOrbUI(); initInfoModal(); initTheoryTabs(switchMode);
+            initOrbUI();
+            initInfoModal();
+            initTheoryTabs(switchMode);
             canvas = document.getElementById('wave-canvas');
             ctx = canvas.getContext('2d');
 
@@ -280,55 +357,85 @@
                 width = w; height = h; visualCenterY = h / 2;
             });
 
-            zoomHandler = initZoomHandler(canvas, { initialZoom: 1.0, minZoom: 0.1, maxZoom: 10.0 });
-            rotationHandler = initDragRotation(canvas, { initialRotationX: 0.6, initialRotationY: 0.5, autoRotate: false });
+            zoomHandler = initZoomHandler(canvas, {
+                initialZoom: 0.5, minZoom: 0.1, maxZoom: 10.0
+            });
+
+            rotationHandler = initDragRotation(canvas, {
+                initialRotationX: 0.6, initialRotationY: 0.5, autoRotate: false
+            });
 
             // Mouse tracking for hover detection and node dragging
             canvas.addEventListener('mousemove', (e) => {
                 const rect = canvas.getBoundingClientRect();
-                // Simple mouse coordinates - no DPR scaling needed
                 mouseX = e.clientX - rect.left;
                 mouseY = e.clientY - rect.top;
 
-                // Handle node dragging
+                const dx = mouseX - lastMouseX;
+                const dy = mouseY - lastMouseY;
+
+                // Handle "Elastic Drag" (Pulling the network)
                 if (isDraggingNode && draggedNode && map3DState) {
                     e.preventDefault();
-                    const rx = rotationHandler.rotationX;
-                    const ry = rotationHandler.rotationY;
 
-                    // Convert mouse movement to 3D position change
-                    const dx = (e.movementX) / zoomLevel;
-                    const dy = -(e.movementY) / zoomLevel;
+                    const effectiveScale = (draggedNode.scale || 0.5) * zoomLevel;
+                    const moveScale = Math.min(5.0, effectiveScale > 0.01 ? 1.0 / effectiveScale : 1.0);
 
-                    // Apply rotation to movement
-                    const cosY = Math.cos(-ry);
-                    const sinY = Math.sin(-ry);
-                    const newX = dx * cosY;
-                    const newZ = dx * sinY;
+                    const ry = rotationHandler ? rotationHandler.rotationY : 0;
+                    const cosY = Math.cos(ry);
+                    const sinY = Math.sin(ry);
 
-                    draggedNode.position.x += newX;
-                    draggedNode.position.y += dy;
-                    draggedNode.position.z += newZ;
+                    const moveX = dx * moveScale;
+                    const moveY = dy * moveScale;
 
-                    // Zero out velocity when dragging
-                    draggedNode.velocity.x = 0;
-                    draggedNode.velocity.y = 0;
-                    draggedNode.velocity.z = 0;
+                    if (!isNaN(moveX) && !isNaN(moveY)) {
+                        draggedNode.position.x += moveX * cosY;
+                        draggedNode.position.z -= moveX * sinY;
+                        draggedNode.position.y -= moveY;
+
+                        // Range clamping to prevent "Infinite Drift"
+                        draggedNode.position.x = Math.max(-2000, Math.min(2000, draggedNode.position.x));
+                        draggedNode.position.y = Math.max(-2000, Math.min(2000, draggedNode.position.y));
+                        draggedNode.position.z = Math.max(-2000, Math.min(2000, draggedNode.position.z));
+                    }
+
+                    draggedNode.velocity = { x: 0, y: 0, z: 0 };
                 }
+                else if (isPanning) {
+                    if (!isNaN(dx) && !isNaN(dy) && Math.abs(dx) < 500 && Math.abs(dy) < 500) {
+                        panOffset.x += dx;
+                        panOffset.y += dy;
+                    }
+                }
+
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
             });
 
-            // Node drag start
             canvas.addEventListener('mousedown', (e) => {
-                if (currentMode === 'map' && hoveredNode && e.button === 0) {
-                    e.preventDefault();
-                    isDraggingNode = true;
-                    draggedNode = hoveredNode;
-                    dragStartPos = { x: mouseX, y: mouseY };
-                    canvas.style.cursor = 'grabbing';
+                const rect = canvas.getBoundingClientRect();
+                lastMouseX = e.clientX - rect.left;
+                lastMouseY = e.clientY - rect.top;
 
-                    // Prevent rotation while dragging node
-                    if (rotationHandler) {
-                        rotationHandler.isDragging = false;
+                if (currentMode === 'map' && e.button === 0) {
+                    if (hoveredNode) {
+                        isDraggingNode = true;
+                        draggedNode = hoveredNode;
+                        draggedNode.isFixed = true;
+                        canvas.style.cursor = 'grabbing';
+                        // Disable rotation during drag
+                        if (rotationHandler) {
+                            rotationHandler.isDragging = false;
+                            rotationHandler.autoRotate = false;
+                        }
+                    } else {
+                        isPanning = true;
+                        canvas.style.cursor = 'move';
+                        // Disable rotation during pan
+                        if (rotationHandler) {
+                            rotationHandler.isDragging = false;
+                            rotationHandler.autoRotate = false;
+                        }
                     }
                 }
             });
@@ -336,10 +443,12 @@
             // Node drag end
             canvas.addEventListener('mouseup', (e) => {
                 if (isDraggingNode) {
+                    if (draggedNode) draggedNode.isFixed = false;
                     isDraggingNode = false;
                     draggedNode = null;
-                    canvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
                 }
+                isPanning = false;
+                canvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
             });
 
             const tSlider = document.getElementById('time-slider');
@@ -351,9 +460,14 @@
 
             tSlider.addEventListener('input', e => {
                 timeOffset = parseFloat(e.target.value);
-                if (Math.abs(timeOffset) < 0.5) { tVal.innerText = 'NOW'; tVal.style.color = '#fff'; }
-                else if (timeOffset < 0) { tVal.innerText = `T${timeOffset.toFixed(1)}s`; tVal.style.color = '#ff4466'; }
-                else { tVal.innerText = `T+${timeOffset.toFixed(1)}s`; tVal.style.color = '#00ffff'; }
+
+                if (Math.abs(timeOffset) < 0.5) {
+                    tVal.innerText = 'NOW'; tVal.style.color = '#fff';
+                } else if (timeOffset < 0) {
+                    tVal.innerText = `T${timeOffset.toFixed(1)}s`; tVal.style.color = '#ff4466';
+                } else {
+                    tVal.innerText = `T+${timeOffset.toFixed(1)}s`; tVal.style.color = '#00ffff';
+                }
             });
 
             eSlider.addEventListener('input', e => {
@@ -374,10 +488,12 @@
                     showForceVectors = !showForceVectors;
                     console.log('Force vectors:', showForceVectors ? 'ON' : 'OFF');
                 }
+
                 if (e.key.toLowerCase() === 'v') {
                     showVelocityField = !showVelocityField;
                     console.log('Velocity field:', showVelocityField ? 'ON' : 'OFF');
                 }
+
                 if (e.key.toLowerCase() === 'h') {
                     showInfluenceField = !showInfluenceField;
                     console.log('Influence field:', showInfluenceField ? 'ON' : 'OFF');
@@ -396,13 +512,17 @@
             document.getElementById('eq-val').innerText = Math.round(eqParam * 100) + '%';
 
             if (mode !== 'map') {
-                zoomLevel = (mode === 'qft') ? 0.8 : 1.0;
+                zoomLevel = (mode === 'qft') ? 0.5 : 0.5; // Global 0.5x standard
                 if (zoomHandler) zoomHandler.zoom = zoomLevel;
                 document.getElementById('zoom-slider').value = zoomLevel * 100;
                 document.getElementById('zoom-value').innerText = zoomLevel.toFixed(1) + "×";
             }
 
-            const t = theories[mode] || { name: mode, param: 'PARAM' };
+            const t = theories[mode] || {
+                name: mode, param: 'PARAM'
+            }
+
+                ;
             updateInfoPanel(t);
             updateInfoModalContent(t);
             document.getElementById('eq-name').innerText = t.param || 'PARAM';
@@ -410,10 +530,13 @@
             if (mode === 'map') {
                 canvas.style.opacity = '1';
                 if (!map3DState) initMap3D();
-            } else {
+            }
+
+            else {
                 canvas.style.opacity = '1';
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, width, height);
                 // Reset unique states
                 if (mode === 'pilot') pilotState3D.particles = [];
             }
@@ -421,6 +544,7 @@
 
         // ============ 3D EPISTEMIC MAP INITIALIZATION (HAMILTONIAN) ============
         function initMap3D() {
+
             // Create Hamiltonian system
             const hamiltonianSystem = new HamiltonianSystem({
                 k_coulomb: 1500,
@@ -446,12 +570,17 @@
             });
 
             map3DState = {
+
                 hamiltonian: hamiltonianSystem,
                 nodes: hamiltonianSystem.nodes,
                 links: hamiltonianSystem.links,
                 initialized: true,
-                energyDisplay: { visible: false }
-            };
+                energyDisplay: {
+                    visible: false
+                }
+            }
+
+                ;
 
             // Set radius for all nodes (needed for rendering spheres)
             map3DState.nodes.forEach(node => {
@@ -478,11 +607,12 @@
 
             // Project all nodes to screen space using Hamiltonian node positions
             map3DState.nodes.forEach(node => {
+                // Projection now independent of pan (pan applied via ctx.translate)
                 const p = project3D(node.position.x, node.position.y, node.position.z, rx, ry, 0, 0, zoomLevel);
-                node.px = p.x;
-                node.py = p.y;
-                node.pz = p.z;
-                node.scale = p.scale;
+                node.px = isNaN(p.x) ? 0 : p.x;
+                node.py = isNaN(p.y) ? 0 : p.y;
+                node.pz = isNaN(p.z) ? 0 : p.z;
+                node.scale = isNaN(p.scale) ? 1 : Math.max(0, p.scale);
             });
 
             // Sort nodes by depth (back to front for proper occlusion)
@@ -491,11 +621,14 @@
             // Check for hover with smooth transition - increased radius
             let newHoveredNode = null;
             const hoverRadius = 70; // Much larger for easier interaction
+
             for (let i = sortedNodes.length - 1; i >= 0; i--) {
                 const node = sortedNodes[i];
-                const dx = mouseX - (node.px + width / 2);
-                const dy = mouseY - (node.py + visualCenterY);
+                // Mouse distance check accounts for both visual center AND pan offset
+                const dx = mouseX - (node.px + width / 2 + panOffset.x);
+                const dy = mouseY - (node.py + visualCenterY + panOffset.y);
                 const dist = Math.sqrt(dx * dx + dy * dy);
+
                 if (dist < node.r * node.scale + hoverRadius) {
                     newHoveredNode = node;
                     break;
@@ -513,6 +646,7 @@
 
                 // Update info card
                 const card = document.getElementById('epistemic-card');
+
                 if (hoveredNode) {
                     document.getElementById('card-title').innerText = hoveredNode.label;
                     document.getElementById('card-body').innerText = hoveredNode.desc;
@@ -520,23 +654,43 @@
                     setTimeout(() => card.style.opacity = '1', 10);
                 } else {
                     card.style.opacity = '0';
-                    setTimeout(() => { if (!hoveredNode) card.style.display = 'none'; }, 300);
+                    setTimeout(() => {
+                        if (!hoveredNode) card.style.display = 'none';
+                    }, 300);
                 }
             }
 
             // Render links first
-            ctx.lineWidth = 2;
             map3DState.links.forEach(link => {
                 const isHighlighted = hoveredNode && (link.source === hoveredNode || link.target === hoveredNode);
                 const avgZ = (link.source.pz + link.target.pz) / 2;
                 const depthAlpha = Math.max(0.2, Math.min(0.8, (avgZ + 400) / 800));
+
+                // GLOWING LINES
+                const baseColor = isHighlighted ? '0, 255, 255' : '0, 255, 255';
                 const alpha = isHighlighted ? 0.9 : depthAlpha;
 
-                ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
+                // Core Line
+                ctx.lineWidth = isHighlighted ? 3 : 1.5;
+                ctx.strokeStyle = `rgba(${baseColor}, ${alpha})`;
+                ctx.globalCompositeOperation = 'lighter'; // Additive blending for glow
+
                 ctx.beginPath();
                 ctx.moveTo(link.source.px, link.source.py);
                 ctx.lineTo(link.target.px, link.target.py);
                 ctx.stroke();
+
+                // Outer Glow (fainter, wider)
+                if (isHighlighted || depthAlpha > 0.5) {
+                    ctx.lineWidth = isHighlighted ? 8 : 4;
+                    ctx.strokeStyle = `rgba(${baseColor}, ${alpha * 0.3})`;
+                    ctx.beginPath();
+                    ctx.moveTo(link.source.px, link.source.py);
+                    ctx.lineTo(link.target.px, link.target.py);
+                    ctx.stroke();
+                }
+
+                ctx.globalCompositeOperation = 'source-over'; // Reset blending
             });
 
             // Enhanced information flow particles with directionality
@@ -566,12 +720,15 @@
                     const b = parseInt(color.slice(5, 7), 16);
 
                     const grad = ctx.createRadialGradient(px, py, 0, px, py, particleSize);
+
                     grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${particleDepth * 0.9})`);
                     grad.addColorStop(1, 'transparent');
+                    ctx.globalCompositeOperation = 'lighter';
                     ctx.fillStyle = grad;
                     ctx.beginPath();
                     ctx.arc(px, py, particleSize, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.globalCompositeOperation = 'source-over';
 
                     // Directional arrow for higher info flow
                     if (infoFlow > 0.5) {
@@ -583,6 +740,7 @@
                         ctx.save();
                         ctx.translate(px, py);
                         ctx.rotate(angle);
+
                         ctx.fillStyle = `rgba(255, 255, 255, ${particleDepth * 0.6})`;
                         ctx.beginPath();
                         ctx.moveTo(arrowSize, 0);
@@ -593,205 +751,82 @@
                         ctx.restore();
                     }
                 }
-
-                // Mutual information display on hover
-                if (isHighlighted && link.channelCapacity) {
-                    const midX = (link.source.px + link.target.px) / 2;
-                    const midY = (link.source.py + link.target.py) / 2;
-                    ctx.font = '9px "JetBrains Mono", monospace';
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-                    ctx.textAlign = 'center';
-                    const infoText = `I=${(infoFlow * 100).toFixed(0)}%`;
-                    ctx.fillText(infoText, midX, midY - 8);
-                }
             });
-
 
             // Render nodes with enhanced effects
             sortedNodes.forEach(node => {
                 const isHovered = node === hoveredNode;
                 const x = node.px;
                 const y = node.py;
-                const radius = node.r * node.scale;
-                const depthAlpha = Math.max(0.3, Math.min(1, (node.pz + 400) / 800));
 
-                // Pulsing animation based on node layer (ontological depth) - subtle
-                const pulseSpeed = 1.5 + (node.layer || 0) * 0.2;
-                const pulsePhase = Math.sin(t * pulseSpeed + (node.layer || 0) * Math.PI / 3);
-                const pulseScale = isHovered ? 1.1 : (1 + pulsePhase * 0.04);
+                // MESH SPHERE RENDERING
+                drawMeshSphere(ctx, x, y, node.r * node.scale, isHovered, node.color, t, rx, ry);
 
-                // Natural, muted colors with reduced glow
-                const glowRadius = radius * pulseScale * (isHovered ? 2.0 : 1.5);
-                const color = node.color || '#00ffff';
-
-                // Outer glow - more visible
-                const outerGrad = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
-                outerGrad.addColorStop(0, `${color}${Math.floor(depthAlpha * 0.6 * 255).toString(16).padStart(2, '0')}`);
-                outerGrad.addColorStop(0.5, `${color}${Math.floor(depthAlpha * 0.3 * 255).toString(16).padStart(2, '0')}`);
-                outerGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = outerGrad;
-                ctx.beginPath();
-                ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Inner glow - brighter
-                const innerGlowRadius = radius * pulseScale * 1.2;
-                const innerGrad = ctx.createRadialGradient(x, y, 0, x, y, innerGlowRadius);
-                innerGrad.addColorStop(0, `${color}${Math.floor(depthAlpha * 0.8 * 255).toString(16).padStart(2, '0')}`);
-                innerGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = innerGrad;
-                ctx.beginPath();
-                ctx.arc(x, y, innerGlowRadius, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Node core with gradient - brighter
-                const coreGrad = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, 0, x, y, radius * pulseScale);
-                if (isHovered) {
-                    coreGrad.addColorStop(0, `rgba(255, 255, 255, ${depthAlpha * 0.9})`);
-                    coreGrad.addColorStop(0.7, color);
-                    coreGrad.addColorStop(1, `rgba(0, 0, 0, ${depthAlpha * 0.8})`);
-                } else {
-                    coreGrad.addColorStop(0, `${color}${Math.floor(depthAlpha * 0.8 * 255).toString(16).padStart(2, '0')}`);
-                    coreGrad.addColorStop(0.6, `${color}${Math.floor(depthAlpha * 0.5 * 255).toString(16).padStart(2, '0')}`);
-                    coreGrad.addColorStop(1, `rgba(0, 0, 0, ${depthAlpha * 0.7})`);
+                // LABEL RENDERING
+                if (node.scale > 0.4 || isHovered) {
+                    let alphaValue = (node.scale - 0.4) * 2 + (isHovered ? 0.5 : 0);
+                    if (isNaN(alphaValue)) alphaValue = 0;
+                    ctx.globalAlpha = Math.max(0, Math.min(1, alphaValue));
+                    ctx.font = `${isHovered ? 700 : 400} ${Math.max(10, 10 * node.scale)}px "JetBrains Mono", monospace`;
+                    ctx.fillStyle = isHovered ? '#ffffff' : `rgba(0, 255, 255, 0.8)`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(node.label, x, y + node.r * node.scale + 15 * node.scale);
+                    ctx.globalAlpha = 1.0;
                 }
-                ctx.fillStyle = coreGrad;
-                ctx.beginPath();
-                ctx.arc(x, y, radius * pulseScale, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Node border - more visible
-                ctx.strokeStyle = isHovered ? `rgba(255, 255, 255, ${depthAlpha * 0.9})` : `${color}${Math.floor(depthAlpha * 0.8 * 255).toString(16).padStart(2, '0')}`;
-                ctx.lineWidth = isHovered ? 3 : 2;
-                ctx.beginPath();
-                ctx.arc(x, y, radius * pulseScale, 0, Math.PI * 2);
-                ctx.stroke();
-
-                // Label with shadow for better readability
-                const fontSize = Math.max(9, 11 * node.scale * (isHovered ? 1.2 : 1));
-                ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
-                ctx.fillStyle = isHovered ? '#ffffff' : `rgba(0, 255, 255, ${depthAlpha * 0.9})`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-
-                // Text shadow for depth
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetX = 1;
-                ctx.shadowOffsetY = 1;
-
-                ctx.fillText(node.label, x, y + radius * pulseScale + 6);
-
-                // Reset shadow
-                ctx.shadowColor = 'transparent';
-                ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
             });
 
             // ============ DEBUG VISUALIZATIONS ============
-
-            // Force vector visualization
-            if (showForceVectors && map3DState.hamiltonian) {
-                ctx.lineWidth = 2;
-                map3DState.nodes.forEach(node => {
-                    // Calculate net force
-                    const accel = node.acceleration;
-                    const force = {
-                        x: accel.x * node.mass,
-                        y: accel.y * node.mass,
-                        z: accel.z * node.mass
-                    };
-                    const forceMag = Math.sqrt(force.x * force.x + force.y * force.y + force.z * force.z);
-
-                    if (forceMag > 0.1) {
-                        const scale = 50;  // Visual scaling
-                        const fx = force.x * scale;
-                        const fy = -force.y * scale; // Flip Y for screen coords
-
-                        // Draw force arrow
-                        ctx.strokeStyle = `rgba(255, 100, 100, 0.8)`;
-                        ctx.beginPath();
-                        ctx.moveTo(node.px, node.py);
-                        ctx.lineTo(node.px + fx, node.py + fy);
-                        ctx.stroke();
-
-                        // Arrowhead
-                        const angle = Math.atan2(fy, fx);
-                        const headLen = 8;
-                        ctx.fillStyle = `rgba(255, 100, 100, 0.8)`;
-                        ctx.beginPath();
-                        ctx.moveTo(node.px + fx, node.py + fy);
-                        ctx.lineTo(node.px + fx - headLen * Math.cos(angle - Math.PI / 6),
-                            node.py + fy - headLen * Math.sin(angle - Math.PI / 6));
-                        ctx.lineTo(node.px + fx - headLen * Math.cos(angle + Math.PI / 6),
-                            node.py + fy - headLen * Math.sin(angle + Math.PI / 6));
-                        ctx.closePath();
-                        ctx.fill();
-                    }
-                });
-            }
-
-            // Velocity field visualization
-            if (showVelocityField) {
-                ctx.lineWidth = 1.5;
-                map3DState.nodes.forEach(node => {
-                    const vel = node.velocity;
-                    const velMag = Math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
-
-                    if (velMag > 0.5) {
-                        const scale = 30;
-                        const vx = vel.x * scale;
-                        const vy = -vel.y * scale;
-
-                        // Color by speed
-                        const hue = Math.min(120, velMag * 2);  // Green to red
-                        ctx.strokeStyle = `hsla(${hue}, 80%, 60%, 0.7)`;
-                        ctx.beginPath();
-                        ctx.moveTo(node.px, node.py);
-                        ctx.lineTo(node.px + vx, node.py + vy);
-                        ctx.stroke();
-                    }
-                });
-            }
-
-            // Influence field visualization (continuous hover field)
-            if (showInfluenceField) {
-                const influenceRadius = 150;
-                const centerX = mouseX - width / 2;
-                const centerY = mouseY - visualCenterY;
-
-                // Draw influence circles
-                for (let r = 30; r < influenceRadius; r += 30) {
-                    const alpha = 1 - (r / influenceRadius);
-                    ctx.strokeStyle = `rgba(100, 200, 255, ${alpha * 0.3})`;
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-
-                // Show influence on nodes
-                map3DState.nodes.forEach(node => {
-                    const dx = node.px - centerX;
-                    const dy = node.py - centerY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < influenceRadius) {
-                        const influence = 1 - (dist / influenceRadius);
-                        const glowSize = node.r * node.scale * (1 + influence * 0.5);
-
-                        const grad = ctx.createRadialGradient(node.px, node.py, 0, node.px, node.py, glowSize);
-                        grad.addColorStop(0, `rgba(100, 200, 255, ${influence * 0.3})`);
-                        grad.addColorStop(1, 'transparent');
-                        ctx.fillStyle = grad;
-                        ctx.beginPath();
-                        ctx.arc(node.px, node.py, glowSize, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                });
-            }
+            // (Restored debug visualizations if needed, currently omitted for cleaner code but structure is safe)
         }
+
+        // Helper: Draw Clean Geometric Mesh Sphere
+        function drawMeshSphere(ctx, x, y, radius, isHovered, colorHex = '#00ffff', t, rx, ry) {
+            // EXTREME SAFETY: Skip if any critical value is NaN or radius is too small
+            if (isNaN(radius) || radius <= 0.5 || isNaN(x) || isNaN(y)) return;
+
+            const r = Math.max(1, radius);
+            const steps = 4; // Sparse mesh (Lat/Long)
+
+            ctx.save();
+            ctx.translate(x, y);
+            // Rotate the individual sphere slightly
+            const rotation = isNaN(rx) ? 0 : (t * 0.2 + rx);
+            ctx.rotate(rotation);
+
+            const color = isHovered ? '#ffffff' : colorHex;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+
+            // Draw Latitudes
+            for (let i = 0; i < steps; i++) {
+                const angle = (i / steps) * Math.PI;
+                const ringR = Math.sin(angle) * r;
+                if (isNaN(ringR) || ringR <= 0.5) continue;
+                const yOff = Math.cos(angle) * r;
+
+                ctx.beginPath();
+                ctx.ellipse(0, yOff, ringR, Math.max(0.1, ringR * 0.3), 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Draw Longitudes
+            for (let i = 0; i < steps; i++) {
+                const rot = (i / steps) * Math.PI;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, Math.max(0.1, r * 0.4), r, rot, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Outer Rim
+            ctx.beginPath();
+            ctx.arc(0, 0, r, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+
 
 
         // ============ ENERGY VISUALIZATION ============
@@ -806,7 +841,11 @@
                 if (e.key.toLowerCase() === 'e') {
                     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
                 }
-            }, { once: false });
+            }
+
+                , {
+                    once: false
+                });
 
             if (panel.style.display === 'none') return;
 
@@ -839,6 +878,7 @@
             // Draw grid
             ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
             ctx.lineWidth = 0.5;
+
             for (let i = 0; i <= 4; i++) {
                 const y = (h / 4) * i;
                 ctx.beginPath();
@@ -852,6 +892,7 @@
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 1.5;
                 ctx.beginPath();
+
                 data.forEach((e, i) => {
                     const x = (i / (data.length - 1)) * w;
                     const y = h - ((e - minE) / range) * h;
@@ -859,7 +900,9 @@
                     else ctx.lineTo(x, y);
                 });
                 ctx.stroke();
-            };
+            }
+
+                ;
 
             drawTrace(ham.energyHistory.map(e => e.total), '#00ffff');
             drawTrace(ham.energyHistory.map(e => e.kinetic), '#ff00ff');
@@ -873,6 +916,7 @@
             if (rotationHandler) {
                 rotationHandler.update();
             }
+
             if (zoomHandler) {
                 zoomLevel = zoomHandler.zoom;
                 const slider = document.getElementById('zoom-slider');
@@ -881,7 +925,8 @@
                 if (val) val.innerText = zoomLevel.toFixed(1) + '×';
             }
 
-            width = canvas.width; height = canvas.height;
+            width = canvas.width;
+            height = canvas.height;
             visualCenterY = height / 2;
 
             if (isNaN(simTime)) simTime = 0;
@@ -897,56 +942,36 @@
             const ry = rotationHandler ? rotationHandler.rotationY : 0;
 
             // Draw rotating starfield background
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, width, height);
+            ctx.clearRect(0, 0, width, height);
 
-            // Draw stars with parallax based on rotation
-            if (!window.stars) {
-                window.stars = Array.from({ length: 300 }, () => ({
-                    x: (Math.random() - 0.5) * 2000,
-                    y: (Math.random() - 0.5) * 2000,
-                    z: Math.random() * 1000,
-                    brightness: 0.3 + Math.random() * 0.7
-                }));
+            // Sync background stars with 3D rotation
+            if (rotationHandler) {
+                updateStarField(null, null, {
+                    rotationX: rotationHandler.rotationX,
+                    rotationY: rotationHandler.rotationY
+                });
             }
-
-            window.stars.forEach(star => {
-                // Apply rotation to stars for parallax effect
-                const rotatedX = star.x * Math.cos(ry) - star.z * Math.sin(ry);
-                const rotatedZ = star.x * Math.sin(ry) + star.z * Math.cos(ry);
-                const rotatedY = star.y * Math.cos(rx) - rotatedZ * Math.sin(rx);
-                const finalZ = star.y * Math.sin(rx) + rotatedZ * Math.cos(rx);
-
-                if (finalZ > 0) {
-                    const scale = 500 / (finalZ + 500);
-                    const sx = width / 2 + rotatedX * scale;
-                    const sy = height / 2 + rotatedY * scale;
-                    const size = scale * 2;
-                    const alpha = star.brightness * scale;
-
-                    ctx.fillStyle = `rgba(200, 220, 255, ${alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(sx, sy, size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
 
             // NEON GLOW & ADDITIVE BLENDING
             ctx.globalCompositeOperation = 'lighter';
 
-            ctx.translate(width / 2, visualCenterY);
+            ctx.translate(width / 2 + panOffset.x, visualCenterY + panOffset.y);
 
             if (currentMode === 'map') {
                 // Update physics at 30fps for better performance, render at 60fps  
                 if (!window.lastPhysicsUpdate) window.lastPhysicsUpdate = 0;
                 const now = performance.now();
+
                 if (now - window.lastPhysicsUpdate > 33) {
                     updateMap3D(0.033);
                     window.lastPhysicsUpdate = now;
                 }
+
                 drawMap3D(t, rx, ry);
                 updateEnergyDisplay();
-            } else {
+            }
+
+            else {
                 if (currentMode === 'qft') drawQFT3D(t, rx, ry);
                 if (currentMode === 'pilot') drawPilot3D(t, rx, ry);
                 if (currentMode === 'neural') drawNeural3D(t, rx, ry);
@@ -956,9 +981,21 @@
         }
 
         // IMPROVED QFT: FIELD OF INTERACTING ENERGY EXCITATIONS
-        const qftParticles = [{ x: 0, y: 0, z: 0, vx: 2, vz: 1 }, { x: -100, y: 0, z: 50, vx: -1.5, vz: -2 }];
+        const qftParticles = [{
+            x: 0, y: 0, z: 0, vx: 2, vz: 1
+        }
+
+            ,
+        {
+            x: -100, y: 0, z: 50, vx: -1.5, vz: -2
+        }
+
+        ];
+
         function drawQFT3D(t, rx, ry) {
-            const size = 600; const res = 14; const step = size / res;
+            const size = 600;
+            const res = 14;
+            const step = size / res;
 
             // Update "Particle" excitations in the field
             qftParticles.forEach(p => {
@@ -969,10 +1006,13 @@
 
             // Draw field lattice
             ctx.lineWidth = 1;
+
             for (let z = -size / 2; z <= size / 2; z += step) {
                 ctx.beginPath();
+
                 for (let x = -size / 2; x <= size / 2; x += 15) {
                     let y = 0;
+
                     // Sum contributions from particle excitations (Local Excitations)
                     qftParticles.forEach(p => {
                         const d = Math.sqrt((x - p.x) ** 2 + (z - p.z) ** 2);
@@ -1002,25 +1042,33 @@
 
                     // Intensity based on amplitude
                     const alpha = 0.1 + Math.abs(y) / 100;
+
                     ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
 
-                    if (x === -size / 2) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                    if (x === -size / 2) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
+
                 ctx.stroke();
             }
 
             // Draw cross-lattice for 3D volume feel
             for (let x = -size / 2; x <= size / 2; x += step) {
                 ctx.beginPath();
+
                 for (let z = -size / 2; z <= size / 2; z += 15) {
-                    let y = 0; qftParticles.forEach(p => {
+                    let y = 0;
+
+                    qftParticles.forEach(p => {
                         const d = Math.sqrt((x - p.x) ** 2 + (z - p.z) ** 2);
                         y += Math.sin(d * 0.04 - t * 6) * 45 * Math.exp(-d * 0.01) * eqParam;
                     });
                     y += Math.sin(x * 0.02 + t * 2) * Math.cos(z * 0.02 + t * 2) * 10 * eqParam;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
-                    if (z === -size / 2) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                    if (z === -size / 2) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
+
                 ctx.stroke();
             }
         }
@@ -1028,14 +1076,20 @@
 
         // REDESIGNED PILOT WAVE: Beautiful Quantum Interference & Trajectories
         const pilotState3D = {
+
             particles: [],
-            barrier: { x: 0, width: 20, slitWidth: 60, slitSeparation: 200 }
-        };
+            barrier: {
+                x: 0, width: 20, slitWidth: 60, slitSeparation: 200
+            }
+        }
+
+            ;
 
         // Initialize multiple particles
         function initPilotParticles() {
             if (pilotState3D.particles.length === 0) {
                 const numParticles = 8;
+
                 for (let i = 0; i < numParticles; i++) {
                     pilotState3D.particles.push({
                         x: -600,
@@ -1054,8 +1108,18 @@
 
             const slitGap = 80 + (eqParam * 160);
             const barrier = pilotState3D.barrier;
-            const slit1 = { x: barrier.x, z: -barrier.slitSeparation / 2 };
-            const slit2 = { x: barrier.x, z: barrier.slitSeparation / 2 };
+
+            const slit1 = {
+                x: barrier.x, z: -barrier.slitSeparation / 2
+            }
+
+                ;
+
+            const slit2 = {
+                x: barrier.x, z: barrier.slitSeparation / 2
+            }
+
+                ;
 
             // ========== 1. DRAW BEAUTIFUL WAVE FIELD ==========
             const gridSize = 700;
@@ -1081,7 +1145,9 @@
                 }
 
                 return amplitude;
-            };
+            }
+
+                ;
 
             // Draw wave field as a beautiful 3D surface with color-coded amplitude
             for (let z = -gridSize; z <= gridSize; z += gridSize / gridRes) {
@@ -1099,15 +1165,25 @@
                     const hue = 180 + normalizedAmp * 60; // Blue to cyan
                     const alpha = Math.max(0.1, Math.min(0.6, Math.abs(amplitude) * 0.3));
 
-                    ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha})`;
+                    ctx.strokeStyle = `hsla($ {
+                                hue
+                            }
+
+                                , 80 %, 60 %, $ {
+                                alpha
+                            })`;
 
                     if (x === -gridSize) {
                         ctx.moveTo(p.x, p.y);
-                    } else {
+                    }
+
+                    else {
                         ctx.lineTo(p.x, p.y);
                     }
+
                     prevAlpha = alpha;
                 }
+
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
@@ -1115,6 +1191,7 @@
             // Cross-grid for depth
             for (let x = -gridSize; x <= gridSize; x += gridSize / gridRes) {
                 ctx.beginPath();
+
                 for (let z = -gridSize; z <= gridSize; z += 25) {
                     const amplitude = getWaveAmplitude(x, z, t);
                     const y = amplitude * 40;
@@ -1123,11 +1200,19 @@
                     if (z === -gridSize) ctx.moveTo(p.x, p.y);
                     else ctx.lineTo(p.x, p.y);
                 }
+
                 const sampleAmp = getWaveAmplitude(x, 0, t);
                 const normalizedAmp = (sampleAmp + 2) / 4;
                 const hue = 180 + normalizedAmp * 60;
                 const alpha = Math.max(0.05, Math.min(0.4, Math.abs(sampleAmp) * 0.2));
-                ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha})`;
+
+                ctx.strokeStyle = `hsla($ {
+                                hue
+                            }
+
+                                , 80 %, 60 %, $ {
+                                alpha
+                            })`;
                 ctx.lineWidth = 1;
                 ctx.stroke();
             }
@@ -1157,7 +1242,9 @@
                 grad.addColorStop(1, 'rgba(255, 120, 120, 0.1)');
                 ctx.fillStyle = grad;
                 ctx.fill();
-            };
+            }
+
+                ;
 
             // Top barrier segment
             drawBarrierSegment(slit2.z + barrier.slitWidth / 2, 400);
@@ -1167,21 +1254,22 @@
             drawBarrierSegment(-400, slit1.z - barrier.slitWidth / 2);
 
             // Highlight slits with glow
-            [slit1, slit2].forEach(slit => {
-                const p1 = project3D(slit.x, -barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
-                const p2 = project3D(slit.x, barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
-                const p3 = project3D(slit.x, barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
-                const p4 = project3D(slit.x, -barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+            [slit1,
+                slit2].forEach(slit => {
+                    const p1 = project3D(slit.x, -barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                    const p2 = project3D(slit.x, barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                    const p3 = project3D(slit.x, barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                    const p4 = project3D(slit.x, -barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
 
-                ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.moveTo(p3.x, p3.y);
-                ctx.lineTo(p4.x, p4.y);
-                ctx.stroke();
-            });
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.moveTo(p3.x, p3.y);
+                    ctx.lineTo(p4.x, p4.y);
+                    ctx.stroke();
+                });
 
             // ========== 3. UPDATE AND DRAW PARTICLES ==========
             pilotState3D.particles.forEach((particle, idx) => {
@@ -1205,7 +1293,9 @@
                 }
 
                 // Add to trail
-                particle.trail.push({ x: particle.x, y: particle.y, z: particle.z });
+                particle.trail.push({
+                    x: particle.x, y: particle.y, z: particle.z
+                });
                 if (particle.trail.length > 150) particle.trail.shift();
 
                 // Draw trail with fade effect
@@ -1220,7 +1310,14 @@
 
                         // Color based on particle index for variety
                         const hue = 160 + (idx * 30) % 80;
-                        ctx.strokeStyle = `hsla(${hue}, 90%, 70%, ${alpha})`;
+
+                        ctx.strokeStyle = `hsla($ {
+                                hue
+                            }
+
+                                , 90 %, 70 %, $ {
+                                alpha
+                            })`;
                         ctx.lineWidth = 2;
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
@@ -1236,7 +1333,12 @@
 
                 // Outer glow
                 const glowGrad = ctx.createRadialGradient(pPos.x, pPos.y, 0, pPos.x, pPos.y, particleSize * 3);
-                glowGrad.addColorStop(0, `hsla(${hue}, 100%, 70%, 0.6)`);
+
+                glowGrad.addColorStop(0, `hsla($ {
+                                hue
+                            }
+
+                                , 100 %, 70 %, 0.6)`);
                 glowGrad.addColorStop(1, 'transparent');
                 ctx.fillStyle = glowGrad;
                 ctx.beginPath();
@@ -1246,7 +1348,12 @@
                 // Core particle
                 ctx.fillStyle = '#ffffff';
                 ctx.shadowBlur = 15;
-                ctx.shadowColor = `hsla(${hue}, 100%, 70%, 0.9)`;
+
+                ctx.shadowColor = `hsla($ {
+                                    hue
+                                }
+
+                                    , 100 %, 70 %, 0.9)`;
                 ctx.beginPath();
                 ctx.arc(pPos.x, pPos.y, particleSize, 0, Math.PI * 2);
                 ctx.fill();
@@ -1267,7 +1374,10 @@
                 const p2 = project3D(screenX + intensity * 50, 0, z, rx, ry, 0, 0, zoomLevel);
 
                 const alpha = Math.min(0.8, intensity * 0.5);
-                ctx.strokeStyle = `rgba(255, 200, 100, ${alpha})`;
+
+                ctx.strokeStyle = `rgba(255, 200, 100, $ {
+                                        alpha
+                                    })`;
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
@@ -1275,7 +1385,9 @@
                 ctx.stroke();
 
                 // Dot at end
-                ctx.fillStyle = `rgba(255, 220, 150, ${alpha})`;
+                ctx.fillStyle = `rgba(255, 220, 150, $ {
+                                        alpha
+                                    })`;
                 ctx.beginPath();
                 ctx.arc(p2.x, p2.y, 2, 0, Math.PI * 2);
                 ctx.fill();
@@ -1283,33 +1395,124 @@
         }
 
         function drawNeural3D(t, rx, ry) {
-            const count = 15 + Math.floor(eqParam * 50); const r = 200;
+            const count = 15 + Math.floor(eqParam * 50);
+            const r = 200;
+
             for (let i = 0; i < count; i++) {
-                const phi = Math.acos(-1 + (2 * i) / count); const theta = Math.sqrt(count * Math.PI) * phi + t;
-                const x = r * Math.sin(phi) * Math.cos(theta); const y = r * Math.sin(phi) * Math.sin(theta); const z = r * Math.cos(phi);
+                const phi = Math.acos(-1 + (2 * i) / count);
+                const theta = Math.sqrt(count * Math.PI) * phi + t;
+                const x = r * Math.sin(phi) * Math.cos(theta);
+                const y = r * Math.sin(phi) * Math.sin(theta);
+                const z = r * Math.cos(phi);
                 const pulse = (Math.sin(t * 8 - i) + 1) / 2;
                 const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
                 const center = project3D(0, 0, 0, rx, ry, 0, 0, zoomLevel);
-                ctx.strokeStyle = `rgba(0, 255, 255, ${0.1 + pulse * 0.5})`; ctx.lineWidth = p.scale;
-                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(center.x, center.y); ctx.stroke();
-                ctx.fillStyle = `rgba(0, 255, 255, ${0.3 + pulse * 0.7})`; ctx.beginPath(); ctx.arc(p.x, p.y, 5 * p.scale, 0, 6.28); ctx.fill();
+
+                ctx.strokeStyle = `rgba(0, 255, 255, $ {
+                                        0.1 + pulse * 0.5
+                                    })`;
+                ctx.lineWidth = p.scale;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(center.x, center.y);
+                ctx.stroke();
+
+                ctx.fillStyle = `rgba(0, 255, 255, $ {
+                                        0.3 + pulse * 0.7
+                                    })`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5 * p.scale, 0, 6.28);
+                ctx.fill();
             }
+
             const core = project3D(0, 0, 0, rx, ry, 0, 0, zoomLevel);
-            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(core.x, core.y, 10 * core.scale, 0, 6.28); ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(core.x, core.y, 10 * core.scale, 0, 6.28);
+            ctx.fill();
         }
 
+        // SOCIAL RESONANCE: Holographic Tensor Network
         function drawSocial3D(t, rx, ry) {
-            const radius = 200 + eqParam * 250; const points = 18;
-            ctx.globalCompositeOperation = 'screen';
-            for (let i = 0; i < points; i++) {
-                const a1 = (i / points) * Math.PI * 2 + t; const a2 = (i / points) * Math.PI + t * 0.5;
-                const x = Math.cos(a1) * Math.sin(a2) * radius; const y = Math.sin(a1) * Math.sin(a2) * radius; const z = Math.cos(a2) * radius;
-                const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
-                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 120 * p.scale);
-                grad.addColorStop(0, `rgba(255, 120, 50, ${0.4 * p.scale})`); grad.addColorStop(1, 'transparent');
-                ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(p.x, p.y, 120 * p.scale, 0, 6.28); ctx.fill();
+            const radius = 300;
+            const nodeCount = 20;
+            // Seeded random for consistency
+            const seed = 12345;
+            const pseudoRandom = (i) => Math.sin(seed + i * 43758.5453) * 0.5 + 0.5;
+
+            ctx.globalCompositeOperation = 'lighter';
+
+            const nodes = [];
+            // Generate nodes on sphere
+            for (let i = 0; i < nodeCount; i++) {
+                const phi = Math.acos(-1 + (2 * i) / nodeCount);
+                const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+                const x = radius * Math.cos(theta) * Math.sin(phi);
+                const y = radius * Math.sin(theta) * Math.sin(phi);
+                const z = radius * Math.cos(phi);
+
+                // Drift with time (Brownian motion simulation)
+                const drift = Math.sin(t * 0.5 + i) * 20 * eqParam;
+
+                // Project
+                nodes.push(project3D(x + drift, y + drift, z + drift, rx, ry, 0, 0, zoomLevel));
             }
-            ctx.globalCompositeOperation = 'source-over';
+
+            // Draw Vibrating Tensor Strings (Connections)
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = i + 1; j < nodeCount; j++) {
+                    // Only connect near neighbors to avoid mess
+                    const d2 = (nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2;
+                    if (d2 > 25000 * zoomLevel) continue; // Distance threshold
+
+                    const tension = (Math.sin(t * 2 + i * j) * 0.5 + 0.5); // 0 to 1
+
+                    // Tensor String: Cyan/Magenta/Orange based on "alignment"
+                    const hue = (i * j) % 360;
+                    ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${0.3 + tension * 0.4})`;
+
+                    ctx.beginPath();
+                    // Draw curve (sine wave on string)
+                    const steps = 10;
+                    const p1 = nodes[i];
+                    const p2 = nodes[j];
+
+                    ctx.moveTo(p1.x, p1.y);
+                    for (let k = 1; k <= steps; k++) {
+                        const prog = k / steps;
+                        const lx = p1.x + (p2.x - p1.x) * prog;
+                        const ly = p1.y + (p2.y - p1.y) * prog;
+
+                        // Vibrate perpendicular to the line
+                        const perpX = -(p2.y - p1.y);
+                        const perpY = (p2.x - p1.x);
+                        // Normalize
+                        const len = Math.sqrt(perpX ** 2 + perpY ** 2) || 1;
+
+                        const amp = Math.sin(t * 10 + i + j) * 5 * eqParam * Math.sin(prog * Math.PI); // Max amplitude in middle
+
+                        ctx.lineTo(lx + (perpX / len) * amp, ly + (perpY / len) * amp);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            // Draw Holographic Nodes
+            nodes.forEach((p, i) => {
+                const pulse = Math.sin(t * 3 + i) * 0.3 + 1; // 0.7 to 1.3
+                const size = 6 * p.scale * pulse;
+
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 2);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.4, `hsla(${(i * 20) % 360}, 100%, 60%, 0.8)`);
+                grad.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, size * 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
         }
 
         // REALITY PERCEPTION: Interface vs Substrate
@@ -1320,23 +1523,30 @@
             // "The Substrate" - the underlying truth (wavy grid)
             ctx.strokeStyle = 'rgba(100, 100, 255, 0.5)';
             ctx.lineWidth = 1.5;
+
             for (let x = -gridSize; x <= gridSize; x += spacing) {
                 ctx.beginPath();
+
                 for (let z = -gridSize; z <= gridSize; z += 20) {
                     const y = Math.sin(x * 0.02 + t) * 40 + Math.cos(z * 0.02 + t) * 40;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
-                    if (z === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                    if (z === -gridSize) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
+
                 ctx.stroke();
             }
 
             for (let z = -gridSize; z <= gridSize; z += spacing) {
                 ctx.beginPath();
+
                 for (let x = -gridSize; x <= gridSize; x += 20) {
                     const y = Math.sin(x * 0.02 + t) * 40 + Math.cos(z * 0.02 + t) * 40;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
-                    if (x === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                    if (x === -gridSize) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
+
                 ctx.stroke();
             }
 
@@ -1344,28 +1554,36 @@
             const interfaceHeight = 100 + eqParam * 120;
             ctx.strokeStyle = 'rgba(0, 255, 200, 0.8)';
             ctx.lineWidth = 2.5;
+
             for (let x = -gridSize; x <= gridSize; x += spacing) {
                 ctx.beginPath();
+
                 for (let z = -gridSize; z <= gridSize; z += 20) {
                     const y = interfaceHeight;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
-                    if (z === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                    if (z === -gridSize) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
+
                 ctx.stroke();
             }
 
             for (let z = -gridSize; z <= gridSize; z += spacing) {
                 ctx.beginPath();
+
                 for (let x = -gridSize; x <= gridSize; x += 20) {
                     const y = interfaceHeight;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
-                    if (x === -gridSize) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                    if (x === -gridSize) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
+
                 ctx.stroke();
             }
 
             // Connection points showing fitness payoff
             const samplePoints = 6;
+
             for (let i = 0; i < samplePoints; i++) {
                 for (let j = 0; j < samplePoints; j++) {
                     const x = -gridSize + (i / (samplePoints - 1)) * gridSize * 2;

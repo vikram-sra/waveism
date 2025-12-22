@@ -683,7 +683,7 @@
         const visFns = getVizFns();
 
         function loop() {
-            time += 0.01;
+            time += 0.002; // Slower, more majestic (approx 1 second pulses)
 
             document.querySelectorAll('.section.active canvas:not([id^="viz-webgl"])').forEach(c => {
                 const vizId = c.dataset.vizId;

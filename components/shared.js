@@ -25,13 +25,11 @@ const NAVIGATION_ITEMS = [
 function renderMainNav(activeId) {
     const homeBtn = `<a href="index.html" class="main-nav-tab home-btn" title="Home">⌂</a>`;
 
-    // Inclusion of scale metadata for the premium feel
     const navHtml = NAVIGATION_ITEMS.map(item => {
         const activeClass = item.id === activeId ? ' active' : '';
         return `
         <a href="${item.href}" class="main-nav-tab${activeClass}">
             <div class="nav-content">
-                <span class="nav-scale">${item.scale}</span>
                 <span class="nav-label">${item.label}</span>
             </div>
         </a>`;
@@ -40,12 +38,13 @@ function renderMainNav(activeId) {
     const isIndex = activeId === 'index';
     const containerClass = isIndex ? 'main-nav-container hidden-on-index' : 'main-nav-container';
 
+    // Auto-init slider if we're rendering this after DOM load
+    setTimeout(initNavSlider, 0);
+
     return `
     <div class="${containerClass}">
-        <div class="main-nav">
-            ${homeBtn}
-            ${navHtml}
-        </div>
+        ${homeBtn}
+        ${navHtml}
     </div>`;
 }
 
@@ -79,14 +78,14 @@ function init2DStarfield(containerId) {
 
     // Mobile detection
     const isMobile = window.innerWidth <= 900;
-    const sizeMultiplier = isMobile ? 0.5 : 1; // 50% smaller on mobile
+    const sizeMultiplier = isMobile ? 0.4 : 1; // Smaller on mobile
     const speedMultiplier = isMobile ? 2.0 : 1; // 2x faster on mobile
-    const countMultiplier = isMobile ? 0.7 : 1; // Fewer stars on mobile for performance
+    const countMultiplier = isMobile ? 0.5 : 1; // Fewer stars on mobile for performance
 
     const layers = [
-        { count: Math.floor(150 * countMultiplier), size: 0.8 * sizeMultiplier, speed: 0.02 * speedMultiplier, opacity: 0.3, stars: [] },
-        { count: Math.floor(80 * countMultiplier), size: 1.5 * sizeMultiplier, speed: 0.05 * speedMultiplier, opacity: 0.5, stars: [] },
-        { count: Math.floor(30 * countMultiplier), size: 2.5 * sizeMultiplier, speed: 0.1 * speedMultiplier, opacity: 0.7, stars: [] }
+        { count: Math.floor(40 * countMultiplier), size: 0.3 * sizeMultiplier, speed: 0.02 * speedMultiplier, opacity: 0.25, stars: [] },
+        { count: Math.floor(20 * countMultiplier), size: 0.6 * sizeMultiplier, speed: 0.05 * speedMultiplier, opacity: 0.4, stars: [] },
+        { count: Math.floor(8 * countMultiplier), size: 1.0 * sizeMultiplier, speed: 0.1 * speedMultiplier, opacity: 0.6, stars: [] }
     ];
 
     function resize() {
@@ -592,7 +591,15 @@ function project3D(x, y, z, rotX, rotY, centerX, centerY, zoom = 1, depth = 400,
     pz = -y * Math.sin(rotX) + pz * Math.cos(rotX);
 
     // Perspective projection
-    const scale = depth / (depth + pz + (depth / 2));
+    const zOffset = depth + pz + (depth / 2);
+    // Safety check to prevent division by zero or negative scale
+    let scale = 0;
+    if (zOffset > 10) {
+        scale = depth / zOffset;
+    }
+
+    // Clamp scale to prevent visual explosions
+    scale = Math.min(scale, 20);
 
     return {
         x: centerX + px * scale * zoom * multiplier,
@@ -744,8 +751,11 @@ function enableDragScrolling(el) {
 
 // ============ NAV AUTO-CENTERING ============
 function centerActiveNavItems() {
-    const activeMain = document.querySelector('.main-nav-tab.active');
-    if (activeMain) activeMain.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    const mainNav = document.querySelector('.main-nav-container');
+    if (mainNav) {
+        const active = mainNav.querySelector('.active');
+        if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
 
     const activeTheory = document.querySelector('.theory-tab.active');
     if (activeTheory) activeTheory.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -842,250 +852,39 @@ function initOrbUI() {
 }
 
 // ============ INTERACTIVE NAV SLIDER (ROLLING WHEEL) ============
+// ============ INTERACTIVE NAV SLIDER (HORIZONTAL TOP) ============
 function initNavSlider() {
-    const container = document.querySelector('.main-nav');
-    // Select all tabs including home button
+    const container = document.querySelector('.main-nav-container');
     const items = Array.from(document.querySelectorAll('.main-nav-tab'));
     if (!container || !items.length) return;
 
-    // State
-    const itemHeight = 60; // Distance between items
-    let startScroll = 0;
+    // Enable drag scrolling (mouse/touch)
+    enableDragScrolling(container);
 
-    // Initialize: Set start index to active item
-    let activeIdx = items.findIndex(item => item.classList.contains('active'));
-    if (activeIdx < 0) activeIdx = 0;
+    // Initial Center Active Item
+    const activeItem = container.querySelector('.active');
+    if (activeItem) {
+        setTimeout(() => {
+            activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }, 100);
+    }
 
-    startScroll = activeIdx * itemHeight;
-    let currentScroll = startScroll;
-    let targetScroll = startScroll;
-    let lastCenterIndex = -1;
-    let isDragging = false;
-    let startY = 0;
+    // Scroll Indicators (Optional, mainly CSS handles overflow)
+    // We can add subtle fade masks in CSS instead of JS logic
 
-    // Memory for wakeup
-    let savedScroll = startScroll;
-
-    const maxScroll = (items.length - 1) * itemHeight;
-
-    // Inject Scroll Indicators
-    const upArrow = document.createElement('div');
-    upArrow.className = 'nav-scroll-indicator up';
-    upArrow.innerHTML = '▲'; // or use SVG/Icon
-    container.parentElement.appendChild(upArrow);
-
-    const downArrow = document.createElement('div');
-    downArrow.className = 'nav-scroll-indicator down';
-    downArrow.innerHTML = '▼';
-    container.parentElement.appendChild(downArrow);
-
-    // Inject Counter
-    const counter = document.createElement('div');
-    counter.className = 'nav-counter';
-    container.parentElement.appendChild(counter);
-
-    // Arrow Logic
-    const stepScroll = (dir) => {
-        targetScroll = clampScroll(targetScroll + (dir * itemHeight));
-        requestAnimationFrame(updateWheel);
-        snapTimer = setTimeout(snapToNearest, 150); // Ensure clean snap
-        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
-    };
-
-    upArrow.addEventListener('click', (e) => { e.stopPropagation(); stepScroll(-1); });
-    downArrow.addEventListener('click', (e) => { e.stopPropagation(); stepScroll(1); });
-
-    // Physics Loop
-    const updateWheel = () => {
-        if (Math.abs(currentScroll - targetScroll) > 0.5) {
-            currentScroll += (targetScroll - currentScroll) * 0.08; // Smoother physics
-            // Audio Tick logic...
-            const nearestItem = Math.round(currentScroll / itemHeight);
-            if (nearestItem !== lastCenterIndex) {
-                lastCenterIndex = nearestItem;
-            }
-        }
-
-        // Update Arrow Visibility
-        upArrow.style.opacity = currentScroll <= 5 ? '0' : '';
-        upArrow.style.pointerEvents = currentScroll <= 5 ? 'none' : 'auto';
-
-        downArrow.style.opacity = currentScroll >= maxScroll - 5 ? '0' : '';
-        downArrow.style.pointerEvents = currentScroll >= maxScroll - 5 ? 'none' : 'auto';
-
-        // Update Counter
-        const totalItems = items.length;
-        const currentIdx = Math.max(1, Math.min(totalItems, Math.round(currentScroll / itemHeight) + 1));
-        counter.textContent = `${currentIdx}/${totalItems}`;
-
-        // Directional Coloring (Purple towards active item)
-        const activePos = activeIdx * itemHeight;
-        const threshold = 30; // buffer
-
-        if (currentScroll > activePos + threshold) {
-            upArrow.classList.add('active-direction');
-            downArrow.classList.remove('active-direction');
-        } else if (currentScroll < activePos - threshold) {
-            downArrow.classList.add('active-direction');
-            upArrow.classList.remove('active-direction');
-        } else {
-            // Near active item
-            upArrow.classList.remove('active-direction');
-            downArrow.classList.remove('active-direction');
-        }
-
-        items.forEach((item, i) => {
-            const itemPos = i * itemHeight;
-            const dist = itemPos - currentScroll;
-
-            // "Instrument" Visibility Window: +/- 150px
-            if (Math.abs(dist) > 180) {
-                item.style.display = 'none';
-                item.classList.remove('visible', 'active-item');
-                return;
-            }
-
-            item.style.display = 'flex';
-            item.classList.add('visible');
-
-            // Normalized distance (-1 to 1 roughly within the focus area)
-            const normDist = dist / 120;
-            const absNormDist = Math.abs(normDist);
-
-            // Visual Transform
-            // Center (0): Scale 1, Opacity 1, Z 0
-            // Edge (1): Scale 0.6, Opacity 0.2, Z -50
-
-            const scale = Math.max(0.6, 1 - absNormDist * 0.4);
-            const opacity = Math.max(0.1, 1 - absNormDist * 1.5);
-            const z = -Math.abs(dist) * 0.5;
-            const rotateX = -normDist * 40; // Rotate like a drum
-
-            item.style.transform = `translateY(${dist}px) translateZ(${z}px) rotateX(${rotateX}deg) scale(${scale})`;
-            item.style.opacity = opacity;
-            item.style.zIndex = Math.round(100 - absNormDist * 10);
-        });
-
-        // Continue loop if moving
-        if (Math.abs(targetScroll - currentScroll) > 0.1 || isDragging) {
-            requestAnimationFrame(updateWheel);
-
-            // If on index, have the wheel control the horizontal reel
-            const reel = document.getElementById('reel');
-            if (reel && isDragging) {
-                const scrollRatio = currentScroll / maxScroll;
-                reel.scrollLeft = scrollRatio * (reel.scrollWidth - window.innerWidth);
-            }
-        }
-    };
-
-    // Interaction Handlers
-    const clampScroll = (val) => Math.max(0, Math.min(maxScroll, val));
-
-    const onWheel = (e) => {
-        e.preventDefault();
-        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
-        targetScroll = clampScroll(targetScroll + e.deltaY * 0.5);
-        requestAnimationFrame(updateWheel); // Ensure loop is running
-
-        // Debounce snapping
-        clearTimeout(snapTimer);
-        snapTimer = setTimeout(snapToNearest, 150);
-    };
-
-    let snapTimer;
-    const snapToNearest = () => {
-        if (isDragging) return;
-        const idx = Math.round(targetScroll / itemHeight);
-        targetScroll = idx * itemHeight;
-        requestAnimationFrame(updateWheel);
-    };
-
-    const startDrag = (e) => {
-        // Ignore if clicking arrows
-        if (e.target.closest('.nav-scroll-indicator')) return;
-
-        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
-        isDragging = true;
-        startY = e.touches ? e.touches[0].clientY : e.clientY;
-        startScroll = currentScroll;
-        // stop any snapping
-        clearTimeout(snapTimer);
-        targetScroll = currentScroll; // sync
-        requestAnimationFrame(updateWheel);
-    };
-
-    const moveDrag = (e) => {
-        if (!isDragging) return;
-        window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
-        const y = e.touches ? e.touches[0].clientY : e.clientY;
-        const delta = startY - y; // Drag up = positive scroll (move down list)
-        targetScroll = clampScroll(startScroll + delta * 1.5); // 1.5x speed
-    };
-
-    const endDrag = (e) => {
-        if (!isDragging) return;
-        isDragging = false;
-        snapToNearest();
-    };
-
-    // Event Listeners
-    container.parentElement.addEventListener('wheel', onWheel, { passive: false });
-    container.parentElement.addEventListener('mousedown', startDrag);
-    container.parentElement.addEventListener('touchstart', startDrag, { passive: false });
-    window.addEventListener('mousemove', moveDrag);
-    window.addEventListener('touchmove', moveDrag, { passive: false });
-    window.addEventListener('mouseup', endDrag);
-    window.addEventListener('touchend', endDrag);
-
-    // Click to Navigate logic
-    items.forEach((item, i) => {
+    // Click Logic (for smooth scroll to item)
+    items.forEach(item => {
         item.addEventListener('click', (e) => {
-            window.dispatchEvent(new CustomEvent('ui-interaction')); // Keep UI awake
-            // Keep default link behavior IF it is the center item
-            const itemScroll = i * itemHeight;
-            if (Math.abs(currentScroll - itemScroll) > 20) {
-                // If clicked item is NOT center, scroll to it instead of navigating immediately
-                e.preventDefault();
-                targetScroll = itemScroll;
-                snapToNearest();
-            }
-            // else: let href trigger
+            // Allow default link behavior but animate scroll
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         });
     });
-
-    // Start
-    requestAnimationFrame(updateWheel);
-
-    // Wakeup Protection: Restore saved scroll if sidebar was hidden/drifted
-    const body = document.body;
-    const observer = new MutationObserver(() => {
-        if (body.classList.contains('ui-open')) {
-            // Wake up to the last active index, not the drifted position
-            const activeIdx = items.findIndex(item => item.classList.contains('active'));
-            if (activeIdx >= 0) {
-                targetScroll = activeIdx * itemHeight;
-            }
-        }
-    });
-    observer.observe(body, { attributes: true, attributeFilter: ['class'] });
 
     // Gentle Fade-In
     setTimeout(() => {
         const navContainer = document.querySelector('.main-nav-container');
         if (navContainer) navContainer.classList.add('visible');
     }, 100);
-
-    // Sync with Index Reel
-    const reel = document.getElementById('reel');
-    if (reel) {
-        reel.addEventListener('scroll', () => {
-            if (isDragging) return;
-            // Map horizontal reel scroll to vertical sidebar scroll
-            const scrollRatio = reel.scrollLeft / (reel.scrollWidth - window.innerWidth);
-            targetScroll = scrollRatio * maxScroll;
-        });
-    }
 }
 
 // ============ PAGE TRANSITION (FADE ONLY) ============

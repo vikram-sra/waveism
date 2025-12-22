@@ -59,6 +59,7 @@ class HamiltonianNode {
         this.velocity = new Vector3();
         this.acceleration = new Vector3();
         this.force = new Vector3();
+        this.isFixed = false; // Add interaction lock state
 
         // Information-theoretic properties
         this.information = config.information || 1.0; // Salience/importance
@@ -84,10 +85,21 @@ class HamiltonianNode {
     }
 
     update(dt) {
+        if (this.isFixed) {
+            this.acceleration = new Vector3();
+            this.velocity = new Vector3();
+            return;
+        }
+
+        // Integral safety
+        if (isNaN(this.position.x) || !isFinite(this.position.x)) this.position.x = Math.random() * 10 - 5;
+        if (isNaN(this.position.y) || !isFinite(this.position.y)) this.position.y = Math.random() * 10 - 5;
+        if (isNaN(this.position.z) || !isFinite(this.position.z)) this.position.z = Math.random() * 10 - 5;
+
         // Velocity Verlet integration (symplectic, energy-conserving)
         // v(t + dt/2) = v(t) + a(t) * dt/2
         const halfDtAccel = this.acceleration.multiply(dt * 0.5);
-        const halfVel = this.velocity.add(halfDtAccel);
+        let halfVel = this.velocity.add(halfDtAccel);
 
         // x(t + dt) = x(t) + v(t + dt/2) * dt
         this.position = this.position.add(halfVel.multiply(dt));
@@ -95,8 +107,19 @@ class HamiltonianNode {
         // a(t + dt) = F(t + dt) / m
         this.acceleration = this.force.multiply(1 / this.mass);
 
+        // Safety clamp on acceleration
+        const accMag = this.acceleration.magnitude();
+        if (accMag > 10000) {
+            this.acceleration = this.acceleration.normalize().multiply(10000);
+        }
+
         // v(t + dt) = v(t + dt/2) + a(t + dt) * dt/2
         this.velocity = halfVel.add(this.acceleration.multiply(dt * 0.5));
+
+        // Final position safety
+        if (isNaN(this.position.x)) this.position.x = 0;
+        if (isNaN(this.position.y)) this.position.y = 0;
+        if (isNaN(this.position.z)) this.position.z = 0;
     }
 }
 
