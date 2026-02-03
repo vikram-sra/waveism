@@ -1641,7 +1641,6 @@ if (document.readyState === 'loading') {
         initOscilloscope();
         initPageTransition();
         initNavSlider();
-        initEquationInteractivity();
         initOnboardingHint();
         initSlidersButton();
         initShareButton();
