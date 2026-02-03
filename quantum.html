@@ -38,32 +38,9 @@
             box-shadow: inset 0 0 15px rgba(0, 255, 170, 0.2);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(0, 255, 170, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 180px;
-            line-height: 1.4;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            color: rgba(0, 255, 170, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glitch {
             position: fixed;
@@ -81,21 +58,9 @@
 
         /* Mobile Cleanup */
         @media (max-width: 600px) {
-            #cinematic-overlay {
-                font-size: 0.4rem;
-                bottom: 10px;
-                left: 10px;
-                max-width: 150px;
-                opacity: 0.5;
-            }
 
-            .system-status {
-                font-size: 0.4rem;
-                bottom: 10px;
-                right: 10px;
-                line-height: 1.2;
-                opacity: 0.5;
-            }
+
+
 
             /* Info Panel needs to be above the tiny labels but not blocking view */
             .info-panel {
@@ -130,14 +95,10 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE QUANTUM HILBERT SPACE INTERFACE</div>
+
     <div class="manifold-glitch"></div>
 
-    <div class="system-status">
-        [ WAVEFUNCTION: UNITARY ]<br>
-        [ PHASE COHERENCE: LOCKED ]<br>
-        [ OBSERVATION: SUPPRESSED ]
-    </div>
+
 
     <div id="nav-container"></div>
 
@@ -202,6 +163,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -221,6 +186,7 @@
             'superposition': {
                 name: 'Observer Paradox', year: 'Aesthetic Interpretation',
                 equation: '|Ψ⟩ = α|Face⟩ + β|Landscape⟩',
+                equationExpl: 'A state vector |Ψ⟩ is a linear combination (superposition) of basis states. In this simulation, it represents the blending of two distinct visual forms.',
                 facts: [{ text: 'Morphological', status: 'yes' }, { text: 'Interactive', status: 'yes' }],
                 description: 'Visual metaphor for superposition. The object exists as both a localized entity (Face) and a distributed field (Landscape), choosing a form only upon interaction.',
                 concepts: [
@@ -232,6 +198,7 @@
             'double-slit': {
                 name: 'Interference Patterns', year: 'Wave-Particle Duality',
                 equation: 'ψ = ψ₁ + ψ₂',
+                equationExpl: 'The total wavefunction ψ is the sum of the wavefunctions from both slits. This linearity allows for constructive and destructive interference patterns.',
                 facts: [{ text: 'Superposition', status: 'yes' }, { text: 'Pattern Persistence', status: 'yes' }],
                 description: 'The prototypical quantum test. Particles travel through two slits and interfere with themselves, creating a deterministic distribution pattern.',
                 concepts: [
@@ -243,6 +210,7 @@
             'orbitals': {
                 name: 'Atomic Orbitals', year: 'Harmonic States',
                 equation: 'Hψ = Eψ',
+                equationExpl: 'The time-independent Schrödinger equation. The Hamiltonian operator H acts on the wavefunction ψ to yield the possible energy levels E.',
                 facts: [{ text: 'Stable States', status: 'yes' }, { text: 'Quantized energy', status: 'yes' }],
                 description: 'Probability clouds of electron residence. These are standing-wave patterns (Spherical Harmonics) in the field around the nucleus.',
                 concepts: [
@@ -254,6 +222,7 @@
             'strings': {
                 name: 'Superstring Manifolds', year: 'Harmonic Elements',
                 equation: 'L ∝ ∫ d²σ',
+                equationExpl: 'The Nambu-Goto action. It describes the area of the world-sheet swept out by a relativistic string, defining the movement of fundamental strings.',
                 facts: [{ text: '10 Dimensions', status: 'yes' }, { text: 'Calabi-Yau', status: 'yes' }],
                 description: 'Point-particles as vibrating strings. Different vibration modes correspond to electrons, photons, and gravitons.',
                 concepts: [
@@ -265,6 +234,7 @@
             'crystal': {
                 name: 'Time Crystals', year: 'Temporal Order',
                 equation: '⟨ψ(t+T)⟩ = ⟨ψ(t)⟩',
+                equationExpl: 'Discrete time-translation symmetry. The state of the system returns to itself after a specific time period T, breaking continuous temporal symmetry.',
                 facts: [{ text: 'Broken T-Symmetry', status: 'yes' }, { text: 'Non-equilibrium', status: 'yes' }],
                 description: 'A phase of matter breaking time-translation symmetry. Pattern repetition occurs through time rather than space, even at lowest energy states.',
                 concepts: [
@@ -276,6 +246,7 @@
             'gedanken': {
                 name: "Schrödinger's Cat", year: 'Measurement Problem',
                 equation: '1/√2 (|A⟩ + |D⟩)',
+                equationExpl: 'A maximally entangled state between a quantum trigger and a macroscopic object (cat). Illustrates the challenge of objective reality.',
                 facts: [{ text: 'Macroscopic', status: 'yes' }, { text: 'Entangled', status: 'yes' }],
                 description: 'Paradox illustrating interpretation limits. A cat is simultaneously alive and dead until the system is observed.',
                 concepts: [
@@ -287,6 +258,7 @@
             'tunneling': {
                 name: 'Quantum Tunneling', year: 'Barrier Penetration',
                 equation: 'T ∝ exp(-κL)',
+                equationExpl: 'The transmission coefficient T shows that a particle probability density decays exponentially but non-zero through a forbidden energy barrier.',
                 facts: [{ text: 'Evanescent Wave', status: 'yes' }, { text: 'Barrier Leak', status: 'yes' }],
                 description: 'Barrier penetration via wave mechanics. Classically impossible: the field permeates the barrier, re-establishing on the other side.',
                 concepts: [
@@ -298,6 +270,7 @@
             'entanglement': {
                 name: 'Quantum Entanglement', year: 'EPR Paradox',
                 equation: '|Ψ⟩ = (|00⟩ + |11⟩)/√2',
+                equationExpl: 'The Bell State. Two particles are in a single, inseparable quantum state where measuring one instantly defines the state of the other.',
                 facts: [{ text: 'Non-locality', status: 'yes' }, { text: 'Phase Lock', status: 'yes' }],
                 description: 'Instantaneous correlation between distant particles. Einstein’s "Spooky Action"—the state of one defines the state of the other globally.',
                 concepts: [
@@ -309,6 +282,7 @@
             'teleportation': {
                 name: 'Quantum Teleportation', year: 'Bennett Protocol',
                 equation: 'Bob(Ψ) → Alice(M)',
+                equationExpl: 'The transfer of quantum states via entanglement. The original state is destroyed and re-appears at the destination without physical travel.',
                 facts: [{ text: 'State Transfer', status: 'yes' }, { text: 'No Cloning', status: 'yes' }],
                 description: 'Transfer of quantum states via entanglement. The original state is destroyed (No-Cloning), re-appearing at the destination through classic-quantum bridging.',
                 concepts: [

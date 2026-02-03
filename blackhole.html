@@ -32,31 +32,9 @@
             box-shadow: inset 0 0 15px rgba(255, 85, 0, 0.2);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(255, 85, 0, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 250px;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            color: rgba(255, 85, 0, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glow {
             position: fixed;
@@ -111,16 +89,12 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE SINGULARITY METRIC SUBSURFACE</div>
+
     <div class="manifold-glow"></div>
     <div id="lensing-distortion"></div>
     <div class="singularity-readout" id="readout">ρ → ∞ | r → rₛ</div>
 
-    <div class="system-status">
-        [ SCHWARZSCHILD RADIUS: CALCULATING ]<br>
-        [ EVENT HORIZON: STABLE ]<br>
-        [ HAWKING FLUX: DETECTED ]
-    </div>
+
 
     <div id="nav-container"></div>
 
@@ -176,6 +150,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -195,6 +173,7 @@
             'schwarzschild': {
                 name: 'Schwarzschild Singularly', year: 'Karl Schwarzschild, 1916',
                 equation: 'rₛ = 2GM/c²',
+                equationExpl: 'The Schwarzschild radius defines the point of no return for a non-rotating mass. It is directly proportional to the mass M of the black hole.',
                 facts: [{ text: 'Stationary', status: 'yes' }, { text: 'Perfect Sphere', status: 'yes' }],
                 description: 'The prototypical black hole. It describes the gravitational field outside a non-rotating, spherical mass. At the event horizon, space and time essentially swap roles; every future worldline leads inevitably to the singularity.',
                 concepts: [
@@ -207,6 +186,7 @@
             'kerr': {
                 name: 'Kerr Rotating Metric', year: 'Roy Kerr, 1963',
                 equation: 'Δ = r² - 2Mr + a²',
+                equationExpl: 'The horizon condition for a rotating black hole. The parameter "a" represents the angular momentum, which twists and shrinks the event horizon.',
                 facts: [{ text: 'Frame-Dragging', status: 'yes' }, { text: 'Ergosphere', status: 'yes' }],
                 description: 'The most realistic model for astrophysical black holes. Because the hole rotates, it twists the surrounding spacetime fabric into a vortex—a process known as the Lense-Thirring effect.',
                 concepts: [
@@ -219,6 +199,7 @@
             'accretion': {
                 name: 'Relativistic Accretion', year: 'Keplerian Friction',
                 equation: 'L = η Ṁ c²',
+                equationExpl: 'Mass accretion luminosity. Efficiency (η) represents how much rest-mass energy is converted to light as matter spirals into the abyss.',
                 facts: [{ text: 'X-Ray Intense', status: 'yes' }, { text: 'Plasma Flow', status: 'yes' }],
                 description: 'A brilliant disk of superheated plasma spiraling into the abyss. Friction converts gravitational potential energy into radiation with up to 42% efficiency—dwarfing nuclear fusion.',
                 concepts: [
@@ -230,6 +211,7 @@
             'lensing': {
                 name: 'Einstein Rings & Shadow', year: 'Nucl. Deflection',
                 equation: 'θ ≈ 4GM/c²b',
+                equationExpl: 'The Einstein deflection angle. Mass warps spacetime such that light rays are bent, creating visual rings and focusing effects.',
                 facts: [{ text: 'Self-Lensing', status: 'yes' }, { text: 'Geodesic Bend', status: 'yes' }],
                 description: 'The intense gravity redirects light rays. We see the back of the accretion disk "lifted" over the hole, and distant stars warped into rings. The "Shadow" is the absence of any light rays that have fallen past the horizon.',
                 concepts: [
@@ -241,6 +223,7 @@
             'hawking': {
                 name: 'Hawking Evaporation', year: 'Stephen Hawking, 1974',
                 equation: 'T_H = ℏc³ / (8πGMk)',
+                equationExpl: 'The Hawking temperature implies black holes are not perfectly black but emit thermal radiation, eventually radiating away their entire mass.',
                 facts: [{ text: 'Quantum Decay', status: 'yes' }, { text: 'Virtual Pairs', status: 'yes' }],
                 description: 'A quantum breakdown at the horizon. Virtual particle pairs are separated; one falls in, the other escapes. Over aeons, the black hole loses mass and eventually explodes in a final burst of gamma rays.',
                 concepts: [

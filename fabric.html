@@ -55,39 +55,13 @@
             opacity: 0.03;
             background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 255, 255, 0.05) 1px, rgba(0, 255, 255, 0.05) 2px);
         }
-
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(0, 255, 255, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 150px;
-        }
-
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            color: rgba(0, 255, 255, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
     </style>
 </head>
 
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE COSMIC MANIFOLD VISUALIZATION</div>
+
     <div class="manifold-glitch"></div>
     <div id="nav-container"></div>
 
@@ -146,6 +120,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Deep Field Physics</div>
                 <p id="info-physics"></p>
             </div>
@@ -165,6 +143,7 @@
             'loaf': {
                 name: 'The 4D Loaf', year: 'Special Relativity',
                 equation: 'ds² = -c²dt² + dx²',
+                equationExpl: 'The 1D+1D Minkowski metric. Similar to a slice of bread in a loaf, your velocity determines the angle of your Now in the 4D spacetime continuum.',
                 facts: [{ text: 'Sliceable', status: 'yes' }, { text: 'Relative Now', status: 'yes' }],
                 description: 'Brian Greene\'s "Bread Loaf" analogy. The universe exists as a static block. Your velocity determines the angle at which you slice this block to define "Now." Movement through space is literally a rotation of your temporal axis.',
                 concepts: [
@@ -176,6 +155,7 @@
             'river': {
                 name: 'The Frozen River', year: 'Static Manifold',
                 equation: '∇·J = 0 (Static Flux)',
+                equationExpl: 'The continuity equation for static flux. It represents the "Frozen River" view where the timeline is a pre-existing vector field with no dynamic flow.',
                 facts: [{ text: 'Flow = Illusion', status: 'yes' }, { text: 'Immutable', status: 'yes' }],
                 description: 'Critique of the "Flow" metaphor. If time flows, it must flow *with respect* to something else (hypertime?), leading to infinite regress. The "Frozen River" model posits that spacetime is a static, pre-existing manifold.',
                 concepts: [
@@ -187,6 +167,7 @@
             'entropy': {
                 name: 'The Entropy Arrow', year: 'Second Law',
                 equation: 'S = k_B ln Ω',
+                equationExpl: 'The Boltzmann entropy formula. It links the macroscopic state of a system to the number of microstates (Ω), explaining why order naturally decays.',
                 facts: [{ text: 'Irreversible', status: 'yes' }, { text: 'Axiomatic Heat', status: 'yes' }],
                 description: 'Order decays into noise. The "future" is simply the direction of statistically higher entropy. Time\'s arrow is the dissipation of initial low-entropy tension into the vacuum.',
                 concepts: [
@@ -198,6 +179,7 @@
             'expansion': {
                 name: 'Metric Expansion', year: 'Hubble-Lemaître',
                 equation: 'a(t) ∝ t^(2/3)',
+                equationExpl: 'The scale factor evolution for a matter-dominated universe. It describes how the physical distance between non-interacting points grows over time.',
                 facts: [{ text: 'Fabric Stretching', status: 'yes' }, { text: 'Non-Local', status: 'yes' }],
                 description: 'Galaxies aren\'t moving *through* space; space itself is stretching between them. Hubble\'s Law quantifies the expansion of the metric field itself.',
                 concepts: [

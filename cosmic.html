@@ -38,32 +38,9 @@
             box-shadow: inset 0 0 15px rgba(0, 136, 255, 0.2);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(0, 136, 255, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 140px;
-            line-height: 1.4;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            color: rgba(0, 136, 255, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glitch {
             position: fixed;
@@ -76,40 +53,16 @@
             opacity: 0.03;
             background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 136, 255, 0.05) 1px, rgba(0, 136, 255, 0.05) 2px);
         }
-
-        .system-status,
-        #cinematic-overlay {
-            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        /* ORB INTEGRATION */
-        body:not(.ui-open) .system-status,
-        body:not(.ui-open) #cinematic-overlay {
-            opacity: 0;
-            transform: translateX(50px) scale(0.9);
-            pointer-events: none;
-        }
-
-        body.ui-open .system-status,
-        body.ui-open #cinematic-overlay {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-            pointer-events: auto;
-        }
     </style>
 </head>
 
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE MINKOWSKI WORLDLINE INTERFACE</div>
+
     <div class="manifold-glitch"></div>
 
-    <div class="system-status">
-        [ METRIC: LORENTZIAN ]<br>
-        [ CURVATURE: DYNAMIC ]<br>
-        [ GEODESIC: OPTIMAL ]
-    </div>
+
 
     <div id="nav-container"></div>
 
@@ -169,6 +122,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -188,6 +145,7 @@
             'worldline': {
                 name: 'Helical Worldlines', year: 'Hermann Minkowski, 1908',
                 equation: 'x(τ) = (R cos ωτ, R sin ωτ, vτ)',
+                equationExpl: 'The parametric equation of a helical worldline. It describes an object orbiting in space while moving linearly through the vertical temporal dimension.',
                 facts: [{ text: 'Proper Time', status: 'yes' }, { text: '4D Cylinder', status: 'yes' }],
                 description: 'The geometric interpretation of orbits. In 3D space, a planet circles a sun. In 4D spacetime, the same planet traces a helical "worldline" through the vertical temporal dimension. All objects move through spacetime at the constant speed of light c.',
                 concepts: [
@@ -200,6 +158,7 @@
             'emc2': {
                 name: 'Mass-Energy Symmetry', year: 'Wave-Knot Protocol',
                 equation: 'E² = (pc)² + (m₀c²)²',
+                equationExpl: 'The full relativistic energy-momentum relation. It shows that energy is a combination of mass-energy (m₀c²) and the kinetic energy of momentum (pc).',
                 facts: [{ text: 'Trapped Energy', status: 'yes' }, { text: 'Exchange', status: 'yes' }],
                 description: 'Mass as energy trapped in localized resonance. Mass-energy symmetry allows conversion between radiant flux and localized states.',
                 concepts: [
@@ -211,6 +170,7 @@
             'gravity': {
                 name: 'Metric Warping', year: 'Einstein Manifold',
                 equation: 'G_μν = 8πT_μν',
+                equationExpl: 'The Einstein Field Equation states that the geometry of spacetime (G) is curved by the presence of all mass, energy, and momentum (T).',
                 facts: [{ text: 'Dynamic Stage', status: 'yes' }, { text: 'Geodesic Flow', status: 'yes' }],
                 description: 'Gravity as curvature. Massive objects deform the metric, dictating the "straightest" paths for all system agents.',
                 concepts: [
@@ -222,6 +182,7 @@
             'funnel': {
                 name: 'Cosmic Funnel', year: 'Expansion Era',
                 equation: 'ȧ/a = H(t)',
+                equationExpl: "The Hubble expansion rate. It measures the relative growth of the universe's scale factor (a) over time, describing its cosmic history.",
                 facts: [{ text: 'Metric Stretch', status: 'yes' }, { text: 'Scalar Field', status: 'yes' }],
                 description: 'Holographic history of the manifold. Expansion from high-energy singularity to the era of dark energy acceleration.',
                 concepts: [
@@ -233,6 +194,7 @@
             'singularity': {
                 name: 'Event Horizon', year: 'Schwarzschild Limit',
                 equation: 'R_s = 2GM/c²',
+                equationExpl: 'The Schwarzschild radius defines the point of no return where the escape velocity exactly equals the speed of light.',
                 facts: [{ text: 'Infinite Curve', status: 'yes' }, { text: 'Time Freeze', status: 'yes' }],
                 description: 'The ultimate cosmic resonance. A region where curvature is so extreme that the metric field effectively disconnects from the surrounding worldlines.',
                 concepts: [

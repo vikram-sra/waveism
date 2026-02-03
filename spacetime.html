@@ -38,32 +38,9 @@
             box-shadow: inset 0 0 15px rgba(254, 235, 44, 0.2);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(254, 235, 44, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 180px;
-            line-height: 1.4;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            color: rgba(254, 235, 44, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glitch {
             position: fixed;
@@ -82,14 +59,10 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE MINKOWSKI METRIC INTERFACE</div>
+
     <div class="manifold-glitch"></div>
 
-    <div class="system-status">
-        [ COORDINATES: LORENTZ COVARIANT ]<br>
-        [ METRIC: (-+++) SIGNATURE ]<br>
-        [ CAUSALITY: ENFORCED BY c ]
-    </div>
+
 
     <div id="nav-container"></div>
 
@@ -153,6 +126,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -172,6 +149,7 @@
             'block-universe': {
                 name: 'Block Universe', year: 'Eternalism Protocol',
                 equation: 'M⁴ = R³ × T',
+                equationExpl: 'The 4D Minkowski manifold is the Cartesian product of 3D Euclidean space and 1D time. It implies space and time are fundamentally unified.',
                 facts: [{ text: 'Formal Past', status: 'yes' }, { text: 'Static Future', status: 'yes' }],
                 description: 'The 4D "Meatloaf". Space and time exist as a singular, immutable solid. Your "Now" is a cross-sectional slice traversing the continuum.',
                 concepts: [
@@ -183,6 +161,7 @@
             'light-cone': {
                 name: 'Light Cone Topology', year: 'Minkowski Geometry',
                 equation: 'ds² = 0',
+                equationExpl: 'The interval ds² is zero for any path traveling at the speed of light. This defines the absolute causal boundary of the universe.',
                 facts: [{ text: 'Absolute Future', status: 'yes' }, { text: 'Causal Limit', status: 'yes' }],
                 description: 'Causality boundaries. Light defines a 45° manifold. Outside lies "Absolute Elsewhere"—regions biologically unreachable from the origin.',
                 concepts: [
@@ -194,6 +173,7 @@
             'gravity': {
                 name: 'Einstein Geometry', year: 'Metric Warping',
                 equation: 'G_μν = 8πT_μν',
+                equationExpl: 'The Einstein Field Equation states that the curvature of spacetime (G) is directly proportional to the density of mass and energy (T).',
                 facts: [{ text: 'Curvature', status: 'yes' }, { text: 'Inertial Flow', status: 'yes' }],
                 description: 'Spacetime curvature. Mass-energy density distorts the 4D manifold. Gravity is just the straightest possible path through a bent substrate.',
                 concepts: [
@@ -205,6 +185,7 @@
             'dilation': {
                 name: 'Lorentz Dilation', year: 'Temporal Distortion',
                 equation: 'dt = γ dτ',
+                equationExpl: 'Proper time (dτ) is stretched by the Lorentz factor (γ) when viewed from a relatively moving frame. Moving clocks beat slower.',
                 facts: [{ text: 'Time Stretch', status: 'yes' }, { text: 'Invariant c', status: 'yes' }],
                 description: 'Relative dimensionality. High velocity stretches the temporal interval to maintain the absolute invariance of c.',
                 concepts: [
@@ -216,6 +197,7 @@
             'twin': {
                 name: 'Twin Paradox', year: 'Asymmetry Protocol',
                 equation: 'Δτ_1 ≠ Δτ_2',
+                equationExpl: 'The proper time elapsed along two different worldlines between the same two events is not equal if one path involves acceleration.',
                 facts: [{ text: 'Frame Breaking', status: 'yes' }, { text: 'Metric Drift', status: 'yes' }],
                 description: 'The traveler accelerates, physically shortening their metric trajectory. Returning results in a tangible phase-offset in age.',
                 concepts: [
@@ -227,6 +209,7 @@
             'time-spiral': {
                 name: 'Temporal Spiral', year: 'Cyclical Drift',
                 equation: 't(θ) = z / (2πb)',
+                equationExpl: 'A helical worldline where time progresses linearly with altitude (z) while rotating (θ), allowing for cyclical periodicity.',
                 facts: [{ text: 'Cyclicality', status: 'yes' }, { text: 'Entropy Drift', status: 'yes' }],
                 description: 'Time as a 3D helix. Periodicity allows events to repeat in self-similar cycles while drifting forward linearly.',
                 concepts: [
@@ -237,7 +220,8 @@
             },
             'einstein-sr': {
                 name: 'Lorentz Scissoring', year: 'Axiomatic Geometry',
-                equation: 'x\' = γ(x - vt)',
+                equation: "x' = γ(x - vt)",
+                equationExpl: 'The Lorentz transformation for position. It accounts for the relative distortion of space and time to keep light speed invariant.',
                 facts: [{ text: 'Frame Invariant', status: 'yes' }, { text: 'Relative Now', status: 'yes' }],
                 description: 'Visual proof of transformation. Spacetime axes "scissor" toward the light line as velocity approaches c.',
                 concepts: [
@@ -249,6 +233,7 @@
             'causal-net': {
                 name: 'Causal Network', year: 'Events & Nodes',
                 equation: 'E = {v, e}',
+                equationExpl: 'History as a set of events (v) and their connections (e), forming a directed acyclic graph that defines the topology of causality.',
                 facts: [{ text: 'Connectivity', status: 'yes' }, { text: 'Information Flow', status: 'yes' }],
                 description: 'Spacetime as a graph. Discrete events linked by light-speed signaling, forming a "web" of causality that underpins the continuum.',
                 concepts: [
@@ -260,6 +245,7 @@
             'event-horizon': {
                 name: 'Event Horizon', year: 'The Final Frontier',
                 equation: 'R_s = 2GM/c²',
+                equationExpl: 'The Schwarzschild radius defines the spherical boundary where the escape velocity exceeds the speed of light.',
                 facts: [{ text: 'No Exit', status: 'yes' }, { text: 'Time Freeze', status: 'yes' }],
                 description: 'The boundary of no return. Beyond this shell, all light-cones tip inward, ensuring every path leads to the singularity.',
                 concepts: [

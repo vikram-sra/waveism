@@ -38,50 +38,10 @@
             box-shadow: inset 0 0 15px rgba(204, 0, 255, 0.2);
         }
 
-        .telemetry-overlay {
-            position: fixed;
-            bottom: 40px;
-            left: 40px;
-            font-family: 'JetBrains Mono';
-            font-size: 0.66rem;
-            color: #cc00ff;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            letter-spacing: 0.1em;
-            pointer-events: none;
-            z-index: 100;
-            padding: 10px;
-            border-left: 2px solid rgba(204, 0, 255, 0.4);
-            background: linear-gradient(90deg, rgba(204, 0, 255, 0.05), transparent);
-        }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 90px;
-            left: 20px;
-            color: rgba(204, 0, 255, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 140px;
-            line-height: 1.4;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            color: rgba(204, 0, 255, 0.5);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glow {
             position: fixed;
@@ -100,15 +60,10 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE NON-LINEAR STOCHASTIC MANIFOLD</div>
-    <div class="telemetry-overlay" id="telemetry">LYAPUNOV STATUS: NOMINAL</div>
+
     <div class="manifold-glow"></div>
 
-    <div class="system-status">
-        [ INTEGRATOR: RUNGE-KUTTA 4 ]<br>
-        [ PRECISION: 64-BIT FLOATING ]<br>
-        [ ENTROPY DRIFT: MONITORING ]
-    </div>
+
 
     <div id="nav-container"></div>
 
@@ -168,6 +123,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -187,6 +146,7 @@
             'sensitivity': {
                 name: 'Initial Sensitivity', year: 'Butterfly Effect',
                 equation: 'δx(t) ≈ e^(λt)δx(0)',
+                equationExpl: 'The Lyapunov divergence. It shows how initial errors grow exponentially in chaotic systems, making long-term prediction impossible.',
                 facts: [{ text: 'Exponential Drift', status: 'yes' }, { text: 'Ordered Collapse', status: 'yes' }],
                 description: 'A crystalline "Linear" system. Fundamentally unstable: a single perturbation introduces micro-errors that amplify exponentially into total entropy.',
                 concepts: [
@@ -198,6 +158,7 @@
             'lorenz': {
                 name: 'Strange Attractor', year: 'Edward Lorenz',
                 equation: 'dx/dt = σ(y - x)',
+                equationExpl: 'The Lorenz Attractor equations. They represent a simplified model of atmospheric convection, leading to the famous butterfly-shaped strange attractor.',
                 facts: [{ text: 'Deterministic', status: 'yes' }, { text: 'Non-Periodic', status: 'yes' }],
                 description: 'Deterministic unpredictability. The Attractor is a fractal manifold trapping trajectories in an infinite loop.',
                 concepts: [
@@ -209,6 +170,7 @@
             'three-body': {
                 name: '3-Body Problem', year: 'Orbital Chaos',
                 equation: '∇²Φ = -4πGρ',
+                equationExpl: 'The Poisson equation for gravity. In the three-body problem, the overlapping potentials create non-linear motions that lead to chaotic orbits.',
                 facts: [{ text: 'Non-Integrable', status: 'yes' }, { text: 'Unstable', status: 'yes' }],
                 description: 'Unsolved astrodynamics. A 3rd body introduces non-linearities that lead to orbital ejection and system divergence.',
                 concepts: [
@@ -220,6 +182,7 @@
             'pendulum': {
                 name: 'Double Pendulum', year: 'Lagrangian Chaos',
                 equation: 'L = T - V',
+                equationExpl: 'The Lagrangian for mechanical systems. For a double pendulum, the coupling between the arms creates a high-dimensional phase space dominated by chaos.',
                 facts: [{ text: 'Highly Unstable', status: 'yes' }, { text: 'Coupled Modes', status: 'yes' }],
                 description: 'Mechanical unpredictability. Coupled weights form non-linear feedback loops, creating motion that defies intuition.',
                 concepts: [
@@ -231,6 +194,7 @@
             'logistic': {
                 name: 'Logistic Map', year: 'Universal Chaos',
                 equation: 'x_(n+1) = r x_n(1 - x_n)',
+                equationExpl: 'The Logistic Map. This recursive relation exhibits the universal path to chaos through period-doubling bifurcations as the parameter (r) increases.',
                 facts: [{ text: 'Feigenbaum δ', status: '4.669' }, { text: 'Universality', status: 'yes' }],
                 description: 'Mathematical proof of universal chaos. The path to turbulence follows a precise "Period Doubling" geometric ratio in all systems.',
                 concepts: [
@@ -481,7 +445,6 @@
                     lorenzData.lines[i].geometry.setFromPoints(p.trail);
                 });
                 const d = lorenzData.pts[0].trail[lorenzData.pts[0].trail.length - 1].distanceTo(lorenzData.pts[1].trail[lorenzData.pts[1].trail.length - 1]);
-                document.getElementById('telemetry').innerText = `LYAPUNOV DISTANCE Δ: ${d.toFixed(4)}`;
             } else if (currentMode === 'three-body') {
                 const G = 100.0;
                 for (let s = 0; s < 10; s++) {

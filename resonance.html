@@ -38,33 +38,9 @@
             box-shadow: inset 0 0 15px rgba(0, 221, 255, 0.2);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(0, 221, 255, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 180px;
-            line-height: 1.4;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.52rem;
-            color: rgba(0, 221, 255, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+
+
 
         #brainwave-hud {
             position: fixed;
@@ -80,23 +56,17 @@
             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        #cinematic-overlay {
-            transition: all 0.5s ease;
-        }
+
 
         /* ORB INTEGRATION */
-        body:not(.ui-open) #brainwave-hud,
-        body:not(.ui-open) .system-status,
-        body:not(.ui-open) #cinematic-overlay {
+        body:not(.ui-open) #brainwave-hud {
             opacity: 0;
             transform: translateX(50px) scale(0.9);
             /* Overlay might move left? keeps simple */
             pointer-events: none;
         }
 
-        body.ui-open #brainwave-hud,
-        body.ui-open .system-status,
-        body.ui-open #cinematic-overlay {
+        body.ui-open #brainwave-hud {
             opacity: 1;
             transform: translateX(0) scale(1);
             pointer-events: auto;
@@ -147,14 +117,10 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE RESONANT FIELD MANIFOLD</div>
+
     <div class="manifold-glitch"></div>
 
-    <div class="system-status">
-        [ MODE: EIGENSTATE ]<br>
-        [ Q-FACTOR: INFINITE ]<br>
-        [ PHASE: SYNCHRONIZED ]
-    </div>
+
 
     <div id="brainwave-hud">
         <div class="wave-band" id="band-gamma">
@@ -237,6 +203,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -256,6 +226,7 @@
             'social': {
                 name: 'Social Resonance', year: 'Emergent Collectivity',
                 equation: 'Ψ_total = Σ ψ_i',
+                equationExpl: 'The principle of social superposition. The total conscious manifold is the summation of individual cognitive wavefunctions.',
                 facts: [{ text: 'Path Memory', status: 'yes' }, { text: 'Collective Drift', status: 'yes' }],
                 description: 'Visitors leave "Ghosts"—traces of interaction. This mode visualizes individual agency weaving into a collective social manifold.',
                 concepts: [
@@ -267,6 +238,7 @@
             'neural': {
                 name: 'Neural Binding', year: 'Synchrony Protocol',
                 equation: 'γ(synchrony)',
+                equationExpl: 'The Gamma oscillation binding function. It represents the phase-locking of neural clusters into a unified conscious experience.',
                 facts: [{ text: 'Phase Locking', status: 'yes' }, { text: 'Info Gating', status: 'yes' }],
                 description: 'Synchronized oscillations across brain regions. Gamma waves (40Hz) bind disparate sensory data into unified conscious experience.',
                 concepts: [
@@ -278,6 +250,7 @@
             'gravity': {
                 name: 'Metrical Ripples', year: 'Gravitational Waves',
                 equation: 'h_μν ∝ d²Q_μν/dt²',
+                equationExpl: 'The quadrupole formula for gravitational radiation. Ripples in the metric (h) are produced by the second time-derivative of the mass-quadrupole moment (Q).',
                 facts: [{ text: 'Metric Warp', status: 'yes' }, { text: 'Transverse Strain', status: 'yes' }],
                 description: 'Oscillations in spacetime. Massive accelerations radiate quadropolar energy, physically stretching and squeezing the cosmic substrate.',
                 concepts: [
@@ -289,6 +262,7 @@
             'pilot': {
                 name: 'De Broglie-Bohm Pilot', year: 'Deterministic Quantum Fluid',
                 equation: 'v = ∇S / m',
+                equationExpl: 'The guidance equation of Bohmian mechanics. The velocity of a particle is determined by the gradient of the phase of its pilot wave.',
                 facts: [{ text: 'Guidance Field', status: 'yes' }, { text: 'Non-Local Potential', status: 'yes' }],
                 description: 'An alternative to standard quantum mechanics where particles are real and follow exact paths. They are "guided" by a pilot wave (the wavefunction) that creates interference and tunneling through fluid-like dynamics.',
                 concepts: [
@@ -300,6 +274,7 @@
             'cymatics': {
                 name: 'Eigenmode Manifolds', year: 'Hans Jenny / Chladni',
                 equation: '∇²ψ + k²ψ = 0',
+                equationExpl: 'The Helmholtz Equation. It describes the spatial distribution of standing waves in a medium, where physical vibration creates geometric nodal patterns.',
                 facts: [{ text: 'Nodal Patterning', status: 'yes' }, { text: 'Geometric Nodes', status: 'yes' }],
                 description: 'The visual manifestation of sound and vibration. When a surface is vibrated at resonant frequencies, matter organizes itself into intricate geometric patterns at the nodal points where the field is at rest.',
                 concepts: [

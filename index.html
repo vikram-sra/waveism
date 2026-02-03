@@ -43,7 +43,7 @@
 
     <script>
         // Register Service Worker for Offline PWA Support
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then(registration => {
@@ -53,6 +53,17 @@
                         console.warn('[Waveism] Service Worker registration failed:', error);
                     });
             });
+
+            // Reload page on new SW activation
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
+            });
+        } else if (window.location.protocol === 'file:') {
+            console.log('[Waveism] Service Worker skipped: running on file:// protocol');
         }
     </script>
 
@@ -193,20 +204,60 @@
 
         .phase-title {
             font-family: 'JetBrains Mono', monospace;
-            /* Cyber Mono */
             font-size: 5rem;
             font-weight: 700;
             letter-spacing: -0.04em;
             color: #fff;
             margin: 0;
             text-transform: uppercase;
-            /* Glitchy Text Shadow */
             text-shadow: 2px 0 var(--accent), -2px 0 rgba(255, 0, 255, 0.5);
-            background: linear-gradient(180deg, #fff 0%, #ccc 100%);
+            background: linear-gradient(180deg, #fff 0%, #aaa 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .section.active .phase-title {
+            animation: titlePulse 4s infinite ease-in-out, titleGlitch 10s infinite;
+        }
+
+        @keyframes titlePulse {
+
+            0%,
+            100% {
+                filter: brightness(1) drop-shadow(0 0 0px var(--accent));
+            }
+
+            50% {
+                filter: brightness(1.2) drop-shadow(0 0 15px var(--accent));
+            }
+        }
+
+        @keyframes titleGlitch {
+
+            0%,
+            95%,
+            100% {
+                transform: translate(0);
+            }
+
+            96% {
+                transform: translate(2px, -1px);
+            }
+
+            97% {
+                transform: translate(-2px, 1px);
+            }
+
+            98% {
+                transform: translate(1px, 2px);
+            }
+
+            99% {
+                transform: translate(-1px, -2px);
+            }
         }
 
         .phase-link:hover .phase-title {
@@ -219,17 +270,42 @@
         .phase-desc {
             display: block;
             font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
             margin: 0;
-            max-width: 600px;
+            max-width: 500px;
             line-height: 1.6;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 24px;
-            border-radius: 4px;
-            backdrop-filter: blur(12px);
+            background: rgba(5, 10, 15, 0.8);
+            border: 1px solid rgba(0, 221, 255, 0.2);
+            padding: 16px 28px;
+            border-radius: 2px;
+            backdrop-filter: blur(20px);
             text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .phase-desc::before,
+        .phase-desc::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: var(--accent);
+            border-style: solid;
+            opacity: 0.5;
+        }
+
+        .phase-desc::before {
+            top: -1px;
+            left: -1px;
+            border-width: 1px 0 0 1px;
+        }
+
+        .phase-desc::after {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 1px 1px 0;
         }
 
         .phase-question {
@@ -262,16 +338,7 @@
         }
 
         /* HEADER & HUD */
-        header {
-            position: fixed;
-            top: 40px;
-            left: 40px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            letter-spacing: 0.3em;
-            color: #fff;
-            z-index: 100;
-        }
+
 
         .hud-pager {
             position: fixed;
@@ -288,32 +355,29 @@
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            width: 80px;
-            /* Larger Touch Target */
-            height: 80px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 50;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 2rem;
-            transition: all 0.3s;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
             user-select: none;
-            background: rgba(0, 0, 0, 0.01);
-            /* Hitbox fill */
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 50%;
             -webkit-tap-highlight-color: transparent;
-        }
-
-        .nav-arrow:active {
-            color: var(--accent);
-            transform: translateY(-50%) scale(0.9);
-            background: rgba(0, 221, 255, 0.1);
+            backdrop-filter: blur(5px);
         }
 
         .nav-arrow:hover {
             color: var(--accent);
+            background: rgba(0, 221, 255, 0.05);
+            border-color: rgba(0, 221, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 221, 255, 0.1);
         }
 
         .nav-arrow.left {
@@ -340,6 +404,50 @@
             background: var(--accent);
             width: 0%;
             transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent var(--freq, 10px),
+                    rgba(255, 255, 255, 0.3) var(--freq, 10px),
+                    rgba(255, 255, 255, 0.3) calc(var(--freq, 10px) + 1px));
+            animation: moveFreq 2s infinite linear;
+        }
+
+        @keyframes moveFreq {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 40px 0;
+            }
+        }
+
+        .wavelength-label {
+            position: fixed;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 100;
+            text-transform: uppercase;
+        }
+
+        .wavelength-label span {
+            color: rgba(255, 255, 255, 0.4);
+            margin-right: 8px;
         }
 
         @media (max-width: 600px) {
@@ -365,17 +473,17 @@
 
         #reel .section[data-id="create_wave"] .create-wave-hint {
             position: absolute;
-            top: 50%;
+            top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 0.5em;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.3em;
             pointer-events: none;
             z-index: 5;
             text-align: center;
-            animation: pulseHint 3s infinite ease-in-out;
+            text-transform: uppercase;
         }
 
         @keyframes pulseHint {
@@ -441,7 +549,7 @@
     <div id="nav-container"></div>
     <div class="scanlines"></div>
 
-    <header>WAVEISM // MANIFOLD</header>
+
 
     <!-- Native Scroll Container -->
     <div id="reel">
@@ -452,21 +560,28 @@
     <div class="nav-arrow left" id="nav-l">❮</div>
     <div class="nav-arrow right" id="nav-r">❯</div>
 
+    <!-- HUD -->
+    <div class="hud-pager" id="pager">-- / --</div>
+    <div class="wavelength-label" id="wavelength"><span>λ</span> --</div>
+    <div class="progress-track">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+
     <script>
         const phases = [
-            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa' },
-            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd' },
-            { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'Unified framework of oscillatory reality.', color: '#7b2cbf' },
-            { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Coherent interference and entrainment protocols.', color: '#ff0055' },
-            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d' },
-            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500' },
-            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The metric tensor substrate of reality.', color: '#00ddff' },
-            { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Topological bridges through the manifold.', color: '#4cc9f0' },
-            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The 4D continuum of light cones and worldlines.', color: '#ff6b9d' },
-            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Infinite curvature and causal singularities.', color: '#ffaa00' },
-            { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Metric acceleration of the cosmic substrate.', color: '#b5179e' },
-            { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'Large-scale structure of galactic filaments.', color: '#0088ff' },
-            { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Manual interaction with the cosmic medium.', color: '#ffffff' }
+            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa', scale: '10⁻³⁵m' },
+            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd', scale: '10⁻³⁰m' },
+            { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'Unified framework of oscillatory reality.', color: '#7b2cbf', scale: '10⁻¹⁵m' },
+            { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Coherent interference and entrainment protocols.', color: '#ff0055', scale: '10⁻⁶m' },
+            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d', scale: '10⁰m' },
+            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500', scale: '10⁵m' },
+            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The metric tensor substrate of reality.', color: '#00ddff', scale: '10¹⁰m' },
+            { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Topological bridges through the manifold.', color: '#4cc9f0', scale: '10¹⁵m' },
+            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The 4D continuum of light cones and worldlines.', color: '#ff6b9d', scale: '10¹⁸m' },
+            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Infinite curvature and causal singularities.', color: '#ffaa00', scale: '10²¹m' },
+            { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Metric acceleration of the cosmic substrate.', color: '#b5179e', scale: '10²⁴m' },
+            { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'Large-scale structure of galactic filaments.', color: '#0088ff', scale: '10²⁶m' },
+            { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Manual interaction with the cosmic medium.', color: '#ffffff', scale: '∞' }
         ];
 
         const reel = document.getElementById('reel');
@@ -510,47 +625,37 @@
             canvas.style.zIndex = 2; // On top
             canvas.style.cursor = 'pointer';
 
-            let currentForce = 0;
-            let forceTimeout = null;
+            // Advanced Multi-Device Interaction (Trackpads, Phones, Mouse)
+            const updateInteraction = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = 1 - (e.clientY - rect.top) / rect.height;
+                canvas.dataset.mx = x;
+                canvas.dataset.my = y;
+
+                // Pressure Detection: Pointer Events or fallback
+                let p = (e.pressure !== undefined && e.pressure > 0) ? e.pressure : 0;
+                if (p === 0 && e.buttons > 0) p = 0.5; // Mouse fallback
+                canvas.dataset.pressure = p;
+            };
 
             canvas.onpointerdown = (e) => {
                 if (p.id === 'create_wave') {
-                    if (navigator.vibrate) navigator.vibrate(20);
-                    // Click simulation: Boost intensity immediately
-                    currentForce = 0.5;
-                    canvas.dataset.intensity = currentForce;
-
-                    // Shake effect trigger in shader via intensity
-                    if (forceTimeout) clearTimeout(forceTimeout);
+                    canvas.setPointerCapture(e.pointerId);
+                    updateInteraction(e);
+                    if (navigator.vibrate) navigator.vibrate(15);
                 }
             };
             canvas.onpointermove = (e) => {
-                if (p.id === 'create_wave' && e.buttons > 0) {
-                    currentForce = e.webkitForce || 0.6;
-                    canvas.dataset.intensity = currentForce;
-                    if (navigator.vibrate) navigator.vibrate(5);
+                if (p.id === 'create_wave') {
+                    updateInteraction(e);
                 }
             };
             canvas.onpointerup = canvas.onpointerleave = (e) => {
                 if (p.id === 'create_wave') {
-                    // Gradual fade out for the 'click' pulse
-                    forceTimeout = setInterval(() => {
-                        currentForce *= 0.9;
-                        canvas.dataset.intensity = currentForce;
-                        if (currentForce < 0.01) {
-                            currentForce = 0;
-                            canvas.dataset.intensity = 0;
-                            clearInterval(forceTimeout);
-                        }
-                    }, 16);
+                    canvas.dataset.pressure = 0;
                 }
             };
-            canvas.addEventListener('webkitmouseforcechanged', (e) => {
-                if (p.id === 'create_wave') {
-                    canvas.dataset.intensity = e.webkitForce;
-                }
-            });
-
             canvas.onclick = () => {
                 if (p.id !== 'create_wave') window.location.href = p.id + '.html';
             };
@@ -567,7 +672,7 @@
             if (p.id === 'create_wave') {
                 const hint = document.createElement('div');
                 hint.className = 'create-wave-hint';
-                hint.innerHTML = 'ENGAGE FORCE FEEDBACK<br><span style="font-size: 0.5rem; opacity: 0.5; letter-spacing: 0.1em;">(DRAG TO DEFORM SUBSTRATE)</span>';
+                hint.innerHTML = 'ENGAGE RESONANCE<br><span style="font-size: 0.5rem; opacity: 0.5; letter-spacing: 0.1em;">(DRAG OR PRESS TO DEFORM)</span>';
                 sec.appendChild(hint);
 
                 const backHint = document.createElement('div');
@@ -589,7 +694,7 @@
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
         // Robust Initial Scroll Logic to Start at WAVEISM (Index 1)
-        window.addEventListener('load', () => {
+        function initReelPosition() {
             isTeleporting = true;
             reel.style.scrollBehavior = 'auto';
 
@@ -604,7 +709,13 @@
                 isTeleporting = false;
                 reel.style.overflowX = 'auto';
             }, 100);
-        });
+        }
+
+        if (document.readyState !== 'loading') {
+            initReelPosition();
+        } else {
+            document.addEventListener('DOMContentLoaded', initReelPosition);
+        }
 
         const indexStars = initGlobalStarField('background-stars');
 
@@ -672,11 +783,21 @@
         document.querySelectorAll('.section').forEach(s => observer.observe(s));
 
         function updateHUD(idx) {
+            const phase = phases[idx];
             document.getElementById('pager').innerText = `${String(idx + 1).padStart(2, '0')} / ${phases.length}`;
+            document.getElementById('wavelength').innerHTML = `<span>λ</span> ${phase.scale}`;
+
             const pct = ((idx + 1) / phases.length) * 100;
-            document.getElementById('progress').style.width = pct + '%';
-            document.getElementById('progress').style.backgroundColor = phases[idx].color;
-            document.documentElement.style.setProperty('--accent', phases[idx].color);
+            const progress = document.getElementById('progress');
+            progress.style.width = pct + '%';
+            progress.style.backgroundColor = phase.color;
+
+            // Frequency indication: Higher scales (smaller wavelengths) = Denser bars
+            // Rank from 0 (Quantum) to 12 (Cosmic)
+            const freq = 5 + (idx * 3);
+            progress.style.setProperty('--freq', freq + 'px');
+
+            document.documentElement.style.setProperty('--accent', phase.color);
         }
 
         // Nav Helpers
@@ -746,228 +867,304 @@
         function drawSea(c, w, h, t, color) {
             const hLine = h * 0.5; // Dead Center Horizon
 
-            c.fillStyle = '#010105';
-            c.beginPath();
-            c.moveTo(0, h);
-            c.lineTo(0, hLine);
+            // Layered Depth (Multiple Wave Planes)
+            const layers = [
+                { offset: 0, speed: 1.0, opacity: 1, depth: 0, color: '#010105' },
+                { offset: 10, speed: 0.7, opacity: 0.3, depth: 40, color: color + '22' },
+                { offset: -5, speed: 1.3, opacity: 0.2, depth: -30, color: color + '11' }
+            ];
 
-            for (let x = 0; x <= w; x += 10) {
-                const y = hLine + Math.sin(x * 0.005 + t) * 20 + Math.cos(x * 0.02 - t * 0.3) * 10;
-                c.lineTo(x, y);
-            }
+            layers.forEach((layer, idx) => {
+                c.fillStyle = layer.color;
+                c.beginPath();
+                c.moveTo(0, h);
+                c.lineTo(0, hLine + layer.depth);
 
-            c.lineTo(w, h);
-            c.fill();
+                for (let x = 0; x <= w; x += 15) {
+                    const y = hLine + layer.depth +
+                        Math.sin(x * 0.004 + t * layer.speed) * 15 +
+                        Math.cos(x * 0.015 - t * 0.4 * layer.speed) * 8;
+                    c.lineTo(x, y);
+                }
 
-            // Neon Edge
-            c.strokeStyle = color;
-            c.lineWidth = 2;
-            c.shadowBlur = 30; c.shadowColor = color;
-            c.beginPath();
-            for (let x = 0; x <= w; x += 10) {
-                const y = hLine + Math.sin(x * 0.005 + t) * 20 + Math.cos(x * 0.02 - t * 0.3) * 10;
-                x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
-            }
-            c.stroke();
-            c.shadowBlur = 0;
+                c.lineTo(w, h);
+                c.fill();
+
+                if (idx === 0) { // Primary Neon Edge
+                    c.strokeStyle = color;
+                    c.lineWidth = 2;
+                    c.shadowBlur = 20; c.shadowColor = color;
+                    c.beginPath();
+                    for (let x = 0; x <= w; x += 15) {
+                        const y = hLine + Math.sin(x * 0.004 + t) * 15 + Math.cos(x * 0.015 - t * 0.4) * 8;
+                        x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+                    }
+                    c.stroke();
+                    c.shadowBlur = 0;
+                }
+            });
         }
 
         // TOTEM ARTIFACTS
         function drawTotem(c, w, h, t, id, color) {
             const cx = w / 2;
-            // Stand on the waves (Centered)
-            const hLine = h * 0.5 + Math.sin(cx * 0.005 + t) * 20 + Math.cos(cx * 0.02 - t * 0.3) * 10;
-            const size = h * 0.15; // Slightly tighter scale for better fit
+            const hLine = h * 0.5 + Math.sin(cx * 0.004 + t) * 15 + Math.cos(cx * 0.015 - t * 0.4) * 8;
+            const size = h * 0.15;
 
             c.save();
-            c.translate(cx, hLine - size * 0.8);
+            c.translate(cx, hLine - size * 1.0);
 
-            // Reflection
+            // 1. Symbol Particle Aura
+            c.globalCompositeOperation = 'screen';
+            for (let i = 0; i < 12; i++) {
+                const ang = (i / 12) * Math.PI * 2 + t;
+                const dist = size * (0.8 + Math.sin(t * 2 + i) * 0.1);
+                const px = Math.cos(ang) * dist;
+                const py = Math.sin(ang) * dist;
+                c.fillStyle = color;
+                c.globalAlpha = 0.2 + Math.sin(t * 3 + i) * 0.1;
+                c.beginPath();
+                c.arc(px, py, 1.5, 0, Math.PI * 2);
+                c.fill();
+            }
+            c.globalCompositeOperation = 'source-over';
+            c.globalAlpha = 1.0;
+
+            // 2. Reflection on Sea
             c.save();
-            c.scale(1, -0.5);
-            c.translate(0, -size * 1.5);
-            c.globalAlpha = 0.2;
-            c.filter = 'blur(8px)';
+            c.scale(1, -0.4);
+            c.translate(0, -size * 1.8);
+            c.globalAlpha = 0.15;
+            c.filter = 'blur(12px)';
             drawSymbol(c, t, id, color, size);
             c.restore();
 
-            // The Artifact
-            c.shadowBlur = 40; c.shadowColor = color;
+            // 3. Main Artifact
+            c.shadowBlur = 50; c.shadowColor = color;
             drawSymbol(c, t, id, color, size);
-
-            // LABEL MAIN
             c.shadowBlur = 0;
-            c.fillStyle = 'rgba(255,255,255,0.9)';
-            c.font = '500 14px "JetBrains Mono"';
-            c.textAlign = 'center';
-            c.letterSpacing = '2px';
-            c.fillText(id.toUpperCase().replace('_', ' '), 0, size * 0.8);
 
-            // LABEL SUB (Tech Data)
+            // 4. Labelling & HUD Data
+            c.fillStyle = 'white';
+            c.font = '600 12px "JetBrains Mono"';
+            c.textAlign = 'center';
+            c.letterSpacing = '3px';
+            c.globalAlpha = 0.9;
+            c.fillText(id.toUpperCase().replace('_', ' '), 0, size * 0.9);
+
+            // Underline
+            c.strokeStyle = color;
+            c.lineWidth = 1;
+            c.beginPath();
+            c.moveTo(-20, size * 0.9 + 5);
+            c.lineTo(20, size * 0.9 + 5);
+            c.stroke();
+
+            // Tech Data HUD
             c.fillStyle = color;
-            c.font = '300 11px "JetBrains Mono"';
+            c.font = '300 10px "JetBrains Mono"';
             c.letterSpacing = '1px';
+            c.globalAlpha = 0.6;
 
             const techData = {
-                fabric: "METRIC TENSOR G\u1D6D\u1D78",
-                spacetime: "MINKOWSKI METRIC",
-                blackhole: "SCHWARZSCHILD RS",
-                quantum: "WAVE FUNCTION \u03A8",
-                resonance: "EIGENFREQUENCY \u03BB",
-                wormhole: "EINSTEIN-ROSEN",
-                chaos: "STRANGE ATTRACTOR",
-                expansion: "HUBBLE PARAM H\u2080",
-                uncertainty: "\u0394x\u0394p \u2265 \u210F/2",
-                wave_theory: "SUPERPOSITION",
-                arrow: "S = k log W",
-                cosmic: "LARGE SCALE STRUCTURE",
-                create_wave: "HAPTIC RIPPLE \u03A3"
+                fabric: "METRIC TENSOR G\u1D6D\u1D78 [DIM:11]",
+                spacetime: "MINKOWSKI METRIC [DS\u00B2]",
+                blackhole: "EVENT HORIZON [RS:2GM/C\u00B2]",
+                quantum: "WAVE FUNCTION \u03A8 [H\u03A8=E\u03A8]",
+                resonance: "EIGENFREQUENCY \u03BB [H\u2080]",
+                wormhole: "EINSTEIN-ROSEN BRIDGE",
+                chaos: "STRANGE ATTRACTOR [LYAPUNOV]",
+                expansion: "HUBBLE PARAM [KM/S/MPC]",
+                uncertainty: "\u0394x\u0394p \u2265 \u210F/2 [BOHR]",
+                wave_theory: "SUPERPOSITION PRINCIPLE",
+                arrow: "ENTROPY S = k log W",
+                cosmic: "LARGE STRUCTURE FILAMENTS",
+                create_wave: "HAPTIC RIPPLE \u03A3 [OSC]"
             };
 
-            c.fillText(techData[id] || "ANALYZING...", 0, size * 0.8 + 14);
-
+            c.fillText(techData[id] || "ANALYZING...", 0, size * 0.9 + 20);
             c.restore();
         }
 
         function drawSymbol(c, t, id, color, s) {
             c.strokeStyle = color;
-            c.fillStyle = '#000';
-            c.lineWidth = 3;
+            c.fillStyle = 'rgba(0,0,0,0.5)';
+            c.lineWidth = 2.5;
+            c.lineCap = 'round';
+            c.lineJoin = 'round';
 
             switch (id) {
-                case 'wave_theory': // OSCILLATOR COLUMN
+                case 'wave_theory':
                     for (let i = -2; i <= 2; i++) {
                         c.beginPath();
+                        c.setLineDash(i % 2 === 0 ? [] : [5, 5]);
                         for (let y = -s; y <= s; y += 5) {
-                            c.lineTo(i * 20 + Math.sin(y * 0.1 - t * 3) * 15, y);
+                            c.lineTo(i * (s * 0.25) + Math.sin(y * 0.1 - t * 4) * (s * 0.15), y);
                         }
                         c.stroke();
                     }
+                    c.setLineDash([]);
                     break;
 
-                case 'fabric': // ROTATING TESSERACT CUBE
+                case 'fabric':
                     c.save();
                     c.rotate(t * 0.5);
-                    c.beginPath(); c.rect(-s * 0.5, -s * 0.5, s, s); c.stroke(); // Inner
-                    c.rotate(t * 0.2);
-                    c.beginPath(); c.rect(-s * 0.8, -s * 0.8, s * 1.6, s * 1.6); c.stroke(); // Outer
-                    // Connectors
-                    c.moveTo(-s * 0.5, -s * 0.5); c.lineTo(-s * 0.8, -s * 0.8);
-                    c.moveTo(s * 0.5, -s * 0.5); c.lineTo(s * 0.8, -s * 0.8);
-                    c.moveTo(s * 0.5, s * 0.5); c.lineTo(s * 0.8, s * 0.8);
-                    c.moveTo(-s * 0.5, s * 0.5); c.lineTo(-s * 0.8, s * 0.8);
+                    c.shadowBlur = 10; c.shadowColor = color;
+                    c.beginPath(); c.rect(-s * 0.4, -s * 0.4, s * 0.8, s * 0.8); c.stroke();
+                    c.shadowBlur = 0;
+                    c.rotate(-t * 0.8);
+                    c.beginPath(); c.rect(-s * 0.7, -s * 0.7, s * 1.4, s * 1.4); c.stroke();
+                    c.beginPath();
+                    c.setLineDash([2, 4]);
+                    c.moveTo(-s * 0.4, -s * 0.4); c.lineTo(-s * 0.7, -s * 0.7);
+                    c.moveTo(s * 0.4, -s * 0.4); c.lineTo(s * 0.7, -s * 0.7);
+                    c.moveTo(s * 0.4, s * 0.4); c.lineTo(s * 0.7, s * 0.7);
+                    c.moveTo(-s * 0.4, s * 0.4); c.lineTo(-s * 0.7, s * 0.7);
                     c.stroke();
+                    c.setLineDash([]);
                     c.restore();
                     break;
 
-                case 'chaos': // STRANGE ATTRACTOR KNOT
+                case 'chaos':
                     c.beginPath();
-                    for (let i = 0; i < 100; i++) {
-                        const ang = t + i * 0.1;
-                        const r = s * Math.cos(2 * ang); // Rose curve
+                    c.setLineDash([1, 2]);
+                    for (let i = 0; i < 120; i++) {
+                        const ang = t * 0.5 + i * 0.08;
+                        const r = s * Math.cos(3 * ang) * (0.8 + Math.sin(t) * 0.2);
                         c.lineTo(r * Math.cos(ang), r * Math.sin(ang));
                     }
-                    c.closePath(); c.stroke();
+                    c.stroke();
+                    c.setLineDash([]);
+                    c.beginPath(); c.arc(0, 0, 4, 0, 7); c.fillStyle = color; c.fill();
                     break;
 
-                case 'spacetime': // HOURGLASS
+                case 'spacetime':
                     c.beginPath();
-                    c.moveTo(-s * 0.5, -s); c.lineTo(s * 0.5, -s); // Top
-                    c.lineTo(0, 0); c.lineTo(s * 0.5, s); // Bottom
-                    c.lineTo(-s * 0.5, s); c.lineTo(0, 0); c.closePath();
-                    c.fill(); c.stroke();
-                    // Sand
-                    c.beginPath(); c.moveTo(0, 0); c.lineTo(0, s); c.stroke();
+                    c.moveTo(-s * 0.6, -s * 0.8); c.lineTo(s * 0.6, -s * 0.8);
+                    c.lineTo(0, 0); c.lineTo(s * 0.6, s * 0.8);
+                    c.lineTo(-s * 0.6, s * 0.8); c.lineTo(0, 0); c.closePath();
+                    c.stroke();
+                    const sPos = (Math.sin(t * 2) * 0.5 + 0.5) * s * 1.6 - s * 0.8;
+                    c.beginPath();
+                    c.moveTo(-s * 0.3, sPos); c.lineTo(s * 0.3, sPos);
+                    c.strokeStyle = 'white'; c.lineWidth = 1; c.stroke();
+                    c.strokeStyle = color; c.lineWidth = 2.5;
                     break;
 
-                case 'blackhole': // SINGULARITY EYE
-                    c.fillStyle = '#000'; c.beginPath(); c.arc(0, 0, s * 0.6, 0, 7); c.fill();
-                    c.strokeStyle = color; c.lineWidth = 4;
-                    c.beginPath(); c.arc(0, 0, s * 0.6, 0, 7); c.stroke();
-                    c.lineWidth = 2;
-                    c.beginPath(); c.ellipse(0, 0, s, s * 0.2, t * 2, 0, 7); c.stroke(); // Accretion
-                    c.beginPath(); c.ellipse(0, 0, s, s * 0.2, -t * 2, 0, 7); c.stroke();
-                    break;
-
-                case 'expansion': // NOVA SPIKES
-                    c.save(); c.rotate(t);
-                    for (let i = 0; i < 8; i++) {
-                        c.rotate(Math.PI / 4);
-                        c.beginPath(); c.moveTo(0, 0); c.lineTo(0, -s); c.stroke();
-                        c.beginPath(); c.arc(0, -s, 5, 0, 7); c.fill();
-                    }
-                    c.restore();
-                    // Pulse core
-                    c.beginPath(); c.arc(0, 0, s * 0.3 + Math.sin(t * 10) * 10, 0, 7); c.stroke();
-                    break;
-
-                case 'wormhole': // GATE RINGS
-                    for (let i = 0; i < 5; i++) {
-                        c.beginPath();
-                        c.ellipse(0, 0, s * (0.2 + i * 0.2), s * (0.1 + i * 0.1), t * (i % 2 ? -1 : 1), 0, 7);
-                        c.stroke();
-                    }
-                    break;
-
-                case 'quantum': // ATOM
-                    c.beginPath(); c.arc(0, 0, 10, 0, 7); c.fill(); c.stroke();
+                case 'blackhole':
+                    c.save();
+                    c.shadowBlur = 20; c.shadowColor = color;
+                    c.fillStyle = '#000'; c.beginPath(); c.arc(0, 0, s * 0.5, 0, 7); c.fill(); c.stroke();
+                    c.shadowBlur = 0;
                     for (let i = 0; i < 3; i++) {
                         c.beginPath();
-                        c.ellipse(0, 0, s, s * 0.3, t * 2 + i * (Math.PI / 1.5), 0, 7);
+                        const phase = t * 3 + i * 2;
+                        c.ellipse(0, 0, s * (1 + Math.sin(phase) * 0.1), s * 0.2, phase, 0, 7);
                         c.stroke();
-                        // Electron
-                        const ang = t * 5 + i * 100; // Fake pos
-                        // c.beginPath(); c.arc(Math.cos(ang), Math.sin(ang), 5, 0, 7); c.fill();
                     }
-                    break;
-
-                case 'uncertainty': // GLITCH BOX
-                    c.save();
-                    if (Math.random() > 0.9) c.translate((Math.random() - 0.5) * 20, 0);
-                    c.beginPath(); c.rect(-s * 0.5, -s * 0.5, s, s); c.stroke();
-                    c.beginPath(); c.moveTo(-s * 0.5, -s * 0.5); c.lineTo(s * 0.5, s * 0.5); c.stroke();
                     c.restore();
                     break;
 
-                case 'resonance': // CYMATIC MANDALA
+                case 'expansion':
+                    c.save(); c.rotate(t * 0.5);
+                    for (let i = 0; i < 12; i++) {
+                        c.rotate(Math.PI / 6);
+                        const len = s * (0.6 + Math.sin(t * 4 + i) * 0.2);
+                        c.beginPath(); c.moveTo(0, 0); c.lineTo(0, -len); c.stroke();
+                        c.beginPath(); c.arc(0, -len, 2, 0, 7); c.fillStyle = color; c.fill();
+                    }
+                    c.restore();
+                    c.beginPath(); c.arc(0, 0, s * 0.3 + Math.sin(t * 8) * 5, 0, 7); c.stroke();
+                    break;
+
+                case 'wormhole':
+                    for (let i = 0; i < 6; i++) {
+                        c.beginPath();
+                        c.globalAlpha = 1 - (i / 6);
+                        const rot = t * (i % 2 ? 1 : -1) * (1 + i * 0.2);
+                        c.ellipse(0, 0, s * (0.15 + i * 0.15), s * (0.05 + i * 0.05), rot, 0, 7);
+                        c.stroke();
+                    }
+                    c.globalAlpha = 1;
+                    break;
+
+                case 'quantum':
+                    c.save();
+                    c.shadowBlur = 15; c.shadowColor = color;
+                    c.beginPath(); c.arc(0, 0, 8, 0, 7); c.fillStyle = color; c.fill();
+                    c.shadowBlur = 0;
+                    for (let i = 0; i < 3; i++) {
+                        c.beginPath();
+                        c.ellipse(0, 0, s * 0.9, s * 0.3, t * 2.5 + i * (Math.PI / 1.5), 0, 7);
+                        c.stroke();
+                    }
+                    c.restore();
+                    break;
+
+                case 'uncertainty':
+                    c.save();
+                    const glitch = Math.random() > 0.90;
+                    if (glitch) c.translate((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15);
+                    c.beginPath(); c.rect(-s * 0.6, -s * 0.6, s * 1.2, s * 1.2); c.stroke();
+                    c.setLineDash([4, 4]);
+                    c.beginPath(); c.moveTo(-s * 0.6, -s * 0.6); c.lineTo(s * 0.6, s * 0.6); c.stroke();
+                    c.beginPath(); c.moveTo(s * 0.6, -s * 0.6); c.lineTo(-s * 0.6, s * 0.6); c.stroke();
+                    c.setLineDash([]);
+                    c.restore();
+                    break;
+
+                case 'resonance':
                     c.beginPath();
-                    for (let i = 0; i < 360; i += 10) {
+                    for (let i = 0; i < 360; i += 5) {
                         const rad = (i * Math.PI) / 180;
-                        const r = s * 0.5 + Math.sin(rad * 8 + t * 5) * 20;
+                        const r = s * 0.7 + Math.sin(rad * 12 + t * 6) * (s * 0.15);
                         c.lineTo(Math.cos(rad) * r, Math.sin(rad) * r);
                     }
                     c.closePath(); c.stroke();
+                    c.beginPath(); c.arc(0, 0, s * 0.4, 0, 7); c.setLineDash([2, 5]); c.stroke(); c.setLineDash([]);
                     break;
 
-                case 'arrow': // DECAY
+                case 'arrow':
                     c.beginPath();
-                    for (let i = 0; i < 50; i++) {
-                        const ang = Math.random() * 7;
-                        const rad = Math.random() * s;
-                        c.moveTo(Math.cos(ang) * rad, Math.sin(ang) * rad);
-                        c.lineTo(Math.cos(ang) * (rad + 5), Math.sin(ang) * (rad + 5));
+                    for (let i = 0; i < 40; i++) {
+                        const ang = (i / 40) * Math.PI * 2 + t * 0.5;
+                        const len = s * (0.5 + Math.random() * 0.5);
+                        c.moveTo(Math.cos(ang) * (len * 0.8), Math.sin(ang) * (len * 0.8));
+                        c.lineTo(Math.cos(ang) * len, Math.sin(ang) * len);
                     }
                     c.stroke();
+                    c.beginPath(); c.moveTo(-s * 0.5, 0); c.lineTo(s * 0.5, 0); c.stroke();
+                    c.lineTo(s * 0.4, -5); c.moveTo(s * 0.5, 0); c.lineTo(s * 0.4, 5); c.stroke();
                     break;
 
-                case 'cosmic': // WEB
-                    c.beginPath();
-                    for (let i = 0; i < 8; i++) {
-                        c.rotate(Math.PI / 4);
-                        c.moveTo(0, 0); c.bezierCurveTo(s / 2, s / 4, s / 2, -s / 4, s, 0);
-                    }
-                    c.stroke();
-                    c.beginPath(); c.arc(0, 0, s * 0.2, 0, 7); c.fill();
-                    break;
-                case 'create_wave':
-                    c.beginPath();
-                    const intensity = parseFloat(c.canvas ? (c.canvas.dataset.intensity || 0) : 0);
+                case 'cosmic':
+                    c.save();
                     for (let i = 0; i < 6; i++) {
-                        const r = s * (0.2 + i * 0.2) * (1 + intensity * 0.5);
-                        c.moveTo(r, 0);
-                        c.arc(0, 0, r, 0, Math.PI * 2);
+                        c.rotate(Math.PI / 3);
+                        c.beginPath();
+                        c.moveTo(0, 0);
+                        c.bezierCurveTo(s * 0.4, s * 0.3, s * 0.7, -s * 0.3, s, 0);
+                        c.stroke();
                     }
-                    c.stroke();
+                    c.beginPath(); c.arc(0, 0, s * 0.25, 0, 7); c.fillStyle = 'rgba(255,255,255,0.1)'; c.fill(); c.stroke();
+                    c.restore();
+                    break;
+
+                case 'create_wave':
+                    const pressure = parseFloat(c.canvas.dataset.pressure || 0);
+                    for (let i = 1; i <= 5; i++) {
+                        const phase = t * 1.5 + i * 0.8;
+                        const r = s * (0.1 + (i / 5.0) * 0.8 + Math.sin(phase) * 0.04) * (1 + pressure * 0.5);
+                        c.globalAlpha = Math.max(0, 0.7 * (1.0 - r / (s * 1.5)));
+                        c.beginPath();
+                        c.arc(0, 0, r, 0, Math.PI * 2);
+                        c.stroke();
+                        if (i === 1) {
+                            c.globalAlpha = 0.05 + pressure * 0.15;
+                            c.fill();
+                        }
+                    }
+                    c.globalAlpha = 1.0;
                     break;
             }
         }
@@ -976,297 +1173,305 @@
         function getVizFns() {
             return {
                 fabric: (c, w, h, t) => {
-                    c.strokeStyle = 'rgba(0,221,255,0.15)'; c.lineWidth = 1;
-                    // Infinite 3D Grid Floor & Ceiling
-                    const horizon = h * 0.5;
+                    const hLine = h * 0.5;
+                    c.strokeStyle = 'rgba(0,221,255,0.1)'; c.lineWidth = 1;
+
+                    // 1. Digital Substrate Grid
                     c.beginPath();
-                    // Vertical perspective lines
-                    for (let i = -w; i <= w * 2; i += 60) {
+                    for (let i = -w * 0.5; i <= w * 1.5; i += 50) {
                         c.moveTo(i, h);
-                        c.lineTo(w / 2 + (i - w / 2) * 0.1, horizon);
+                        c.lineTo(w / 2 + (i - w / 2) * 0.05, hLine);
                     }
-                    // Horizontal moving lines
-                    const offset = (t * 50) % 50;
-                    for (let y = h; y > horizon; y -= 10 + (y - horizon) * 0.1) {
-                        const yPos = y + offset * ((y - horizon) / h);
+                    const gridOffset = (t * 60) % 60;
+                    for (let y = h; y > hLine; y -= 5 + (y - hLine) * 0.1) {
+                        const yPos = y + gridOffset * ((y - hLine) / h);
                         if (yPos < h) {
                             c.moveTo(0, yPos); c.lineTo(w, yPos);
                         }
                     }
                     c.stroke();
 
-                    // Floating Data Particles
-                    c.fillStyle = 'rgba(0,221,255,0.5)';
-                    for (let i = 0; i < 300; i++) {
-                        const x = Math.random() * w;
-                        const y = Math.random() * horizon;
-                        c.fillRect(x, y + Math.sin(t + x) * 10, 1 + Math.random() * 2, 1);
+                    // 2. Scanning Neon Pulse
+                    const scanY = hLine + ((t * 0.5) % 1.0) * (h - hLine);
+                    const grad = c.createLinearGradient(0, scanY - 30, 0, scanY + 30);
+                    grad.addColorStop(0, 'rgba(0,221,255,0)');
+                    grad.addColorStop(0.5, 'rgba(0,221,255,0.2)');
+                    grad.addColorStop(1, 'rgba(0,221,255,0)');
+                    c.fillStyle = grad;
+                    c.fillRect(0, scanY - 30, w, 60);
+
+                    // 3. Data Flow Particles
+                    c.fillStyle = 'rgba(0,221,255,0.4)';
+                    for (let i = 0; i < 200; i++) {
+                        const seed = (i * 1234.5);
+                        const x = (seed % w);
+                        const y = (seed * t * 0.01) % hLine;
+                        c.fillRect(x, y, 1, 1);
                     }
                 },
                 spacetime: (c, w, h, t) => {
                     const cx = w / 2, cy = h * 0.5;
-                    c.strokeStyle = 'rgba(255,107,157,0.4)';
-                    c.lineWidth = 2;
                     c.lineCap = 'round';
+                    c.lineJoin = 'round';
+                    const color = '#ff6b9d';
 
-                    // Warp Speed Tunnel
-                    const count = 60;
-                    for (let i = 0; i < count; i++) {
-                        const ang = (i / count) * Math.PI * 2;
-                        const rx = Math.cos(ang);
-                        const ry = Math.sin(ang);
-                        const depth = (t * 500 + i * 100) % 2000;
-                        const scale = 2000 / (2000 - depth);
+                    // 1. The 4D Loaf (Temporal Z-Slices)
+                    const sliceCount = 14;
+                    for (let i = 0; i < sliceCount; i++) {
+                        const depth = (t * 0.8 + i * 1.2) % (sliceCount * 1.2);
+                        const z = depth / (sliceCount * 1.2); // 0 (near) to 1 (far)
+                        const scale = 0.3 + (1.0 - z) * 1.8;
+                        const alpha = Math.pow(1.0 - z, 1.5) * 0.4;
 
-                        const x = cx + rx * 20 * scale;
-                        const y = cy + ry * 20 * scale;
-                        const len = scale * 40;
+                        if (alpha <= 0.01) continue;
+
+                        const sw = 450 * scale;
+                        const sh = 280 * scale;
+
+                        c.strokeStyle = color;
+                        c.globalAlpha = alpha;
+                        c.lineWidth = 1.2 * (1.0 - z);
+
+                        // Main Frame
+                        c.strokeRect(cx - sw / 2, cy - sh / 2, sw, sh);
+
+                        // Corner Micro-Details
+                        const ds = 12 * scale;
+                        c.lineWidth = 2.5 * (1.0 - z);
+                        // TL
+                        c.beginPath(); c.moveTo(cx - sw / 2, cy - sh / 2 + ds); c.lineTo(cx - sw / 2, cy - sh / 2); c.lineTo(cx - sw / 2 + ds, cy - sh / 2); c.stroke();
+                        // BR
+                        c.beginPath(); c.moveTo(cx + sw / 2, cy + sh / 2 - ds); c.lineTo(cx + sw / 2, cy + sh / 2); c.lineTo(cx + sw / 2 - ds, cy + sh / 2); c.stroke();
+                    }
+
+                    // 2. Worldlines (Connecting the manifold)
+                    c.globalAlpha = 0.1;
+                    c.lineWidth = 0.5;
+                    const worldlineCount = 16;
+                    for (let i = 0; i < worldlineCount; i++) {
+                        const angle = (i / worldlineCount) * Math.PI * 2;
+                        const rx = Math.cos(angle);
+                        const ry = Math.sin(angle);
 
                         c.beginPath();
-                        c.moveTo(x, y);
-                        c.lineTo(x + rx * len, y + ry * len);
-                        c.globalAlpha = Math.min(1, scale * 0.1);
+                        const zStart = 0.05, zEnd = 0.95;
+                        const sS = 0.3 + (1.0 - zStart) * 1.8;
+                        const sE = 0.3 + (1.0 - zEnd) * 1.8;
+
+                        c.moveTo(cx + rx * 225 * sS, cy + ry * 140 * sS);
+                        c.lineTo(cx + rx * 225 * sE, cy + ry * 140 * sE);
                         c.stroke();
                     }
-                    c.globalAlpha = 1;
+
+                    // 3. Temporal Jitter / Particles
+                    for (let i = 0; i < 40; i++) {
+                        const ang = i * 13.7 + t;
+                        const dist = (i * 17.3 + t * 100) % 800;
+                        const x = cx + Math.cos(ang) * dist;
+                        const y = cy + Math.sin(ang) * (dist * 0.6);
+                        c.fillStyle = color;
+                        c.globalAlpha = 0.15 * (1.0 - dist / 800);
+                        c.fillRect(x, y, 1.5, 1.5);
+                    }
+                    c.globalAlpha = 1.0;
                 },
                 blackhole: (c, w, h, t) => {
                     const cx = w / 2, cy = h * 0.5;
-                    // Accretion Disk (Layers)
-                    for (let i = 0; i < 40; i++) {
+                    c.globalCompositeOperation = 'screen';
+
+                    // 1. Accretion Swirls
+                    for (let i = 0; i < 30; i++) {
                         c.beginPath();
-                        c.ellipse(cx, cy, 300 - i * 5, 80 - i * 1.5, t * 0.5 + i * 0.05, 0, 7);
-                        c.strokeStyle = `rgba(255, ${150 + i * 2}, 0, ${0.1 + i * 0.01})`;
+                        c.ellipse(cx, cy, 350 - i * 8, 100 - i * 2, t * 0.4 + i * 0.1, 0, 7);
+                        c.strokeStyle = `hsla(${20 + i}, 100%, 50%, 0.15)`;
+                        c.lineWidth = 1.5;
                         c.stroke();
                     }
 
-                    // Infalling Stars
-                    c.fillStyle = '#fff';
-                    for (let i = 0; i < 600; i++) {
-                        const angle = Math.random() * 7;
-                        const dist = 50 + (t * 200 + i * 20) % 800;
-                        const spiral = angle + 200 / dist;
-                        const x = cx + Math.cos(spiral) * dist;
-                        const y = cy + Math.sin(spiral) * dist * 0.3; // Perspective
-                        c.globalAlpha = Math.min(1, dist / 800);
-                        c.fillRect(x, y, 1.5, 1.5);
-                    }
-                    c.globalAlpha = 1;
+                    // 2. Gravitational Lensing Halo
+                    const haloSize = 120 + Math.sin(t * 2) * 10;
+                    const hGrad = c.createRadialGradient(cx, cy, 50, cx, cy, haloSize);
+                    hGrad.addColorStop(0, 'rgba(0,0,0,1)');
+                    hGrad.addColorStop(0.5, 'rgba(255,170,0,0.15)');
+                    hGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                    c.fillStyle = hGrad;
+                    c.beginPath(); c.arc(cx, cy, haloSize, 0, 7); c.fill();
 
-                    // Event Horizon Shadow
-                    c.fillStyle = '#000'; c.shadowBlur = 80; c.shadowColor = '#ffaa00';
-                    c.beginPath(); c.arc(cx, cy, 50, 0, 7); c.fill(); c.shadowBlur = 0;
+                    c.globalCompositeOperation = 'source-over';
+                    c.fillStyle = '#000';
+                    c.beginPath(); c.arc(cx, cy, 55, 0, 7); c.fill();
                 },
                 expansion: (c, w, h, t) => {
                     const cx = w / 2, cy = h * 0.5;
                     c.fillStyle = 'rgba(255,100,50,0.8)';
-                    // Big Bang Explosion
-                    for (let i = 0; i < 1500; i++) {
-                        const angle = Math.random() * 7;
-                        const speed = 1 + Math.random() * 4;
-                        const dist = (t * 100 * speed + i * 10) % (Math.max(w, h));
+                    const count = 1200;
+                    for (let i = 0; i < count; i++) {
+                        const seed = i * 137.5;
+                        const ang = seed;
+                        const speed = 1 + (seed % 3);
+                        const dist = (t * 150 * speed + seed) % (Math.max(w, h) * 0.8);
 
-                        const x = cx + Math.cos(angle) * dist;
-                        const y = cy + Math.sin(angle) * dist;
-
-                        c.globalAlpha = 1 - (dist / Math.max(w, h));
-                        const size = (dist / 100) * 1.5;
-                        c.fillRect(x, y, size, size);
+                        const x = cx + Math.cos(ang) * dist;
+                        const y = cy + Math.sin(ang) * dist;
+                        const alpha = (1 - dist / (Math.max(w, h) * 0.8)) * 0.6;
+                        c.globalAlpha = alpha;
+                        c.fillRect(x, y, 1.5, 1.5);
                     }
                     c.globalAlpha = 1;
                 },
                 quantum: (c, w, h, t) => {
-                    // Dirac Sea / Field Fluctuations
-                    const rows = 15;
+                    const rows = 12;
                     for (let j = 0; j < rows; j++) {
-                        const rowY = h * 0.3 + (j / rows) * h * 0.4;
-                        const alpha = (1 - Math.abs(j - rows / 2) / (rows / 2)) * 0.2;
+                        const rowY = h * 0.35 + (j / rows) * h * 0.3;
+                        const alpha = (1 - Math.abs(j - rows / 2) / (rows / 2)) * 0.25;
                         c.strokeStyle = `rgba(0, 255, 170, ${alpha})`;
-                        c.lineWidth = 1;
                         c.beginPath();
-                        for (let x = 0; x <= w; x += 15) {
-                            const phase = x * 0.01 + t * 2 + j * 0.5;
-                            const amp = Math.sin(phase) * Math.cos(phase * 0.5) * 40;
-                            // Add "Quantum Foam" spikes
-                            const noise = Math.sin(x * 0.1 - t * 5) * 5;
-                            c.lineTo(x, rowY + amp + noise);
+                        for (let x = 0; x <= w; x += 20) {
+                            const phase = x * 0.008 + t * 2.5 + j * 0.6;
+                            const amp = Math.sin(phase) * Math.cos(phase * 0.7) * 50;
+                            const glitch = (Math.sin(x * 0.1 - t * 10) > 0.98) ? (Math.random() - 0.5) * 40 : 0;
+                            c.lineTo(x, rowY + amp + glitch);
                         }
                         c.stroke();
                     }
-                    // Virtual Particle Pairs
+                    // Animated Probability Points
                     c.fillStyle = 'rgba(0, 255, 170, 0.4)';
-                    for (let i = 0; i < 50; i++) {
-                        const x = (Math.sin(i + t) * 0.5 + 0.5) * w;
-                        const y = (Math.cos(i * 1.5 + t * 0.5) * 0.5 + 0.5) * h;
-                        const size = Math.random() * 2;
-                        c.beginPath();
-                        c.arc(x, y, size, 0, Math.PI * 2);
-                        c.fill();
+                    for (let i = 0; i < 40; i++) {
+                        const x = (t * 100 + i * 200) % w;
+                        const y = h * 0.5 + Math.sin(t + i) * 100;
+                        c.beginPath(); c.arc(x, y, 1, 0, 7); c.fill();
                     }
                 },
                 resonance: (c, w, h, t) => {
                     const cx = w / 2, cy = h * 0.5;
-                    // Cymatic Manifold
-                    c.lineWidth = 1.5;
-                    const count = 25;
+                    const count = 20;
                     for (let i = 0; i < count; i++) {
-                        const r = i * 25 + (t * 40) % 25;
-                        const alpha = (1 - r / (w * 0.8)) * 0.3;
+                        const r = i * 30 + (t * 50) % 30;
+                        const alpha = (1 - r / (w * 0.6)) * 0.2;
                         if (alpha <= 0) continue;
 
-                        // Chromatic Aberration Layers
-                        ['#ff0055', '#00ddff'].forEach((color, ci) => {
-                            c.strokeStyle = color;
-                            c.globalAlpha = alpha * 0.5;
-                            c.beginPath();
-                            for (let ang = 0; ang < Math.PI * 2; ang += 0.1) {
-                                // Modulate radius by harmonics
-                                const harmonic = Math.sin(ang * 6 + t * 2) * 15 + Math.sin(ang * 12 - t) * 5;
-                                const dr = r + harmonic + (ci * 2);
-                                const px = cx + Math.cos(ang) * dr;
-                                const py = cy + Math.sin(ang) * dr * 0.4; // Perspective tilt
-                                if (ang === 0) c.moveTo(px, py);
-                                else c.lineTo(px, py);
-                            }
-                            c.closePath();
-                            c.stroke();
-                        });
+                        c.strokeStyle = `rgba(255, 0, 85, ${alpha})`;
+                        c.beginPath();
+                        for (let a = 0; a < Math.PI * 2; a += 0.2) {
+                            const mod = Math.sin(a * 8 + t * 3) * 15;
+                            const dr = r + mod;
+                            c.lineTo(cx + Math.cos(a) * dr, cy + Math.sin(a) * dr * 0.5);
+                        }
+                        c.closePath(); c.stroke();
+
+                        c.strokeStyle = `rgba(0, 221, 255, ${alpha * 0.8})`;
+                        c.beginPath();
+                        for (let a = 0; a < Math.PI * 2; a += 0.2) {
+                            const mod = Math.sin(a * 8 + t * 3.1) * 12;
+                            const dr = r + mod + 5;
+                            c.lineTo(cx + Math.cos(a) * dr, cy + Math.sin(a) * dr * 0.5);
+                        }
+                        c.closePath(); c.stroke();
                     }
-                    c.globalAlpha = 1;
                 },
                 chaos: (c, w, h, t) => {
-                    // Butterfly Effect Trails
-                    c.strokeStyle = 'rgba(255,50,50,0.4)'; c.lineWidth = 1;
                     const cx = w / 2, cy = h * 0.5;
-                    const scale = 20;
-                    // Draw multiple Lorenz-like curves
-                    for (let k = 0; k < 5; k++) {
-                        let x = 0.1 + k, y = 0, z = 0; // Fake state
+                    c.strokeStyle = 'rgba(255,80,80,0.2)';
+                    for (let k = 0; k < 6; k++) {
                         c.beginPath();
-                        for (let i = 0; i < 100; i++) {
-                            // Simple strange attractor math approx
-                            const dx = Math.sin(t * 2 + i * 0.1 + k) * 100;
-                            const dy = Math.cos(t * 1.5 + i * 0.1) * 80 * Math.sin(t * 0.5);
-                            c.lineTo(cx + dx + Math.cos(k + t) * 200, cy + dy);
+                        for (let i = 0; i < 80; i++) {
+                            const ang = t * 2 + i * 0.1 + k;
+                            const r = (150 + Math.sin(t + i * 0.05) * 100) * (0.5 + k * 0.1);
+                            c.lineTo(cx + Math.cos(ang) * r, cy + Math.sin(ang * 0.5) * r * 0.6);
                         }
                         c.stroke();
                     }
                 },
                 wormhole: (c, w, h, t) => {
                     const cx = w / 2, cy = h * 0.5;
-                    // Spiral Tunnel
-                    for (let i = 0; i < 100; i++) {
-                        const dist = 500 - (t * 200 + i * 30) % 500; // Moving IN
-                        const scale = 500 / Math.max(1, dist);
-                        const rot = t * 2 + dist * 0.01;
-
-                        c.strokeStyle = `rgba(100,255,100,${dist / 500 * 0.5})`;
-                        c.lineWidth = 2 * scale;
-
+                    for (let i = 0; i < 80; i++) {
+                        const dist = 600 - (t * 300 + i * 25) % 600;
+                        const scale = 600 / Math.max(1, dist);
+                        const alpha = (dist / 600) * 0.4;
+                        c.strokeStyle = `rgba(100,255,255,${alpha})`;
+                        c.lineWidth = scale;
                         c.beginPath();
-                        c.ellipse(cx, cy, 100 * scale, 100 * scale, rot, 0, 7);
+                        c.ellipse(cx, cy, 120 * scale, 60 * scale, t + dist * 0.01, 0, 7);
                         c.stroke();
                     }
                 },
                 uncertainty: (c, w, h, t) => {
-                    // Glitch Field
-                    c.fillStyle = 'rgba(255,255,255,0.1)';
-                    for (let i = 0; i < 50; i++) {
-                        const wBox = Math.random() * w;
-                        const hBox = Math.random() * 20;
+                    c.fillStyle = 'rgba(255,255,255,0.03)';
+                    for (let i = 0; i < 30; i++) {
                         const x = Math.random() * w;
                         const y = Math.random() * h;
-                        if (Math.sin(t * 10 + y) > 0.5) {
-                            c.fillRect(x, y, wBox, hBox);
-                        }
+                        const bw = Math.random() * 200;
+                        const bh = 1 + Math.random() * 5;
+                        if (Math.random() > 0.8) c.fillRect(x, y, bw, bh);
                     }
                 },
                 wave_theory: (c, w, h, t) => {
-                    // Universal Surface
-                    c.strokeStyle = 'rgba(255,255,255,0.2)';
-                    for (let i = 0; i < 50; i++) {
+                    c.strokeStyle = 'rgba(255,255,255,0.15)';
+                    for (let i = 0; i < 40; i++) {
                         c.beginPath();
-                        for (let x = 0; x <= w; x += 20) {
-                            const y = h * 0.5 + Math.sin(x * 0.01 + t + i * 0.2) * 50 + (i - 25) * 10;
+                        for (let x = 0; x <= w; x += 30) {
+                            const y = h * 0.5 + Math.sin(x * 0.005 + t + i * 0.3) * 60 + (i - 20) * 12;
                             c.lineTo(x, y);
                         }
                         c.stroke();
                     }
                 },
                 arrow: (c, w, h, t) => {
-                    c.fillStyle = 'rgba(255,80,0,0.6)';
-                    // Flow from Order (Left) to Chaos (Right)
-                    for (let i = 0; i < 800; i++) {
-                        const x = (t * 200 + i * 5) % (w + 200) - 100;
-                        const chaosFactor = Math.max(0, x / w); // 0 invar -> 1 chaos
-                        const yBase = h * 0.5;
-                        const spread = Math.pow(chaosFactor, 2) * h;
-                        const y = yBase + (Math.sin(i) * spread / 2) + (Math.random() - 0.5) * spread;
-
-                        const size = 2 * (1 - chaosFactor * 0.5);
-                        c.globalAlpha = 1 - chaosFactor * 0.8;
-                        c.fillRect(x, y, size, size);
+                    const cx = w / 2, cy = h * 0.5;
+                    c.fillStyle = 'rgba(255,80,0,0.5)';
+                    for (let i = 0; i < 1000; i++) {
+                        const x = (t * 300 + i * 7) % (w + 400) - 200;
+                        const chaos = Math.max(0, (x - w * 0.2) / (w * 0.8));
+                        const dev = Math.pow(chaos, 2.5) * h * 0.6;
+                        const y = cy + (Math.random() - 0.5) * dev;
+                        c.globalAlpha = Math.max(0, 0.8 - chaos);
+                        c.fillRect(x, y, 1.5, 1.5);
                     }
                     c.globalAlpha = 1;
                 },
                 cosmic: (c, w, h, t) => {
-                    c.strokeStyle = 'rgba(0,136,255,0.15)';
-                    c.fillStyle = '#fff';
                     const cx = w / 2, cy = h * 0.5;
-                    // Rotating Cosmic Web
-                    for (let i = 0; i < 80; i++) {
-                        const r = 200 + Math.sin(i) * 100;
-                        const ang = i * 0.5 + t * 0.1;
-                        const x = cx + Math.cos(ang) * r * Math.sin(t * 0.2 + i);
-                        const y = cy + Math.sin(ang) * r;
-
-                        // Connections
+                    c.strokeStyle = 'rgba(0,100,255,0.1)';
+                    for (let i = 0; i < 60; i++) {
+                        const seed = i * 137.5;
+                        const x = cx + Math.cos(seed + t * 0.05) * 300 * Math.sin(t * 0.1 + seed);
+                        const y = cy + Math.sin(seed + t * 0.05) * 300;
                         for (let j = 1; j < 3; j++) {
-                            const r2 = 200 + Math.sin(i + j) * 100;
-                            const ang2 = (i + j) * 0.5 + t * 0.1;
-                            const x2 = cx + Math.cos(ang2) * r2 * Math.sin(t * 0.2 + i + j);
-                            const y2 = cy + Math.sin(ang2) * r2;
-
-                            const dist = Math.hypot(x - x2, y - y2);
-                            if (dist < 150) {
-                                c.lineWidth = (150 - dist) / 150;
+                            const seed2 = (i + j) * 137.5;
+                            const x2 = cx + Math.cos(seed2 + t * 0.05) * 300 * Math.sin(t * 0.1 + seed2);
+                            const y2 = cy + Math.sin(seed2 + t * 0.05) * 300;
+                            const d = Math.hypot(x - x2, y - y2);
+                            if (d < 180) {
+                                c.lineWidth = 1 - d / 180;
                                 c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke();
                             }
                         }
                     }
                 },
                 create_wave: (c, w, h, t) => {
-                    // SEPARATION OF CONCERNS:
-                    // 'c' is the 2D Context of the Top Canvas (Event Layer).
-                    // We need to find and drive the Background WebGL Canvas.
-
                     const topCanvas = c.canvas;
                     if (!topCanvas.parentElement) return;
-
                     const glCanvas = topCanvas.parentElement.querySelector('canvas[id^="viz-webgl-"]');
                     if (!glCanvas) return;
-
-                    // Initialize WebGL on the BACKGROUND canvas
-                    if (!glCanvas.fiveInitialized) { // Unique key to avoid re-init
+                    if (!glCanvas.fiveInitialized) {
                         initCreateWaveWebGL(glCanvas);
                         glCanvas.fiveInitialized = true;
                     }
-
-                    // Sync Dimensions
                     if (glCanvas.width !== w || glCanvas.height !== h) {
-                        glCanvas.width = w;
-                        glCanvas.height = h;
+                        glCanvas.width = w; glCanvas.height = h;
                     }
-
-                    // Bridge Data: Get intensity from Top Canvas -> Send to Bottom Canvas
-                    const intensity = parseFloat(topCanvas.dataset.intensity || 0);
                     if (glCanvas.waveUniforms) {
                         glCanvas.waveUniforms.uTime.value = t;
-                        glCanvas.waveUniforms.uIntensity.value = intensity;
-                    }
 
-                    // Clear 2D Top Canvas (It just holds events + Totem drawn later)
-                    // The Totem is drawn by the main loop after this function returns.
+                        // Interpolate mouse and pressure for smoothness
+                        const targetX = parseFloat(topCanvas.dataset.mx || 0.5);
+                        const targetY = parseFloat(topCanvas.dataset.my || 0.5);
+                        const targetP = parseFloat(topCanvas.dataset.pressure || 0);
+
+                        glCanvas.waveUniforms.uMouse.value.x += (targetX - glCanvas.waveUniforms.uMouse.value.x) * 0.15;
+                        glCanvas.waveUniforms.uMouse.value.y += (targetY - glCanvas.waveUniforms.uMouse.value.y) * 0.15;
+                        glCanvas.waveUniforms.uPressure.value += (targetP - glCanvas.waveUniforms.uPressure.value) * 0.15;
+                    }
                 }
             };
         }
@@ -1277,7 +1482,6 @@
          */
         function initCreateWaveWebGL(canvas) {
             if (!window.THREE) return;
-            canvas.threeInitialized = true;
 
             const w = canvas.width;
             const h = canvas.height;
@@ -1286,18 +1490,15 @@
             renderer.setPixelRatio(window.devicePixelRatio);
 
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
-            camera.position.set(0, 1.5, 3);
-            camera.lookAt(0, 0, 0);
-
-            // Substrate Geometry: A dense mesh for smooth deformation
-            const geometry = new THREE.PlaneGeometry(4, 4, 128, 128);
-            geometry.rotateX(-Math.PI / 2.5); // Perspective Tilt
+            // Flat Layout for "Natural" Feel
+            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
+            const geometry = new THREE.PlaneGeometry(2, 2);
 
             const uniforms = {
                 uTime: { value: 0 },
-                uIntensity: { value: 0 },
-                uColor: { value: new THREE.Color(0xFFFFFF) }
+                uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                uPressure: { value: 0 },
+                uColor: { value: new THREE.Color(0x00ddff) }
             };
             canvas.waveUniforms = uniforms;
 
@@ -1305,66 +1506,51 @@
                 uniforms: uniforms,
                 transparent: true,
                 vertexShader: `
-                    uniform float uTime;
-                    uniform float uIntensity;
-                    varying float vElevation;
                     varying vec2 vUv;
-
-                    // Simple noise for shakiness
-                    float noise(vec2 p) {
-                        return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-                    }
-
                     void main() {
                         vUv = uv;
-                        vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-                        
-                        // Distance from center for radial ripple
-                        float dist = distance(uv, vec2(0.5));
-                        
-                        // Shaky Wave Logic: Periodic noise based on intensity
-                        float shake = noise(uv + uTime) * uIntensity * 0.05;
-                        
-                        // Base wave (Subtle background noise)
-                        float elevation = sin(modelPosition.x * 2.0 + uTime) * 0.02;
-                        elevation += sin(modelPosition.z * 1.5 - uTime * 0.8) * 0.02;
-
-                        // Haptic-Induced Ripple (Triggered by intensity)
-                        if (uIntensity > 0.01) {
-                            float ripple = sin((dist * 30.0) - (uTime * 10.0)) * 0.15;
-                            ripple *= uIntensity;
-                            ripple *= exp(-dist * 4.0); // Dampen away from center
-                            elevation += ripple + shake; // Add shakiness here
-                        }
-
-                        modelPosition.y += elevation;
-                        vElevation = elevation;
-
-                        gl_Position = projectionMatrix * viewMatrix * modelPosition;
+                        gl_Position = vec4(position, 1.0);
                     }
                 `,
                 fragmentShader: `
+                    uniform float uTime;
+                    uniform vec2 uMouse;
+                    uniform float uPressure;
                     uniform vec3 uColor;
-                    uniform float uIntensity;
-                    varying float vElevation;
                     varying vec2 vUv;
 
+                    float hash(vec2 p) {
+                        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+                    }
+
+                    float noise(vec2 p) {
+                        vec2 i = floor(p);
+                        vec2 f = fract(p);
+                        vec2 u = f*f*(3.0-2.0*f);
+                        return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
+                                   mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+                    }
+
                     void main() {
-                        // Create a grid/wireframe texture dynamically
-                        float grid = 0.0;
-                        float freq = 60.0;
-                        if (fract(vUv.x * freq) < 0.05 || fract(vUv.y * freq) < 0.05) grid = 0.5;
-
-                        float dist = distance(vUv, vec2(0.5));
-                        float alpha = (0.2 + grid) * (1.0 - dist * 1.5);
+                        vec2 uv = vUv;
+                        float d = distance(uv, uMouse);
                         
-                        // Glow based on elevation and intensity
-                        vec3 finalColor = uColor;
-                        if (uIntensity > 0.0) {
-                            finalColor += vec3(0.1, 0.5, 1.0) * uIntensity * abs(vElevation) * 10.0;
-                        }
-
-                        gl_FragColor = vec4(finalColor, alpha);
+                        // Layered Natural Waves
+                        float n = noise(uv * 4.0 + uTime * 0.3) * 0.1;
+                        n += noise(uv * 8.0 - uTime * 0.5) * 0.05;
+                        
+                        // Dynamic Ripple based on Pressure
+                        float ripple = sin(d * 50.0 - uTime * 10.0) * 0.5 + 0.5;
+                        ripple *= exp(-d * 4.0);
+                        
+                        float intensity = 0.1 + uPressure * 2.5;
+                        float field = n + ripple * intensity;
+                        
+                        vec3 color = mix(vec3(0.0, 0.05, 0.1), uColor, field);
+                        color += vec3(0.5, 0.0, 1.0) * pow(field, 4.0); // Spectral peaks
+                        
+                        float alpha = clamp(field * 1.2, 0.0, 0.85);
+                        gl_FragColor = vec4(color, alpha);
                     }
                 `
             });
@@ -1373,15 +1559,11 @@
             scene.add(mesh);
 
             function animate() {
-                if (!canvas.parentElement) return; // Stop if removed
+                if (!canvas.parentElement) return;
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);
-
-                // Keep renderer size synced
                 if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
                     renderer.setSize(window.innerWidth, window.innerHeight);
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
                 }
             }
             animate();

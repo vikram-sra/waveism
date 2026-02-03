@@ -32,31 +32,9 @@
             box-shadow: inset 0 0 15px rgba(0, 255, 170, 0.2);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(0, 255, 170, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 250px;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            color: rgba(0, 255, 170, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glitch {
             position: fixed;
@@ -75,14 +53,10 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE Λ-CDM EXPANSION METRIC INTERFACE</div>
+
     <div class="manifold-glitch"></div>
 
-    <div class="system-status">
-        [ H₀ ESTIMATE: 72.1 KM/S/MPC ]<br>
-        [ SCALE FACTOR: a(t) STRETCHING ]<br>
-        [ HORIZON: ESCEDING ]
-    </div>
+
 
     <div id="nav-container"></div>
 
@@ -141,6 +115,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -160,6 +138,7 @@
             'hubble': {
                 name: 'Hubble-Lemaître Flow', year: 'Edwin Hubble, 1929',
                 equation: 'v = H₀ d',
+                equationExpl: 'The Hubble-Lemaître Law. It relates the recession velocity (v) of a galaxy to its distance (d) from the observer, where H₀ is the expansion rate.',
                 facts: [{ text: 'Universal Recession', status: 'yes' }, { text: 'Metric Stretching', status: 'yes' }],
                 description: 'The discovery that galaxies are moving away from us at speeds proportional to their distance. This is not galaxies moving *through* space, but space itself expanding between them.',
                 concepts: [
@@ -172,6 +151,7 @@
             'redshift': {
                 name: 'Metric Redshift (z)', year: 'Spectroscopic Dilation',
                 equation: '1 + z = λ_obs / λ_emit',
+                equationExpl: 'The definition of cosmological redshift (z). It measures how much the wavelength of light has been stretched by the expansion of the universe since emission.',
                 facts: [{ text: 'Photon Stretching', status: 'yes' }, { text: 'Metric Dilation', status: 'yes' }],
                 description: 'As light travels through expanding space, its wavelength is physically stretched. A blue photon emitted billions of years ago arrives as a red photon today, carrying the record of the universe\'s growth.',
                 concepts: [
@@ -183,6 +163,7 @@
             'cmb': {
                 name: 'Last Scattering Surface', year: 'CMB Sky (380,000 BB)',
                 equation: 'T ≈ 2.73 K',
+                equationExpl: 'The blackbody temperature of the Cosmic Microwave Background. This near-uniform heat is the remnant of the hot Big Bang, now cooled to near absolute zero.',
                 facts: [{ text: 'Opaque to Transparent', status: 'yes' }, { text: 'Frozen Acoustic Waves', status: 'yes' }],
                 description: 'The Cosmic Microwave Background. The oldest light in the universe, emitted when the early hot soup of plasma cooled enough for atoms to form, allowing photons to finally fly free.',
                 concepts: [
@@ -195,6 +176,7 @@
             'timeline': {
                 name: 'Spacetime Cone History', year: 'Friedmann-Lemaître Epochs',
                 equation: 'H² = (8πG/3)ρ - k/a²',
+                equationExpl: 'The Friedmann equation. It relates the expansion rate (H) to the energy density (ρ) and the curvature (k) of the universe geometry.',
                 facts: [{ text: 'Big Bang Apex', status: 'yes' }, { text: 'Acceleration Era', status: 'yes' }],
                 description: 'The holographic history of the universe. From the high-energy density of the Big Bang to the matter-dominated era, and finally into the current era of Dark Energy-driven acceleration.',
                 concepts: [

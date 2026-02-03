@@ -254,16 +254,16 @@ function initInfoModal() {
     // Toggle info panel on button click
     infoBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        console.log('[Waveism] Info button clicked');
-        const isOpen = infoModal.classList.toggle('open');
-        infoBtn.classList.toggle('active', isOpen);
-        document.body.classList.toggle('info-panel-open', isOpen);
+        const wasOpen = infoModal.classList.contains('open');
 
-        // Explicit visibility force
-        if (isOpen) {
+        // Close others first
+        closeAllWaveismPopups();
+
+        if (!wasOpen) {
+            infoModal.classList.add('open');
+            infoBtn.classList.add('active');
+            document.body.classList.add('info-panel-open');
             infoModal.style.setProperty('display', 'block', 'important');
-        } else {
-            infoModal.style.setProperty('display', 'none', 'important');
         }
     });
 
@@ -372,15 +372,52 @@ function updateInfoPanel(data) {
     }
 }
 
+// ============ GLOBAL POPUP MANAGEMENT ============
+function closeAllWaveismPopups() {
+    // Info Modal
+    const infoModal = document.getElementById('info-modal');
+    const infoBtn = document.getElementById('info-btn');
+    if (infoModal) {
+        infoModal.classList.remove('open');
+        infoModal.style.setProperty('display', 'none', 'important');
+    }
+    if (infoBtn) infoBtn.classList.remove('active');
+    document.body.classList.remove('info-panel-open');
+
+    // Sliders Panel
+    const paramsPanel = document.querySelector('.params-panel');
+    const slidersBtn = document.querySelector('.sliders-btn');
+    if (paramsPanel) paramsPanel.classList.remove('open');
+    if (slidersBtn) slidersBtn.classList.remove('active');
+    document.body.classList.remove('sliders-popup-open');
+
+    // Share Popup
+    const sharePopup = document.querySelector('.share-popup');
+    const shareBtn = document.querySelector('.share-btn');
+    if (sharePopup) sharePopup.classList.remove('open');
+    if (shareBtn) shareBtn.classList.remove('active');
+    document.body.classList.remove('share-popup-open');
+}
+
 // ============ UPDATE INFO MODAL CONTENT ============
 function updateInfoModalContent(data) {
     const descEl = document.getElementById('info-description');
     const conceptsEl = document.getElementById('info-concepts');
     const physicsEl = document.getElementById('info-physics');
+    const eqnExplEl = document.getElementById('info-equation-explanation');
     const quoteSection = document.getElementById('info-quote-section');
 
     if (descEl && data.description) descEl.textContent = data.description;
     if (physicsEl && data.physics) physicsEl.textContent = data.physics;
+
+    if (eqnExplEl) {
+        if (data.equationExpl) {
+            eqnExplEl.textContent = data.equationExpl;
+            eqnExplEl.parentElement.style.display = 'block';
+        } else {
+            eqnExplEl.parentElement.style.display = 'none';
+        }
+    }
 
     if (quoteSection) {
         if (data.quote) {
@@ -970,21 +1007,7 @@ function initOrbUI() {
     window.addEventListener('ui-interaction', cancelAutoHide);
 
     // Close all popups helper
-    const closeAllPopups = () => {
-        // Close info panel
-        const infoModal = document.getElementById('info-modal');
-        const infoBtn = document.getElementById('info-btn');
-        if (infoModal) infoModal.classList.remove('open');
-        if (infoBtn) infoBtn.classList.remove('active');
-        document.body.classList.remove('info-panel-open');
-
-        // Close share popup
-        const sharePopup = document.querySelector('.share-popup');
-        const shareBtn = document.querySelector('.share-btn');
-        if (sharePopup) sharePopup.classList.remove('open');
-        if (shareBtn) shareBtn.classList.remove('active');
-        document.body.classList.remove('share-popup-open');
-    };
+    const closeAllPopups = closeAllWaveismPopups;
 
     // Zen Mode Logic
     const toggleUI = () => {
@@ -1162,8 +1185,8 @@ function safeWebGLInit(initFunction) {
     }
 }
 
-// ============ CONTENT MODE TOGGLE (ELI5 / PhD) ============
-const CONTENT_MODES = ['eli5', 'standard', 'phd'];
+// ============ CONTENT MODE TOGGLE (ELI5 / Expert) ============
+const CONTENT_MODES = ['eli5', 'standard', 'expert'];
 
 function getContentMode() {
     return localStorage.getItem('waveism_content_mode') || 'standard';
@@ -1175,7 +1198,7 @@ function setContentMode(mode) {
     localStorage.setItem('waveism_content_mode', mode);
 
     // Update body classes
-    document.body.classList.remove('eli5-mode', 'standard-mode', 'phd-mode');
+    document.body.classList.remove('eli5-mode', 'standard-mode', 'expert-mode');
     document.body.classList.add(mode + '-mode');
 
     // Update toggle buttons
@@ -1198,7 +1221,7 @@ function initContentModeToggle() {
     toggle.innerHTML = `
         <button class="content-mode-btn" data-mode="eli5" title="Explain Like I'm 5">ELI5</button>
         <button class="content-mode-btn" data-mode="standard" title="Standard Mode">STD</button>
-        <button class="content-mode-btn" data-mode="phd" title="PhD Level Detail">PHD</button>
+        <button class="content-mode-btn" data-mode="expert" title="Expert Level Detail">EXP</button>
     `;
     document.body.appendChild(toggle);
 
@@ -1431,12 +1454,41 @@ function initSlidersButton() {
         document.body.appendChild(btn);
     }
 
+    // Add header to params panel if missing
+    if (!paramsPanel.querySelector('.params-header')) {
+        const header = document.createElement('div');
+        header.className = 'params-header';
+        header.style.display = 'flex';
+        header.style.justifyContent = 'space-between';
+        header.style.alignItems = 'center';
+        header.style.marginBottom = '12px';
+        header.style.borderBottom = '1px solid rgba(0, 255, 255, 0.2)';
+        header.style.paddingBottom = '8px';
+
+        header.innerHTML = `
+            <span style="font-family:'JetBrains Mono'; font-size:0.7rem; color:rgba(0,255,255,0.6); text-transform:uppercase; letter-spacing:0.1em;">Parameters</span>
+            <button class="params-close" style="background:none; border:none; color:rgba(0,255,255,0.5); font-size:1.1rem; cursor:pointer;">×</button>
+        `;
+        paramsPanel.prepend(header);
+
+        header.querySelector('.params-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllWaveismPopups();
+        });
+    }
+
     // Toggle popup on button click
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isOpen = paramsPanel.classList.toggle('open');
-        btn.classList.toggle('active', isOpen);
-        document.body.classList.toggle('sliders-popup-open', isOpen);
+        const wasOpen = paramsPanel.classList.contains('open');
+
+        closeAllWaveismPopups();
+
+        if (!wasOpen) {
+            paramsPanel.classList.add('open');
+            btn.classList.add('active');
+            document.body.classList.add('sliders-popup-open');
+        }
     });
 
     // Close when clicking outside
@@ -1510,19 +1562,23 @@ function initShareButton() {
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>`;
 
-    const xIcon = `
-        <svg viewBox="0 0 24 24" fill="currentColor" class="ui-icon-s">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+
+    const heartIcon = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ui-icon-s">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>`;
 
     popup.innerHTML = `
+        <div class="share-popup-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,255,255,0.2); padding-bottom:8px;">
+            <h3 style="margin:0; font-family:'JetBrains Mono'; font-size:0.7rem; color:rgba(0,255,255,0.6); text-transform:uppercase; letter-spacing:2px;">Share Manifold</h3>
+            <button class="share-close" style="background:none; border:none; color:rgba(0,255,255,0.5); font-size:1.1rem; cursor:pointer;">×</button>
+        </div>
         <div class="share-popup-content">
-            <h3>Share Manifold</h3>
             <p class="share-page-title">${document.title}</p>
             <div class="share-options">
                 <button class="share-option" data-action="copy">${copyIcon} Copy Link</button>
                 <button class="share-option" data-action="native">${shareIcon} Share</button>
-                <button class="share-option" data-action="tweet">${xIcon} Post to X</button>
+                <button class="share-option donate-btn-primary" data-action="donate" style="border-color:#ff00ff; color:#ff00ff; background:rgba(255,0,255,0.1); font-weight:600;">${heartIcon} Support Project</button>
             </div>
         </div>
     `;
@@ -1530,12 +1586,27 @@ function initShareButton() {
     if (subControls) subControls.appendChild(popup);
     else document.body.appendChild(popup);
 
+    // Close button logic
+    const closeBtn = popup.querySelector('.share-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllWaveismPopups();
+        });
+    }
+
     // Toggle popup on button click
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isOpen = popup.classList.toggle('open');
-        btn.classList.toggle('active', isOpen);
-        document.body.classList.toggle('share-popup-open', isOpen);
+        const wasOpen = popup.classList.contains('open');
+
+        closeAllWaveismPopups();
+
+        if (!wasOpen) {
+            popup.classList.add('open');
+            btn.classList.add('active');
+            document.body.classList.add('share-popup-open');
+        }
     });
 
     // Handle share options
@@ -1570,9 +1641,10 @@ function initShareButton() {
                 } catch (e) {
                     console.log('[Waveism] Share failed:', e);
                 }
-            } else if (action === 'tweet') {
-                const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Exploring ' + pageTitle + ' on Waveism. Visualization of the fabric of spacetime.')}&url=${encodeURIComponent(pageUrl)}`;
-                window.open(tweetUrl, '_blank');
+            } else if (action === 'donate') {
+                // Stripe Donation Link
+                const stripeUrl = 'https://donate.stripe.com/7sYbJ1be2dvu6tM9XS3oA00';
+                window.open(stripeUrl, '_blank');
             }
         });
     });
@@ -1647,7 +1719,7 @@ if (document.readyState === 'loading') {
 
         // Initialize StarField if container exists
         const starContainer = document.getElementById('three-container') || document.getElementById('background-stars');
-        if (starContainer) initStarField(starContainer.id);
+        if (starContainer) initGlobalStarField(starContainer.id);
 
         setTimeout(centerActiveNavItems, 100);
     });
@@ -1662,7 +1734,7 @@ if (document.readyState === 'loading') {
     initSlidersButton();
     initShareButton();
     const starContainer = document.getElementById('three-container') || document.getElementById('background-stars');
-    if (starContainer) initStarField(starContainer.id);
+    if (starContainer) initGlobalStarField(starContainer.id);
     setTimeout(centerActiveNavItems, 100);
 }
 

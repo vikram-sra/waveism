@@ -31,43 +31,14 @@
             color: #ff00ff;
             box-shadow: inset 0 0 15px rgba(255, 0, 255, 0.2);
         }
-
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(255, 0, 255, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            color: rgba(255, 0, 255, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
     </style>
 </head>
 
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE QUANTUM MEASUREMENT INTERFACE</div>
-    <div class="system-status">
-        [ RESOLUTION: PLANCK SCALE ]<br>
-        [ STATE: COHERENT SUPERPOSITION ]<br>
-        [ DECOHERENCE: <span id="decoherence-status">MONITORING</span> ]
-    </div>
+
+
 
     <div id="nav-container"></div>
 
@@ -126,6 +97,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Waveism Interconnect</div>
                 <p id="info-physics"></p>
             </div>
@@ -144,6 +119,7 @@
             'uncertainty': {
                 name: 'Heisenberg Squeezed State', year: 'Conjugate Variables',
                 equation: 'Δx Δp ≥ ℏ/2',
+                equationExpl: 'The Heisenberg Uncertainty Principle. It states that the product of the uncertainties in position (Δx) and momentum (Δp) is bounded by a fundamental constant (ℏ/2).',
                 facts: [{ text: 'Fourier Limit', status: 'yes' }, { text: 'Incompressible', status: 'yes' }],
                 description: 'The fundamental trade-off of the universe. If you squeeze the momentum (Δp) of a wave-packet, its spatial extent (Δx) must leak and spread. Position and momentum are Fourier transforms of each other; high precision in one domain guarantees "fuzziness" in the other.',
                 concepts: [
@@ -155,6 +131,7 @@
             'measurement': {
                 name: 'The Measurement Crunch', year: 'State Reduction',
                 equation: 'ψ → |x₀⟩',
+                equationExpl: 'Wave-function collapse. The broad superposition (ψ) is reduced to a single position eigenstate (|x₀⟩) upon interaction with an observer.',
                 facts: [{ text: 'Decoherence', status: 'active' }, { text: 'Information Heat', status: 'high' }],
                 description: 'A "Measurement" is an energetic interaction that forces a fuzzy superposition to resolve into a single eigenvalue. This is not a passive observation, but a violent synchronization of the system with the macroscopic environment.',
                 concepts: [
@@ -166,6 +143,7 @@
             'momentum': {
                 name: 'Wigner Quasi-Probability', year: 'Phase Space Topology',
                 equation: 'W(x,p) = ∫ ψ*(x-y)ψ(x+y) e^{i2py} dy',
+                equationExpl: 'The Wigner quasi-probability distribution. It provides a phase space representation of quantum states, where negative values signify non-classical interference.',
                 facts: [{ text: 'Negative Prob.', status: 'yes' }, { text: 'interference', status: 'yes' }],
                 description: 'Visualizing quantum states in Phase Space. Unlike classical probability, the Wigner distribution can have negative values—represented by troughs—which signify pure quantum interference that has no classical equivalent.',
                 concepts: [
@@ -177,6 +155,7 @@
             'foam': {
                 name: 'Planck Topology Flux', year: 'Spacetime Jitter',
                 equation: 'l_P = √(ℏG/c³)',
+                equationExpl: 'The Planck length. It is the fundamental scale where spacetime is no longer a smooth manifold but is composed of violent, fluctuating virtual wormholes.',
                 facts: [{ text: 'Geometric Chaos', status: 'high' }, { text: 'Non-Metric', status: 'yes' }],
                 description: 'At the Planck Scale, the smooth fabric of spacetime dissolves. Reality becomes a violent, boiling ocean of virtual wormholes and topological fluctuations. There is no "distance" or "time" here, only the raw flux of the substrate.',
                 concepts: [

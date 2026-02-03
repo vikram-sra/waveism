@@ -44,31 +44,9 @@
             background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 100, 0, 0.05) 1px, rgba(255, 100, 0, 0.05) 2px);
         }
 
-        #cinematic-overlay {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            color: rgba(255, 100, 0, 0.4);
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 150px;
-        }
 
-        .system-status {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            text-align: right;
-            font-family: 'JetBrains Mono';
-            font-size: 0.55rem;
-            color: rgba(255, 100, 0, 0.4);
-            line-height: 1.4;
-            pointer-events: none;
-            z-index: 100;
-        }
+
+
 
         .manifold-glitch {
             position: fixed;
@@ -87,7 +65,7 @@
 <body>
     <div id="background-stars"></div>
     <div id="three-container"></div>
-    <div id="cinematic-overlay">PHD-GRADE TEMPORAL ASYMMETRY VISUALIZATION</div>
+
     <div class="manifold-glitch"></div>
     <div id="nav-container"></div>
 
@@ -146,6 +124,10 @@
                 <ul id="info-concepts"></ul>
             </div>
             <div class="info-section">
+                <div class="info-section-title">Mathematical Backbone</div>
+                <p id="info-equation-explanation"></p>
+            </div>
+            <div class="info-section">
                 <div class="info-section-title">Deep Statistical Physics</div>
                 <p id="info-physics"></p>
             </div>
@@ -166,6 +148,7 @@
             'entropy': {
                 name: 'Entropy & The Arrow', year: 'Boltzmann / Clausius',
                 equation: 'ΔS_univ ≥ 0',
+                equationExpl: 'The Second Law of Thermodynamics. It states that the total entropy of an isolated system can never decrease over time, defining the thermodynamic arrow.',
                 facts: [{ text: 'Increasing', status: 'yes' }, { text: 'Probabilistic', status: 'yes' }],
                 description: 'The movement from low-entropy order to high-entropy disorder. Time\'s arrow is not a fundamental law, but a statistical inevitability. There are simply more ways for a system to be messy than organized.',
                 concepts: [
@@ -177,6 +160,7 @@
             'block': {
                 name: 'Static Temporal Block', year: 'Minkowski Space',
                 equation: 'M⁴ = {t, x, y, z}',
+                equationExpl: 'The 4D Minkowski manifold. In the block universe, time is simply the fourth dimension, and the "past", "present", and "future" are all equally real and fixed.',
                 facts: [{ text: 'Static', status: 'yes' }, { text: 'Eternal', status: 'yes' }],
                 description: 'The 4D perspective where time is a spatial dimension. Every event that has happened or will happen exists simultaneously in the manifold. The "arrow" is a biological illusion of perspective.',
                 concepts: [
@@ -186,8 +170,9 @@
                 physics: 'The Block Universe satisfies the requirements of Relativity. The "flow" of time is a cognitive artifact, not a property of the geometric solution.'
             },
             'demon': {
-                name: 'Maxwell\'s Demon', year: 'Information Paradox',
+                name: "Maxwell's Demon", year: 'Information Paradox',
                 equation: 'ΔS_Total = 8πG - ☠️',
+                equationExpl: 'A playful representation of the Maxwell\'s Demon paradox. It highlights that sorting molecules requires information processing, which generates its own entropy.',
                 facts: [{ text: 'Information Cost', status: 'high' }, { text: 'Sorting Power', status: 'yes' }],
                 description: 'A thought experiment where a demon sorts fast and slow molecules to reverse entropy. The paradox is resolved by Information Theory: the demon creates more entropy erasing its memory than it saves by sorting.',
                 concepts: [
@@ -199,6 +184,7 @@
             'subjective': {
                 name: 'The Specious Now', year: 'Biological Time',
                 equation: 'T_subj = f(Metabolism)',
+                equationExpl: 'A model of subjective time perception. It suggests that our internal sense of "duration" is a function of our biological and metabolic state.',
                 facts: [{ text: 'Non-Linear', status: 'yes' }, { text: 'Metabolic', status: 'yes' }],
                 description: 'Subjective time is determined by the rate of information processing. During moments of high intensity, your brain samples events at a higher frequency, making time appear to "slow down."',
                 concepts: [

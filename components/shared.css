@@ -575,7 +575,7 @@ body:not(.ui-open) .nav-counter {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    z-index: 10005;
+    z-index: 100020;
     pointer-events: none;
     opacity: 0;
     visibility: hidden;
@@ -637,6 +637,11 @@ body:not(.ui-open) .nav-counter {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+}
+
+.params-header span {
+    color: #00ffff !important;
+    font-weight: 600;
 }
 
 .param-group {
@@ -943,38 +948,15 @@ body:not(.ui-open) .share-btn {
     font-weight: 500;
 }
 
-/* ============ GLOBAL TAGLINE WRAPPING ============ */
-#cinematic-overlay,
-.system-status {
-    font-size: 0.52rem;
-}
-
-#cinematic-overlay {
-    max-width: 180px;
-    line-height: 1.5;
-    word-wrap: break-word;
-}
 
 /* ============ MOBILE GLOBAL CLEANUP ============ */
 @media (max-width: 900px) {
 
-    #cinematic-overlay,
-    .system-status,
     .telemetry-overlay {
         font-size: 0.45rem !important;
         bottom: 5px !important;
         opacity: 0.6;
         line-height: 1.1;
-    }
-
-    #cinematic-overlay {
-        left: 5px !important;
-        max-width: 140px !important;
-    }
-
-    .system-status {
-        right: 5px !important;
-        text-align: right;
     }
 
     .telemetry-overlay {
@@ -1130,9 +1112,7 @@ body:not(.ui-open) .ui-sub-controls {
 body:not(.ui-open) .main-nav,
 body:not(.ui-open) .theory-tabs,
 body:not(.ui-open) .params-panel,
-body:not(.ui-open) .info-panel,
-body:not(.ui-open) #cinematic-overlay,
-body:not(.ui-open) .system-status {
+body:not(.ui-open) .info-panel {
     opacity: 0;
     pointer-events: none;
     transform: translateY(-10px);
@@ -1249,7 +1229,7 @@ body:not(.ui-open) canvas {
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
-/* ============ CONTENT MODE TOGGLE (ELI5 / PhD) ============ */
+/* ============ CONTENT MODE TOGGLE (ELI5 / Expert) ============ */
 .content-mode-toggle {
     position: fixed;
     top: 85px;
@@ -1297,18 +1277,18 @@ body.eli5-mode .info-section p {
     line-height: 1.8;
 }
 
-/* PhD Mode - Dense information */
-body.phd-mode .equation {
+/* Expert Mode - Dense information */
+body.expert-mode .equation {
     font-size: 0.9rem;
     letter-spacing: 0.05em;
 }
 
-body.phd-mode .info-section p {
+body.expert-mode .info-section p {
     font-size: 0.75rem;
     line-height: 1.4;
 }
 
-body.phd-mode .theory-facts {
+body.expert-mode .theory-facts {
     font-size: 0.55rem;
 }
 
@@ -1441,7 +1421,7 @@ body.info-panel-open .ui-orb {
     border: 1px solid rgba(0, 255, 255, 0.7);
     border-radius: 12px;
     padding: 16px;
-    z-index: 10005;
+    z-index: 100020;
     opacity: 0;
     visibility: hidden;
     transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1498,13 +1478,31 @@ body.info-panel-open .ui-orb {
     pointer-events: auto;
 }
 
-.share-popup h3 {
+.share-popup-header h3 {
+    margin: 0;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: rgba(0, 255, 255, 0.8);
+    font-size: 0.75rem;
+    color: #00ffff;
     text-transform: uppercase;
     letter-spacing: 2px;
-    margin-bottom: 8px;
+}
+
+.share-close,
+.params-close {
+    background: none;
+    border: none;
+    color: rgba(0, 255, 255, 0.5);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.share-close:hover,
+.params-close:hover {
+    color: #fff;
+    transform: scale(1.2);
 }
 
 .share-page-title {
