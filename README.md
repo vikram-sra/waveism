@@ -1,8 +1,14 @@
 # Waveism | Epistemic Interface
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR-SITE-ID/deploy-status)](https://app.netlify.com/sites/waveism/deploys)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 > A Unified Field Theory Dashboard — Interactive physics visualizations exploring fundamental concepts from quantum mechanics to cosmology.
 
-## 📊 Project Overview
+**[▶ Live Demo](https://waveism.app)** | **[◆ Contribute](DOCS_CONTRIBUTING.md)** | **[⚠ Report Bug](https://github.com/YOUR_USERNAME/waveism/issues)**
+
+## ⬡ Project Overview
 
 | Category | Details |
 |----------|---------|
@@ -14,7 +20,7 @@
 
 ---
 
-## 🌌 Visualization Modules
+## ◈ Visualization Modules
 
 | Module | File | Question Explored | Domain |
 |--------|------|-------------------|--------|
@@ -34,11 +40,12 @@
 
 ---
 
-## 📁 Project Structure
+## ▣ Project Structure
 
 | Path | Purpose |
 |------|---------|
 | `index.html` | Main reel interface with all phase cards |
+| `modules/` | Individual visualization pages (quantum, arrow, chaos, etc.) |
 | `components/shared.js` | Shared utilities: navigation, starfield, 3D projection, drag/zoom handlers |
 | `components/shared.css` | Global styles: navigation, theory tabs, modals, parameter panels |
 | `components/physics_ontology.js` | Physics concept ontology system |
@@ -50,7 +57,7 @@
 
 ---
 
-## ⚙️ Features
+## ⚡ Features
 
 | Feature | Implementation |
 |---------|----------------|
@@ -64,7 +71,7 @@
 
 ---
 
-## 🚀 Getting Started
+## ► Getting Started
 
 ```bash
 # Simply serve any HTTP server — no build step required
@@ -77,7 +84,7 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 ---
 
-## 🎨 Design System
+## ◉ Design System
 
 | Token | Value |
 |-------|-------|
@@ -88,4 +95,52 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 ---
 
+## ▲ Deploying to Netlify
+
+### Quick Deploy
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/YOUR_USERNAME/waveism)
+
+### Manual Deploy
+
+1. **Fork/Clone** this repository
+2. **Connect** to Netlify (GitHub integration recommended)
+3. **Configure** build settings:
+   - **Build command:** (leave empty)
+   - **Publish directory:** `.`
+4. **Deploy!**
+
+The `netlify.toml` file handles caching and security headers automatically.
+
+---
+
+## ⟡ Contributing
+
+We welcome contributions! Whether it's:
+- ⚠ **Bug fixes**
+- ◆ **New visualizations** for physics concepts
+- ▪ **Documentation improvements**
+- ◉ **UI/UX enhancements**
+
+Please read our [**Contributing Guidelines**](DOCS_CONTRIBUTING.md) before submitting a PR.
+
+---
+
+## ⬢ License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+You are free to use, modify, and distribute this project with attribution.
+
+---
+
+## ◇ Acknowledgments
+
+- **Three.js** for 3D rendering capabilities
+- **Physics community** for accurate representations
+- **Contributors** who help improve this project
+
+---
+
 *Built with curiosity about the fundamental nature of reality.*
+

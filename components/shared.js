@@ -6,29 +6,41 @@
 // ============ NAVIGATION DATA ============
 // Scale: 10^x meters
 const NAVIGATION_ITEMS = [
-    { href: 'quantum.html', label: 'QUANTUM', id: 'quantum', scale: '10⁻³⁵m', val: -35 },
-    { href: 'uncertainty.html', label: 'UNCERTAINTY', id: 'uncertainty', scale: '10⁻³⁰m', val: -30 },
-    { href: 'wave_theory.html', label: 'WAVEISM', id: 'wave_theory', scale: '10⁻¹⁵m', val: -15 },
-    { href: 'resonance.html', label: 'RESONANCE', id: 'resonance', scale: '10⁻⁶m', val: -6 },
-    { href: 'chaos.html', label: 'CHAOS', id: 'chaos', scale: '10⁰m', val: 0 },
-    { href: 'arrow.html', label: 'ARROW', id: 'arrow', scale: '10⁵m', val: 5 },
-    { href: 'fabric.html', label: 'FABRIC', id: 'fabric', scale: '10¹⁰m', val: 10 },
-    { href: 'wormhole.html', label: 'WORMHOLE', id: 'wormhole', scale: '10¹⁵m', val: 15 },
-    { href: 'spacetime.html', label: 'SPACETIME', id: 'spacetime', scale: '10¹⁸m', val: 18 },
-    { href: 'blackhole.html', label: 'BLACK HOLE', id: 'blackhole', scale: '10²¹m', val: 21 },
-    { href: 'expansion.html', label: 'EXPANSION', id: 'expansion', scale: '10²⁴m', val: 24 },
-    { href: 'cosmic.html', label: 'COSMIC', id: 'cosmic', scale: '10²⁶m', val: 26 }
+    { href: 'modules/quantum.html', label: 'QUANTUM', id: 'quantum', scale: '10⁻³⁵m', val: -35 },
+    { href: 'modules/uncertainty.html', label: 'UNCERTAINTY', id: 'uncertainty', scale: '10⁻³⁰m', val: -30 },
+    { href: 'modules/wave_theory.html', label: 'WAVEISM', id: 'wave_theory', scale: '10⁻¹⁵m', val: -15 },
+    { href: 'modules/resonance.html', label: 'RESONANCE', id: 'resonance', scale: '10⁻⁶m', val: -6 },
+    { href: 'modules/chaos.html', label: 'CHAOS', id: 'chaos', scale: '10⁰m', val: 0 },
+    { href: 'modules/arrow.html', label: 'ARROW', id: 'arrow', scale: '10⁵m', val: 5 },
+    { href: 'modules/fabric.html', label: 'FABRIC', id: 'fabric', scale: '10¹⁰m', val: 10 },
+    { href: 'modules/wormhole.html', label: 'WORMHOLE', id: 'wormhole', scale: '10¹⁵m', val: 15 },
+    { href: 'modules/spacetime.html', label: 'SPACETIME', id: 'spacetime', scale: '10¹⁸m', val: 18 },
+    { href: 'modules/blackhole.html', label: 'BLACK HOLE', id: 'blackhole', scale: '10²¹m', val: 21 },
+    { href: 'modules/expansion.html', label: 'EXPANSION', id: 'expansion', scale: '10²⁴m', val: 24 },
+    { href: 'modules/cosmic.html', label: 'COSMIC', id: 'cosmic', scale: '10²⁶m', val: 26 }
 ];
 
 // ============ RENDER NAVIGATION ============
 // ============ RENDER NAVIGATION (TUNING FORK) ============
 function renderMainNav(activeId) {
-    const homeBtn = `<a href="index.html" class="main-nav-tab home-btn" title="Home">⌂</a>`;
+    // Detect if we're in a module page or at root
+    const currentPath = window.location.pathname;
+    const isInModulesFolder = currentPath.includes('/modules/');
+
+    console.log('[NAV] Path:', currentPath, '| In modules?:', isInModulesFolder);
+
+    const pathPrefix = isInModulesFolder ? '' : 'modules/';
+    const homeHref = isInModulesFolder ? '../index.html' : 'index.html';
+
+    const homeBtn = `<a href="${homeHref}" class="main-nav-tab home-btn" title="Home">⌂</a>`;
 
     const navHtml = NAVIGATION_ITEMS.map(item => {
         const activeClass = item.id === activeId ? ' active' : '';
+        // Use just the filename if we're in modules/, otherwise use modules/filename
+        const href = isInModulesFolder ? item.href.replace('modules/', '') : item.href;
+        if (item.id === 'fabric') console.log('[NAV] Fabric:', item.href, '->', href);
         return `
-        <a href="${item.href}" class="main-nav-tab${activeClass}">
+        <a href="${href}" class="main-nav-tab${activeClass}">
             <div class="nav-content">
                 <span class="nav-label">${item.label}</span>
             </div>

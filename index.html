@@ -657,7 +657,7 @@
                 }
             };
             canvas.onclick = () => {
-                if (p.id !== 'create_wave') window.location.href = p.id + '.html';
+                if (p.id !== 'create_wave') window.location.href = 'modules/' + p.id + '.html';
             };
             sec.appendChild(canvas);
 
@@ -665,7 +665,7 @@
             content.className = 'content' + (p.id === 'create_wave' ? ' hidden' : '');
             content.innerHTML = `
                 <div class="phase-question">${p.question}</div>
-                <a href="${p.id}.html" class="phase-link"><h1 class="phase-title">${p.title}</h1></a>
+                <a href="modules/${p.id}.html" class="phase-link"><h1 class="phase-title">${p.title}</h1></a>
                 <div class="phase-desc">${p.desc}</div>
             `;
             sec.appendChild(content);
@@ -813,7 +813,7 @@
             if (e.key === 'Enter') {
                 const centerIdx = Math.round(reel.scrollLeft / W);
                 const p = displayPhases[centerIdx];
-                if (p) window.location.href = p.id + '.html';
+                if (p) window.location.href = 'modules/' + p.id + '.html';
             }
         });
 

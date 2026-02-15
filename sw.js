@@ -3,7 +3,7 @@
  * Enables offline PWA support with intelligent caching strategies
  */
 
-const CACHE_VERSION = 'waveism-v1.0.0';
+const CACHE_VERSION = 'waveism-v1.2.1';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const DYNAMIC_CACHE = CACHE_VERSION + '-dynamic';
 
@@ -20,18 +20,18 @@ const CORE_ASSETS = [
 
 // HTML pages for offline access
 const PAGE_ASSETS = [
-    './quantum.html',
-    './uncertainty.html',
-    './wave_theory.html',
-    './resonance.html',
-    './chaos.html',
-    './arrow.html',
-    './fabric.html',
-    './wormhole.html',
-    './spacetime.html',
-    './blackhole.html',
-    './expansion.html',
-    './cosmic.html'
+    './modules/quantum.html',
+    './modules/uncertainty.html',
+    './modules/wave_theory.html',
+    './modules/resonance.html',
+    './modules/chaos.html',
+    './modules/arrow.html',
+    './modules/fabric.html',
+    './modules/wormhole.html',
+    './modules/spacetime.html',
+    './modules/blackhole.html',
+    './modules/expansion.html',
+    './modules/cosmic.html'
 ];
 
 // CDN assets to cache
