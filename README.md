@@ -1,12 +1,11 @@
 # Waveism | Epistemic Interface
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/YOUR-SITE-ID/deploy-status)](https://app.netlify.com/sites/waveism/deploys)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 > A Unified Field Theory Dashboard — Interactive physics visualizations exploring fundamental concepts from quantum mechanics to cosmology.
 
-**[▶ Live Demo](https://waveism.app)** | **[◆ Contribute](DOCS_CONTRIBUTING.md)** | **[⚠ Report Bug](https://github.com/YOUR_USERNAME/waveism/issues)**
+**[▶ Live Demo](https://waveism.duar.one)** | **[◆ Contribute](DOCS_CONTRIBUTING.md)** | **[⚠ Report Bug](https://github.com/vikram-sra/waveism/issues)**
 
 ## ⬡ Project Overview
 
@@ -92,25 +91,6 @@ Then open [http://localhost:8000](http://localhost:8000).
 | `--accent` | Dynamic per phase (eg. `#00ddff`, `#ff0055`) |
 | **Font (Display)** | JetBrains Mono |
 | **Font (Body)** | Inter |
-
----
-
-## ▲ Deploying to Netlify
-
-### Quick Deploy
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/YOUR_USERNAME/waveism)
-
-### Manual Deploy
-
-1. **Fork/Clone** this repository
-2. **Connect** to Netlify (GitHub integration recommended)
-3. **Configure** build settings:
-   - **Build command:** (leave empty)
-   - **Publish directory:** `.`
-4. **Deploy!**
-
-The `netlify.toml` file handles caching and security headers automatically.
 
 ---
 
