@@ -89,7 +89,7 @@
         </div>
         <div class="info-modal-body">
             <div class="info-section">
-                <div class="info-section-title">Epistemic Description</div>
+                <div class="info-section-title">Ontological Description</div>
                 <p id="info-description"></p>
             </div>
             <div class="info-section">
@@ -142,8 +142,8 @@
             },
             'momentum': {
                 name: 'Wigner Quasi-Probability', year: 'Phase Space Topology',
-                equation: 'W(x,p) = ∫ ψ*(x-y)ψ(x+y) e^{i2py} dy',
-                equationExpl: 'The Wigner quasi-probability distribution. It provides a phase space representation of quantum states, where negative values signify non-classical interference.',
+                equation: 'W(x,p) = (1/πℏ) ∫ ψ*(x-y/2)ψ(x+y/2) e^{ipy/ℏ} dy',
+                equationExpl: 'The Wigner quasi-probability distribution provides a phase space representation of quantum states. The presence of negative values (impossible for classical probabilities) reveals purely quantum interference phenomena.',
                 facts: [{ text: 'Negative Prob.', status: 'yes' }, { text: 'interference', status: 'yes' }],
                 description: 'Visualizing quantum states in Phase Space. Unlike classical probability, the Wigner distribution can have negative values—represented by troughs—which signify pure quantum interference that has no classical equivalent.',
                 concepts: [
@@ -154,8 +154,8 @@
             },
             'foam': {
                 name: 'Planck Topology Flux', year: 'Spacetime Jitter',
-                equation: 'l_P = √(ℏG/c³)',
-                equationExpl: 'The Planck length. It is the fundamental scale where spacetime is no longer a smooth manifold but is composed of violent, fluctuating virtual wormholes.',
+                equation: 'l_P = √(ℏG/c³) ≈ 1.6×10⁻³⁵ m',
+                equationExpl: 'The Planck length (~10⁻³⁵ m) marks the scale where quantum gravity effects dominate and classical spacetime geometry breaks down into violent quantum fluctuations.',
                 facts: [{ text: 'Geometric Chaos', status: 'high' }, { text: 'Non-Metric', status: 'yes' }],
                 description: 'At the Planck Scale, the smooth fabric of spacetime dissolves. Reality becomes a violent, boiling ocean of virtual wormholes and topological fluctuations. There is no "distance" or "time" here, only the raw flux of the substrate.',
                 concepts: [

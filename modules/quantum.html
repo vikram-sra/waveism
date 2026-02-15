@@ -141,7 +141,7 @@
         <div class="theory-name" id="theory-name">Double-Slit Interference</div>
         <div class="theory-year" id="theory-year">The Wave-Particle Duality (1927)</div>
         <div class="equation-box">
-            <div class="equation-label">The Schrödinger Equation</div>
+            <div class="equation-label" id="equation-label">The Schrödinger Equation</div>
             <div class="equation" id="equation">iℏ ∂/∂t ψ = Ĥψ</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -185,7 +185,8 @@
         const theories = {
             'superposition': {
                 name: 'Observer Paradox', year: 'Aesthetic Interpretation',
-                equation: '|Ψ⟩ = α|Face⟩ + β|Landscape⟩',
+                equation: '|Ψ⟩ = α|0⟩ + β|1⟩',
+                equationLabel: 'Superposition Principle',
                 equationExpl: 'A state vector |Ψ⟩ is a linear combination (superposition) of basis states. In this simulation, it represents the blending of two distinct visual forms.',
                 facts: [{ text: 'Morphological', status: 'yes' }, { text: 'Interactive', status: 'yes' }],
                 description: 'Visual metaphor for superposition. The object exists as both a localized entity (Face) and a distributed field (Landscape), choosing a form only upon interaction.',
@@ -197,32 +198,35 @@
             },
             'double-slit': {
                 name: 'Interference Patterns', year: 'Wave-Particle Duality',
-                equation: 'ψ = ψ₁ + ψ₂',
-                equationExpl: 'The total wavefunction ψ is the sum of the wavefunctions from both slits. This linearity allows for constructive and destructive interference patterns.',
+                equation: 'I(θ) = I₀ cos²(πd sin θ / λ)',
+                equationLabel: 'Interference Intensity',
+                equationExpl: 'The intensity at angle θ depends on the path difference between waves from both slits. When δ = 2πd sin(θ)/λ is a multiple of 2π, constructive interference occurs.',
                 facts: [{ text: 'Superposition', status: 'yes' }, { text: 'Pattern Persistence', status: 'yes' }],
-                description: 'The prototypical quantum test. Particles travel through two slits and interfere with themselves, creating a deterministic distribution pattern.',
+                description: 'The prototypical quantum test. Particles travel through two slits and interfere with themselves, creating a deterministic distribution pattern even if sent one at a time.',
                 concepts: [
-                    { term: 'Probability Amplitude', definition: 'A complex number (ψ) giving location probability.' },
-                    { term: 'Decoherence', definition: 'The loss of quantum interference due to interaction with the environment.' }
+                    { term: 'Probability Amplitude', definition: 'A complex number (ψ) whose squared magnitude gives probability.' },
+                    { term: 'Fringe Spacing', definition: 'The distance between maxima, governed by wavelength and slit separation.' }
                 ],
                 physics: 'Waveism: Phase-coherence test. The substrate maintains parallel states until a decoherence event forces a reset.'
             },
             'orbitals': {
                 name: 'Atomic Orbitals', year: 'Harmonic States',
-                equation: 'Hψ = Eψ',
+                equation: 'Ĥψ = Eψ',
+                equationLabel: 'The Schrödinger Equation',
                 equationExpl: 'The time-independent Schrödinger equation. The Hamiltonian operator H acts on the wavefunction ψ to yield the possible energy levels E.',
                 facts: [{ text: 'Stable States', status: 'yes' }, { text: 'Quantized energy', status: 'yes' }],
                 description: 'Probability clouds of electron residence. These are standing-wave patterns (Spherical Harmonics) in the field around the nucleus.',
                 concepts: [
-                    { term: 'Nodal Plains', definition: 'Regions of zero probability where the wavefunction changes sign.' },
+                    { term: 'Nodal Planes', definition: 'Regions of zero probability where the wavefunction changes sign.' },
                     { term: 'Shell Stability', definition: 'The geometric arrangement defining all chemical properties.' }
                 ],
                 physics: 'Waveism: Orbitals are the harmonic resonances of the atomic substrate.'
             },
             'strings': {
                 name: 'Superstring Manifolds', year: 'Harmonic Elements',
-                equation: 'L ∝ ∫ d²σ',
-                equationExpl: 'The Nambu-Goto action. It describes the area of the world-sheet swept out by a relativistic string, defining the movement of fundamental strings.',
+                equation: 'S = -T ∫ d²σ √(-h)',
+                equationLabel: 'Polyakov Action',
+                equationExpl: 'The fundamental action describing the dynamics of a relativistic string moving through spacetime.',
                 facts: [{ text: '10 Dimensions', status: 'yes' }, { text: 'Calabi-Yau', status: 'yes' }],
                 description: 'Point-particles as vibrating strings. Different vibration modes correspond to electrons, photons, and gravitons.',
                 concepts: [
@@ -234,6 +238,7 @@
             'crystal': {
                 name: 'Time Crystals', year: 'Temporal Order',
                 equation: '⟨ψ(t+T)⟩ = ⟨ψ(t)⟩',
+                equationLabel: 'Floquet Periodicity',
                 equationExpl: 'Discrete time-translation symmetry. The state of the system returns to itself after a specific time period T, breaking continuous temporal symmetry.',
                 facts: [{ text: 'Broken T-Symmetry', status: 'yes' }, { text: 'Non-equilibrium', status: 'yes' }],
                 description: 'A phase of matter breaking time-translation symmetry. Pattern repetition occurs through time rather than space, even at lowest energy states.',
@@ -245,7 +250,8 @@
             },
             'gedanken': {
                 name: "Schrödinger's Cat", year: 'Measurement Problem',
-                equation: '1/√2 (|A⟩ + |D⟩)',
+                equation: '|Ψ⟩ = 1/√2 (|L⟩ + |D⟩)',
+                equationLabel: 'Entangled State',
                 equationExpl: 'A maximally entangled state between a quantum trigger and a macroscopic object (cat). Illustrates the challenge of objective reality.',
                 facts: [{ text: 'Macroscopic', status: 'yes' }, { text: 'Entangled', status: 'yes' }],
                 description: 'Paradox illustrating interpretation limits. A cat is simultaneously alive and dead until the system is observed.',
@@ -257,8 +263,9 @@
             },
             'tunneling': {
                 name: 'Quantum Tunneling', year: 'Barrier Penetration',
-                equation: 'T ∝ exp(-κL)',
-                equationExpl: 'The transmission coefficient T shows that a particle probability density decays exponentially but non-zero through a forbidden energy barrier.',
+                equation: 'T ≈ e^{-2∫κ(x)dx}',
+                equationLabel: 'WKB Transmission',
+                equationExpl: 'The transmission coefficient shows that a particle probability density decays exponentially but remains non-zero through a forbidden energy barrier.',
                 facts: [{ text: 'Evanescent Wave', status: 'yes' }, { text: 'Barrier Leak', status: 'yes' }],
                 description: 'Barrier penetration via wave mechanics. Classically impossible: the field permeates the barrier, re-establishing on the other side.',
                 concepts: [
@@ -270,7 +277,8 @@
             'entanglement': {
                 name: 'Quantum Entanglement', year: 'EPR Paradox',
                 equation: '|Ψ⟩ = (|00⟩ + |11⟩)/√2',
-                equationExpl: 'The Bell State. Two particles are in a single, inseparable quantum state where measuring one instantly defines the state of the other.',
+                equationLabel: 'Bell State',
+                equationExpl: 'Two particles are in a single, inseparable quantum state where measuring one instantly defines the state of the other.',
                 facts: [{ text: 'Non-locality', status: 'yes' }, { text: 'Phase Lock', status: 'yes' }],
                 description: 'Instantaneous correlation between distant particles. Einstein’s "Spooky Action"—the state of one defines the state of the other globally.',
                 concepts: [
@@ -281,8 +289,9 @@
             },
             'teleportation': {
                 name: 'Quantum Teleportation', year: 'Bennett Protocol',
-                equation: 'Bob(Ψ) → Alice(M)',
-                equationExpl: 'The transfer of quantum states via entanglement. The original state is destroyed and re-appears at the destination without physical travel.',
+                equation: '|ψ⟩ₐ|Φ⁺⟩ᵦ꜀ → |ψ⟩꜀',
+                equationLabel: 'Bennett Protocol',
+                equationExpl: 'Through Bell measurement and classical communication, an unknown quantum state is transferred from Alice to Bob via shared entanglement, without the state traversing the intervening space.',
                 facts: [{ text: 'State Transfer', status: 'yes' }, { text: 'No Cloning', status: 'yes' }],
                 description: 'Transfer of quantum states via entanglement. The original state is destroyed (No-Cloning), re-appearing at the destination through classic-quantum bridging.',
                 concepts: [
@@ -294,6 +303,8 @@
             'zeno': {
                 name: 'Quantum Zeno Effect', year: 'Turing Paradox',
                 equation: 'P(t) ≈ 1 - (t/τ_Z)²',
+                equationLabel: 'Survival Probability',
+                equationExpl: 'For short times, the probability of remaining in the initial state decreases quadratically. Frequent measurements at intervals Δt << τ_Z prevent decay, "freezing" the quantum state.',
                 facts: [{ text: 'Evolution Freeze', status: 'yes' }, { text: 'Watched Pot', status: 'yes' }],
                 description: 'System arrest via frequent observation. Measuring the state repeatedly collapses it back to initial conditions, preventing transition.',
                 concepts: [
@@ -399,10 +410,24 @@
 
         function updateParamDisplay() {
             const valEl = document.getElementById('param1-value');
-            if (currentMode === 'orbitals') valEl.innerText = "Level: " + p1;
-            else if (currentMode === 'strings') valEl.innerText = "Harmonic: " + p1;
-            else if (currentMode === 'crystal') valEl.innerText = "Freq: " + p1;
-            else valEl.innerText = p1;
+            const labelEl = document.getElementById('param1-label');
+
+            if (currentMode === 'orbitals') {
+                labelEl.innerText = "Energy Level (n)";
+                valEl.innerText = p1;
+            } else if (currentMode === 'strings') {
+                labelEl.innerText = "Harmonic Mode";
+                valEl.innerText = p1;
+            } else if (currentMode === 'crystal') {
+                labelEl.innerText = "Frequency";
+                valEl.innerText = p1;
+            } else if (currentMode === 'double-slit') {
+                labelEl.innerText = "Wavelength (λ)";
+                valEl.innerText = (p1 * 10).toFixed(1);
+            } else {
+                labelEl.innerText = "Energy Level (n)";
+                valEl.innerText = p1;
+            }
         }
 
         function switchMode(mode) {
@@ -413,42 +438,75 @@
             activeGroup.position.y = 2;
 
             if (mode === 'double-slit') {
-                const geo = new THREE.PlaneGeometry(200, 300, 100, 150);
-                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa, wireframe: true, transparent: true, opacity: 0.15 });
+                // WAVE PLANE: High-res for interference
+                const geo = new THREE.PlaneGeometry(240, 400, 120, 200);
+                const mat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffaa,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.2,
+                    blending: THREE.AdditiveBlending
+                });
                 const plane = new THREE.Mesh(geo, mat);
                 plane.rotation.x = -Math.PI / 2;
+                plane.position.y = -20;
                 plane.name = "wave_plane";
                 activeGroup.add(plane);
 
+                // WALL WITH SLITS
                 const wallGroup = new THREE.Group();
-                const wallMat = new THREE.MeshPhongMaterial({ color: 0x222222, side: THREE.DoubleSide });
-                const w1 = new THREE.Mesh(new THREE.BoxGeometry(85, 40, 2), wallMat); w1.position.x = -57.5;
-                const w2 = new THREE.Mesh(new THREE.BoxGeometry(30, 40, 2), wallMat); w2.position.x = 0;
-                const w3 = new THREE.Mesh(new THREE.BoxGeometry(85, 40, 2), wallMat); w3.position.x = 57.5;
-                wallGroup.add(w1, w2, w3); wallGroup.position.z = -50;
+                const wallMat = new THREE.MeshPhongMaterial({ color: 0x111111, side: THREE.DoubleSide });
+                const w1 = new THREE.Mesh(new THREE.BoxGeometry(100, 60, 4), wallMat); w1.position.x = -65;
+                const w2 = new THREE.Mesh(new THREE.BoxGeometry(20, 60, 4), wallMat); w2.position.x = 0;
+                const w3 = new THREE.Mesh(new THREE.BoxGeometry(100, 60, 4), wallMat); w3.position.x = 65;
+                wallGroup.add(w1, w2, w3);
+                wallGroup.position.z = -80;
+                wallGroup.position.y = 10;
                 activeGroup.add(wallGroup);
 
-                const screen = new THREE.Mesh(new THREE.PlaneGeometry(200, 40), new THREE.MeshBasicMaterial({ color: 0x000505, side: THREE.DoubleSide }));
-                screen.position.set(0, 15, 150); activeGroup.add(screen);
+                // DETECTION SCREEN
+                const screen = new THREE.Mesh(
+                    new THREE.PlaneGeometry(240, 60),
+                    new THREE.MeshBasicMaterial({ color: 0x000505, side: THREE.DoubleSide })
+                );
+                screen.position.set(0, 10, 150);
+                activeGroup.add(screen);
 
-                const intensity = new THREE.Mesh(new THREE.PlaneGeometry(200, 40, 100, 1), new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true, opacity: 0.6, transparent: true }));
-                intensity.position.set(0, 15, 149); intensity.name = "intensity_graph"; activeGroup.add(intensity);
+                // INTENSITY GRAPH (Probability Distribution)
+                const intGeo = new THREE.PlaneGeometry(240, 60, 200, 1);
+                const intMat = new THREE.MeshBasicMaterial({
+                    color: 0x00ffaa,
+                    wireframe: true,
+                    opacity: 0.8,
+                    transparent: true
+                });
+                const intensity = new THREE.Mesh(intGeo, intMat);
+                intensity.position.set(0, 10, 149);
+                intensity.name = "intensity_graph";
+                activeGroup.add(intensity);
 
-                const pCount = 50;
+                // PHOTONS
+                const pCount = 100;
                 const pPos = new Float32Array(pCount * 3);
+                const pVel = new Float32Array(pCount); // Stores velocity/lifetime
                 for (let i = 0; i < pCount; i++) {
-                    pPos[i * 3] = (Math.random() - 0.5) * 10;
-                    pPos[i * 3 + 1] = 15;
-                    pPos[i * 3 + 2] = -150 - Math.random() * 300;
+                    pPos[i * 3] = (Math.random() - 0.5) * 40;
+                    pPos[i * 3 + 1] = 10 + (Math.random() - 0.5) * 10;
+                    pPos[i * 3 + 2] = -200 - Math.random() * 200;
                 }
                 const pGeo = new THREE.BufferGeometry();
                 pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-                const parts = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 2.5 }));
+                const parts = new THREE.Points(pGeo, new THREE.PointsMaterial({
+                    color: 0x00ffaa,
+                    size: 2,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.8
+                }));
                 parts.name = "photons";
                 activeGroup.add(parts);
 
-                activeGroup.add(createLabel("DOUBLE SLITS", "#ffffff").translateY(25).translateZ(-50));
-                activeGroup.add(createLabel("DOUBLE SLITS", "#ffffff").translateY(25).translateZ(-50));
+                activeGroup.add(createLabel("INTERFERENCE TEST", "#00ffaa").translateY(50).translateZ(-80));
             }
             else if (mode === 'superposition') {
                 // SUPERPOSITION ART: Face vs Landscape
@@ -623,6 +681,13 @@
             scene.add(activeGroup);
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
+
+            // Update Equation Label
+            const eqnLabel = document.getElementById('equation-label');
+            if (eqnLabel) {
+                eqnLabel.innerText = theories[mode].equationLabel || "The Schrödinger Equation";
+            }
+
             updateInfoModalContent(theories[mode]);
             updateParamDisplay();
         }
@@ -633,38 +698,90 @@
 
             if (currentMode === 'double-slit') {
                 const plane = activeGroup.getObjectByName("wave_plane");
+                const slitDist = 30; // 15 each side
+                const wavelength = p1 * 10 + 2;
+
                 if (plane) {
                     const pos = plane.geometry.attributes.position;
                     for (let i = 0; i < pos.count; i++) {
                         const px = pos.getX(i);
-                        const pz = pos.getZ(i);
-                        if (pz < -50) {
-                            const d = Math.sqrt(px ** 2 + (pz + 150) ** 2);
-                            pos.setY(i, Math.sin(d * 0.25 - time * 8) * (p1 * 4));
+                        const pz = pos.getY(i); // Local Y is world -Z
+
+                        // Plane ranges from Y: -200 to 200 (World Z: -200 to 200)
+                        // Slit wall at World Z: -80 (Local Y: 80)
+                        const worldZ = -pz;
+
+                        if (worldZ < -80) {
+                            // Single source wave before slits
+                            const d = Math.sqrt(px ** 2 + (worldZ + 180) ** 2);
+                            pos.setZ(i, Math.sin(2 * Math.PI * (d / wavelength) - time * 10) * 4);
                         } else {
-                            const d1 = Math.sqrt((px - 15) ** 2 + (pz + 50) ** 2);
-                            const d2 = Math.sqrt((px + 15) ** 2 + (pz + 50) ** 2);
-                            const h = (Math.sin(d1 * 0.25 - time * 8) + Math.sin(d2 * 0.25 - time * 8)) * (p1 * 2);
-                            pos.setY(i, h);
+                            // Two sources from slits
+                            const d1 = Math.sqrt((px - slitDist / 2) ** 2 + (worldZ + 80) ** 2);
+                            const d2 = Math.sqrt((px + slitDist / 2) ** 2 + (worldZ + 80) ** 2);
+                            const w1 = Math.sin(2 * Math.PI * (d1 / wavelength) - time * 10);
+                            const w2 = Math.sin(2 * Math.PI * (d2 / wavelength) - time * 10);
+                            pos.setZ(i, (w1 + w2) * 2);
                         }
                     }
                     pos.needsUpdate = true;
                 }
-                const parts = activeGroup.getObjectByName("photons");
-                if (parts) {
-                    const pos = parts.geometry.attributes.position;
+
+                // Update Intensity Graph on Screen
+                const intensity = activeGroup.getObjectByName("intensity_graph");
+                if (intensity) {
+                    const pos = intensity.geometry.attributes.position;
+                    const screenZ = 150;
+                    const wallZ = -80;
+                    const L = screenZ - wallZ;
                     for (let i = 0; i < pos.count; i++) {
-                        let z = pos.getZ(i) + 3 * timeScale;
-                        if (z > 150) z = -150 - Math.random() * 100;
-                        pos.setZ(i, z);
+                        const px = pos.getX(i);
+                        const theta = Math.atan(px / L);
+                        // Interference intensity formula: I = 4 * I0 * cos^2(delta/2)
+                        // delta = 2pi/lambda * d * sin(theta)
+                        const delta = (2 * Math.PI / wavelength) * slitDist * Math.sin(theta);
+                        const val = Math.pow(Math.cos(delta / 2), 2);
+                        pos.setY(i, val * 30); // Local Y of vertical graph
                     }
                     pos.needsUpdate = true;
                 }
+
+                const parts = activeGroup.getObjectByName("photons");
                 if (parts) {
                     const pos = parts.geometry.attributes.position;
+                    const screenZ = 150;
+                    const wallZ = -80;
+                    const L = screenZ - wallZ;
+
                     for (let i = 0; i < pos.count; i++) {
-                        let z = pos.getZ(i) + 3 * timeScale;
-                        if (z > 150) z = -150 - Math.random() * 100;
+                        let x = pos.getX(i);
+                        let y = pos.getY(i);
+                        let z = pos.getZ(i);
+
+                        z += 4 * timeScale;
+
+                        if (z > screenZ) {
+                            // Reset to start
+                            z = -200 - Math.random() * 100;
+                            x = (Math.random() - 0.5) * 40;
+                            y = 10 + (Math.random() - 0.5) * 10;
+                        } else if (z > wallZ && z < wallZ + 5) {
+                            // Probability-based slit choice or bounce
+                            // For simplicity, we snap them to slits if they are close
+                            if (Math.abs(x - slitDist / 2) < 5 || Math.abs(x + slitDist / 2) < 5) {
+                                // Pass through
+                            } else {
+                                // Reflect or block (reset)
+                                z = -200 - Math.random() * 100;
+                            }
+                        } else if (z > wallZ + 5) {
+                            // Move according to interference distribution?
+                            // Accurate way: pick a target X based on distribution when passing slit
+                            // Simple way: keep straight or slightly spread
+                        }
+
+                        pos.setX(i, x);
+                        pos.setY(i, y);
                         pos.setZ(i, z);
                     }
                     pos.needsUpdate = true;
