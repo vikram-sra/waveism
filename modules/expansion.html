@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expansion | Cosmic Metric Manifold</title>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -146,7 +146,14 @@
                     { term: 'Comoving Distance', definition: 'The distance between two objects that remains constant despite the expansion of space.' },
                     { term: 'Peculiar Velocity', definition: 'A galaxy\'s actual motion through the local cluster, separate from the Hubble flow.' }
                 ],
-                physics: 'In Waveism, expansion is the "Phasing Out" of the vacuum. The wavelength of the cosmic substrate is physically stretching, increasing the distance between constructive interference nodes.'
+                physics: 'In Waveism, expansion is the "Phasing Out" of the vacuum. The wavelength of the cosmic substrate is physically stretching, increasing the distance between constructive interference nodes.',
+                sliderConfig: { label: 'Expansion (H₀)', min: 50, max: 150, step: 1, default: 72, units: ' km/s/Mpc', decimals: 0 },
+                contextNote: 'Galaxies recede proportionally to distance — space itself is stretching between them.',
+                relevance: 'The universe is getting bigger. This discovery proved the cosmos had a beginning (Big Bang) and isn\'t static.',
+                sources: [
+                    'Hubble, E. (1929). A Relation between Distance and Radial Velocity among Extra-Galactic Nebulae.',
+                    'Friedmann, A. (1922). Über die Krümmung des Raumes.'
+                ]
             },
             'redshift': {
                 name: 'Metric Redshift (z)', year: 'Spectroscopic Dilation',
@@ -158,7 +165,14 @@
                     { term: 'Scale Factor a(t)', definition: 'A dimensionless number representing the relative expansion of the universe.' },
                     { term: 'Cosmological Time Dilation', definition: 'Processes in distant galaxies (like Supernovae) appear to run slower by a factor of (1+z).' }
                 ],
-                physics: 'Light is a wave in the metric. If the metric stretches, the wave MUST stretch with it. Redshift is the Doppler-effect of existence itself.'
+                physics: 'Light is a wave in the metric. If the metric stretches, the wave MUST stretch with it. Redshift is the Doppler-effect of existence itself.',
+                sliderConfig: { label: 'Redshift (z)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 2 },
+                contextNote: 'Blue photons arrive red after billions of years — their wavelength stretched by cosmic expansion.',
+                relevance: 'How we know the age of the universe. Light stretches as it travels, acting as a cosmic odometer.',
+                sources: [
+                    'Slipher, V. (1917). Radial velocity observations of spiral nebulae.',
+                    'Sandage, A. (1961). The Ability of the 200-inch Telescope to Discriminate Between Selected World Models.'
+                ]
             },
             'cmb': {
                 name: 'Last Scattering Surface', year: 'CMB Sky (380,000 BB)',
@@ -171,7 +185,14 @@
                     { term: 'Acoustic Oscillations', definition: 'Pressure waves in the early plasma that seeded the formation of all galaxies.' },
                     { term: 'Anisotropy', definition: 'Tiny temperature fluctuations (1 part in 100,000) that reveal the early distribution of matter.' }
                 ],
-                physics: 'The CMB is the "Base Frequency" of the universe. It is the snapshot of the initial wave-conditions before gravitational collapse began to structure the cosmos.'
+                physics: 'The CMB is the "Base Frequency" of the universe. It is the snapshot of the initial wave-conditions before gravitational collapse began to structure the cosmos.',
+                sliderConfig: { label: 'Temperature Scale', min: 0, max: 100, step: 1, default: 50, units: ' K', decimals: 2 },
+                contextNote: 'The oldest light in the universe — released when electrons first bound to protons 380,000 years after the Big Bang.',
+                relevance: 'The "baby picture" of the universe. Static on an old TV contains a small percentage of this ancient remnant heat.',
+                sources: [
+                    'Penzias, A.A., & Wilson, R.W. (1965). A Measurement of Excess Antenna Temperature at 4080 Mc/s.',
+                    'Smoot, G.F. et al. (1992). Structure in the COBE DMR first-year maps.'
+                ]
             },
             'timeline': {
                 name: 'Spacetime Cone History', year: 'Friedmann-Lemaître Epochs',
@@ -184,7 +205,14 @@
                     { term: 'Dark Energy (Λ)', definition: 'The unknown pressure that is currently causing expansion to accelerate.' },
                     { term: 'Particle Horizon', definition: 'The limit of the observable universe—the furthest distance light could have traveled to us.' }
                 ],
-                physics: 'The cosmic timeline is a diverging manifold. We exist on the accelerating outer edge of a wave-pulse that began 13.8 billion years ago.'
+                physics: 'The cosmic timeline is a diverging manifold. We exist on the accelerating outer edge of a wave-pulse that began 13.8 billion years ago.',
+                sliderConfig: { label: 'Epoch Zoom', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
+                contextNote: 'From radiation era to dark-energy acceleration — the holographic history of the expanding cosmos.',
+                relevance: 'The story of everything. From a hot soup of particles to the cold, dark energy-dominated future we face today.',
+                sources: [
+                    'Guth, A.H. (1981). Inflationary universe: A possible solution to the horizon and flatness problems.',
+                    'Riess, A.G. et al. (1998). Observational Evidence from Supernovae for an Accelerating Universe.'
+                ]
             }
         };
 
@@ -340,6 +368,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

@@ -46,3 +46,6 @@ lerna-debug.log*
 
 # Netlify
 .netlify
+
+# AI Brain
+.gemini/

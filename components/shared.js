@@ -50,6 +50,24 @@ function renderMainNav(activeId) {
     const isIndex = activeId === 'index';
     const containerClass = isIndex ? 'main-nav-container hidden-on-index' : 'main-nav-container';
 
+    // Build scale progress bar (positions set dynamically by initNavSlider)
+    const activeItem = NAVIGATION_ITEMS.find(i => i.id === activeId);
+    const activeScale = activeItem ? activeItem.scale : '';
+
+    const scaleBar = isIndex ? '' : `
+    <div class="nav-scale-bar">
+        <div class="scale-track">
+            <div class="scale-fill"></div>
+            <div class="scale-indicator">
+                <span class="scale-label">${activeScale}</span>
+            </div>
+        </div>
+        <div class="scale-endpoints">
+            <span class="scale-min">10⁻³⁵m</span>
+            <span class="scale-max">10²⁶m</span>
+        </div>
+    </div>`;
+
     // Auto-init slider if we're rendering this after DOM load
     setTimeout(initNavSlider, 0);
 
@@ -57,7 +75,8 @@ function renderMainNav(activeId) {
     <div class="${containerClass} main-nav">
         ${homeBtn}
         ${navHtml}
-    </div>`;
+    </div>
+    ${scaleBar}`;
 }
 
 // ============ PREMIUM 2D PARALLAX STARFIELD ============
@@ -316,9 +335,25 @@ function initTheoryTabs(callback) {
             // Auto-center the clicked tab
             tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
+            // Play a pleasant chime along the pentatonic scale
+            if (window.WaveAudio && window.audioEnabled) {
+                const index = Array.from(tabs).indexOf(tab);
+                const baseFreq = 220; // A3
+                const scale = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21];
+                const note = scale[index % scale.length];
+                const freq = baseFreq * Math.pow(2, note / 12);
+                window.WaveAudio.ping(freq, 0.8);
+            }
+
             const theory = tab.dataset.theory;
             if (callback && typeof callback === 'function') {
-                callback(theory);
+                if (document.startViewTransition) {
+                    document.startViewTransition(() => {
+                        callback(theory);
+                    });
+                } else {
+                    callback(theory);
+                }
             }
         });
     });
@@ -451,6 +486,58 @@ function updateInfoModalContent(data) {
             `<li><span class="info-highlight">${c.term}</span> — ${c.definition}</li>`
         ).join('');
     }
+
+    // NEW: Relevance Section (Why do I care?)
+    const relevanceSection = document.getElementById('info-relevance-section');
+    if (relevanceSection && data.relevance) {
+        relevanceSection.innerHTML = `
+            <div class="info-section-title">Human Relevance</div>
+            <p style="font-style: italic; color: rgba(255,255,255,0.85); line-height: 1.6;">${data.relevance}</p>
+        `;
+        relevanceSection.style.display = 'block';
+    } else if (relevanceSection) {
+        relevanceSection.style.display = 'none';
+    } else if (data.relevance && !relevanceSection) {
+        // Create if missing (backwards compatibility)
+        const div = document.createElement('div');
+        div.id = 'info-relevance-section';
+        div.className = 'info-section';
+        div.innerHTML = `
+            <div class="info-section-title">Human Relevance</div>
+            <p style="font-style: italic; color: rgba(255,255,255,0.85); line-height: 1.6;">${data.relevance}</p>
+        `;
+        // Insert before concepts or at end
+        if (conceptsEl && conceptsEl.parentElement) {
+            conceptsEl.parentElement.parentNode.insertBefore(div, conceptsEl.parentElement);
+        } else {
+            document.querySelector('.info-modal-body').appendChild(div);
+        }
+    }
+
+    // NEW: Sources Section
+    const sourcesSection = document.getElementById('info-sources-section');
+    if (sourcesSection && data.sources) {
+        sourcesSection.innerHTML = `
+            <div class="info-section-title">Scientific Sources</div>
+            <ul class="info-sources-list">
+                ${data.sources.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+        `;
+        sourcesSection.style.display = 'block';
+    } else if (sourcesSection) {
+        sourcesSection.style.display = 'none';
+    } else if (data.sources && !sourcesSection) {
+        const div = document.createElement('div');
+        div.id = 'info-sources-section';
+        div.className = 'info-section';
+        div.innerHTML = `
+            <div class="info-section-title">Scientific Sources</div>
+            <ul class="info-sources-list">
+                ${data.sources.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+        `;
+        document.querySelector('.info-modal-body').appendChild(div);
+    }
 }
 
 // ============ PARAMETER SLIDER MANAGEMENT ============
@@ -471,6 +558,41 @@ function initParamSlider(sliderId, valueId, options = {}) {
             valueDisplay.textContent = formatter(value);
         }
         onChange(value);
+
+        // Real-time audio pitch glide mapping
+        if (window.WaveAudio && window.audioEnabled) {
+            if (sliderId === 'param1-slider') {
+                const activeTab = document.querySelector('.theory-tab.active');
+                const mode = activeTab && activeTab.dataset ? activeTab.dataset.theory : 'default';
+                let freq = 440;
+                
+                if (mode === 'double-slit') {
+                    const wl = (value / 100) * 10 + 2;
+                    freq = 880 * (2 / wl);
+                } else if (mode === 'orbitals') {
+                    freq = 110 * value;
+                } else if (mode === 'strings') {
+                    freq = 55 * value;
+                } else if (mode === 'crystal') {
+                    freq = 110 + value * 2;
+                } else if (mode === 'tunneling') {
+                    freq = 440 * (40 / Math.max(1, value));
+                } else {
+                    freq = 220 + (value / (parseFloat(slider.max) || 100)) * 660;
+                }
+                window.WaveAudio.setFrequency(freq, 0.05);
+            } else if (sliderId === 'speed-slider') {
+                const cutoff = 200 + (value / 300) * 2000;
+                if (window.WaveAudio.filter) {
+                    window.WaveAudio.filter.frequency.setTargetAtTime(cutoff, window.WaveAudio.ctx.currentTime, 0.1);
+                }
+            } else if (sliderId === 'zoom-slider') {
+                const delayTime = 0.1 + (value / 400) * 0.5;
+                if (window.WaveAudio.delayNode) {
+                    window.WaveAudio.delayNode.delayTime.setTargetAtTime(delayTime, window.WaveAudio.ctx.currentTime, 0.2);
+                }
+            }
+        }
     });
 
     return {
@@ -480,6 +602,69 @@ function initParamSlider(sliderId, valueId, options = {}) {
             if (valueDisplay) valueDisplay.textContent = formatter(v);
         }
     };
+}
+
+// ============ DYNAMIC SLIDER CONFIG ============
+// Called from each module's switchMode() to reconfigure param1 slider per sub-tab
+function updateSliderConfig(theoryData) {
+    if (!theoryData || !theoryData.sliderConfig) return;
+    const cfg = theoryData.sliderConfig;
+    const slider = document.getElementById('param1-slider');
+    const label = document.getElementById('param1-label');
+    const value = document.getElementById('param1-value');
+    if (!slider) return;
+
+    if (label && cfg.label) label.innerText = cfg.label;
+    if (cfg.min !== undefined) slider.min = cfg.min;
+    if (cfg.max !== undefined) slider.max = cfg.max;
+    if (cfg.step !== undefined) slider.step = cfg.step;
+    if (cfg.default !== undefined) slider.value = cfg.default;
+    if (value && cfg.units) {
+        value.innerText = parseFloat(slider.value).toFixed(cfg.decimals || 0) + (cfg.units || '');
+    }
+}
+
+// ============ CONTEXT NOTE (ONE-LINER BELOW TABS) ============
+// Shows a brief explanation of the page concept — persistent with UI, hides only with navs/orb
+function initContextNote() {
+    // Only on module pages
+    const isHomepage = window.location.pathname === '/' ||
+        window.location.pathname.endsWith('index.html') ||
+        window.location.pathname.endsWith('/index');
+    if (isHomepage) return;
+
+    // Check if note element already exists
+    if (document.getElementById('context-note')) return;
+
+    const note = document.createElement('div');
+    note.id = 'context-note';
+    note.className = 'context-note';
+    note.innerHTML = '<span id="context-note-text"></span>';
+
+    // Insert after theory-tabs
+    const tabs = document.querySelector('.theory-tabs');
+    if (tabs && tabs.parentNode) {
+        tabs.parentNode.insertBefore(note, tabs.nextSibling);
+    } else {
+        document.body.appendChild(note);
+    }
+
+    // No auto-hide — context note stays persistent with UI
+    // It hides when body loses .ui-open class (along with navs and orb)
+
+    return note;
+}
+
+// Update the context note text (called from switchMode in each module)
+function updateContextNote(text) {
+    const el = document.getElementById('context-note-text');
+    if (!el) return;
+    el.textContent = text;
+    // Keep visible — no auto-fade, persistent with UI
+    const note = document.getElementById('context-note');
+    if (note) {
+        note.classList.remove('faded');
+    }
 }
 
 // ============ CANVAS RESIZE HANDLER ============
@@ -1031,6 +1216,14 @@ function initOrbUI() {
         const isOpen = document.body.classList.toggle('ui-open');
         orb.classList.toggle('active', isOpen);
 
+        // If opening UI, restore context note
+        if (isOpen) {
+            const contextNote = document.getElementById('context-note');
+            if (contextNote) {
+                contextNote.classList.remove('faded');
+            }
+        }
+
         // If closing UI, also close all popups
         if (!isOpen) {
             closeAllPopups();
@@ -1061,6 +1254,10 @@ function initOrbUI() {
             cancelAutoHide();
             const isOpen = document.body.classList.toggle('ui-open');
             orb.classList.toggle('active', isOpen);
+            if (isOpen) {
+                const contextNote = document.getElementById('context-note');
+                if (contextNote) contextNote.classList.remove('faded');
+            }
         }
     });
 
@@ -1080,7 +1277,15 @@ function initOrbUI() {
 function initNavSlider() {
     const container = document.querySelector('.main-nav-container');
     const items = Array.from(document.querySelectorAll('.main-nav-tab'));
-    if (!container || !items.length) return;
+    if (!container || !items.length) {
+        // Retry once after a short delay if DOM isn't ready yet
+        if (!initNavSlider._retried) {
+            initNavSlider._retried = true;
+            setTimeout(initNavSlider, 200);
+        }
+        return;
+    }
+    initNavSlider._retried = false;
 
     // Enable drag scrolling (mouse/touch)
     enableDragScrolling(container);
@@ -1093,9 +1298,6 @@ function initNavSlider() {
         }, 100);
     }
 
-    // Scroll Indicators (Optional, mainly CSS handles overflow)
-    // We can add subtle fade masks in CSS instead of JS logic
-
     // Click Logic (for smooth scroll to item)
     items.forEach(item => {
         item.addEventListener('click', (e) => {
@@ -1104,19 +1306,55 @@ function initNavSlider() {
         });
     });
 
-    // Gentle Fade-In
-    setTimeout(() => {
-        const navContainer = document.querySelector('.main-nav-container');
-        if (navContainer) {
-            navContainer.classList.add('visible');
-            centerActiveNavItems(); // Re-center once visible
-        }
-    }, 100);
+    // Immediate visibility - don't wait
+    container.classList.add('visible');
 
-    // Re-center on window resize (especially orientation change)
+    // Scale bar: sync width + position dot under active tab
+    const scaleBar = document.querySelector('.nav-scale-bar');
+    const scaleFill = scaleBar ? scaleBar.querySelector('.scale-fill') : null;
+    const scaleIndicator = scaleBar ? scaleBar.querySelector('.scale-indicator') : null;
+
+    const syncScaleBar = () => {
+        if (!scaleBar || !container) return;
+
+        // Match width to nav
+        scaleBar.style.width = container.offsetWidth + 'px';
+
+        // Position dot under the active tab
+        const activeTab = container.querySelector('.main-nav-tab.active');
+        if (!activeTab || !scaleIndicator || !scaleFill) return;
+
+        // Get the nav items (excluding home button)
+        const navTabs = Array.from(container.querySelectorAll('.main-nav-tab:not(.home-btn)'));
+        if (!navTabs.length) return;
+
+        // Calculate the center of the active tab relative to the container's visible area
+        const containerRect = container.getBoundingClientRect();
+        const activeRect = activeTab.getBoundingClientRect();
+        const activeCenter = activeRect.left + activeRect.width / 2 - containerRect.left;
+        const pct = (activeCenter / containerRect.width) * 100;
+
+        // Clamp between 2% and 98% for visual safety
+        const clampedPct = Math.max(2, Math.min(98, pct));
+
+        scaleFill.style.width = clampedPct + '%';
+        scaleIndicator.style.left = clampedPct + '%';
+    };
+
+    if (scaleBar) {
+        scaleBar.classList.add('visible');
+        // Position after a brief delay to let the nav settle/scroll
+        setTimeout(syncScaleBar, 150);
+    }
+
+    centerActiveNavItems();
+
+    // Re-sync on resize & scroll
     window.addEventListener('resize', () => {
         centerActiveNavItems();
+        syncScaleBar();
     });
+    container.addEventListener('scroll', syncScaleBar);
 }
 
 // ============ PAGE TRANSITION (FADE ONLY) ============
@@ -1716,18 +1954,215 @@ function initRelatedConcepts(currentPageId) {
     infoPanel.appendChild(container);
 }
 
+// ============ PREMIUM WEB AUDIO SYNTHESIZER ============
+const WaveAudio = {
+    ctx: null,
+    osc: null,
+    gain: null,
+    filter: null,
+    delayNode: null,
+    delayGain: null,
+    active: false,
+    initialized: false,
+    
+    init() {
+        if (this.initialized) return;
+        
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+            
+            this.osc = this.ctx.createOscillator();
+            this.osc.type = 'sine';
+            
+            this.filter = this.ctx.createBiquadFilter();
+            this.filter.type = 'lowpass';
+            this.filter.frequency.setValueAtTime(1200, this.ctx.currentTime);
+            this.filter.Q.setValueAtTime(1.0, this.ctx.currentTime);
+            
+            this.gain = this.ctx.createGain();
+            this.gain.gain.setValueAtTime(0, this.ctx.currentTime);
+            
+            this.delayNode = this.ctx.createDelay(1.0);
+            this.delayNode.delayTime.setValueAtTime(0.35, this.ctx.currentTime);
+            
+            this.delayGain = this.ctx.createGain();
+            this.delayGain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+            
+            this.osc.connect(this.filter);
+            this.filter.connect(this.gain);
+            this.gain.connect(this.ctx.destination);
+            
+            this.filter.connect(this.delayNode);
+            this.delayNode.connect(this.delayGain);
+            this.delayGain.connect(this.filter);
+            
+            this.osc.start();
+            this.initialized = true;
+            console.log('[WaveAudio] Web Audio Synthesizer initialized.');
+        } catch (e) {
+            console.warn('[WaveAudio] Failed to initialize Web Audio API:', e);
+        }
+    },
+    
+    setFrequency(freq, time = 0.3) {
+        if (!this.initialized) this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') return;
+        
+        const targetFreq = Math.max(30, Math.min(2000, freq));
+        const now = this.ctx.currentTime;
+        this.osc.frequency.setTargetAtTime(targetFreq, now, time);
+        this.filter.frequency.setTargetAtTime(targetFreq * 1.5, now, time);
+    },
+    
+    setVolume(vol, time = 0.1) {
+        if (!this.initialized) this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        this.gain.gain.setTargetAtTime(vol, now, time);
+    },
+    
+    ping(freq = 440, duration = 1.0) {
+        if (!this.initialized) this.init();
+        if (!this.ctx) return;
+        
+        this.resumeIfNeeded();
+        if (this.ctx.state === 'suspended') return;
+        
+        const now = this.ctx.currentTime;
+        this.osc.frequency.setValueAtTime(freq, now);
+        this.filter.frequency.setValueAtTime(freq * 2.0, now);
+        
+        this.gain.gain.cancelScheduledValues(now);
+        this.gain.gain.setValueAtTime(0.001, now);
+        this.gain.gain.exponentialRampToValueAtTime(0.12, now + 0.05);
+        this.gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    },
+    
+    resumeIfNeeded() {
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+};
+
+window.WaveAudio = WaveAudio;
+window.audioEnabled = localStorage.getItem('wave_audio_enabled') === 'true';
+
+function getMuteIcon() {
+    return `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ui-icon">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>`;
+}
+
+function getVolumeIcon() {
+    return `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ui-icon">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>`;
+}
+
+function toggleAudioSynth() {
+    WaveAudio.init();
+    WaveAudio.resumeIfNeeded();
+    
+    window.audioEnabled = !window.audioEnabled;
+    localStorage.setItem('wave_audio_enabled', window.audioEnabled ? 'true' : 'false');
+    const btn = document.getElementById('audio-synth-btn');
+    
+    if (window.audioEnabled) {
+        if (btn) {
+            btn.innerHTML = getVolumeIcon();
+            btn.classList.add('active');
+        }
+        WaveAudio.setVolume(0.15);
+        WaveAudio.ping(220, 1.2);
+    } else {
+        if (btn) {
+            btn.innerHTML = getMuteIcon();
+            btn.classList.remove('active');
+        }
+        WaveAudio.setVolume(0.0, 0.2);
+    }
+}
+
+function initAudioButton() {
+    const isIndex = document.title.includes('Index') ||
+        window.location.pathname.endsWith('index.html') ||
+        window.location.pathname === '/' ||
+        window.location.pathname === '';
+        
+    if (isIndex) {
+        // Landing page setup
+        const btn = document.createElement('button');
+        btn.id = 'audio-synth-btn';
+        btn.className = 'info-btn'; // Matches general design
+        btn.style.position = 'fixed';
+        btn.style.top = '20px';
+        btn.style.right = '20px';
+        btn.style.zIndex = '100015';
+        btn.innerHTML = window.audioEnabled ? getVolumeIcon() : getMuteIcon();
+        if (window.audioEnabled) btn.classList.add('active');
+        btn.onclick = toggleAudioSynth;
+        document.body.appendChild(btn);
+        return;
+    }
+    
+    const container = document.querySelector('.ui-sub-controls');
+    if (!container) return;
+    
+    const btn = document.createElement('button');
+    btn.id = 'audio-synth-btn';
+    btn.className = 'share-btn';
+    btn.innerHTML = window.audioEnabled ? getVolumeIcon() : getMuteIcon();
+    if (window.audioEnabled) btn.classList.add('active');
+    btn.title = "Toggle Sound Synth";
+    btn.onclick = toggleAudioSynth;
+    container.appendChild(btn);
+}
+
+function getPageFrequency(activeId) {
+    const item = NAVIGATION_ITEMS.find(n => n.id === activeId);
+    if (!item) return 440;
+    const t = (item.val + 35) / 61;
+    return 880 * Math.pow(0.0625, t);
+}
+
+// User interaction gesture activation
+window.addEventListener('click', () => {
+    if (window.audioEnabled) {
+        WaveAudio.init();
+        WaveAudio.resumeIfNeeded();
+        WaveAudio.setVolume(0.15);
+        // Play active page frequency
+        const activeNavTab = document.querySelector('.main-nav-tab.active');
+        if (activeNavTab) {
+            const activeId = activeNavTab.getAttribute('href').replace('.html', '').replace('modules/', '').replace('../', '');
+            WaveAudio.setFrequency(getPageFrequency(activeId), 1.0);
+        }
+    }
+}, { once: true });
+
 // ============ ENHANCED AUTO-INIT ============
 // Auto-Init on Load (for all pages)
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initOrbUI();
         initInfoModal();
+        initAudioButton();
         initOscilloscope();
         initPageTransition();
         initNavSlider();
         initOnboardingHint();
         initSlidersButton();
         initShareButton();
+        initContextNote();
 
         // Initialize StarField if container exists
         const starContainer = document.getElementById('three-container') || document.getElementById('background-stars');
@@ -1738,6 +2173,7 @@ if (document.readyState === 'loading') {
 } else {
     initOrbUI();
     initInfoModal();
+    initAudioButton();
     initOscilloscope();
     initPageTransition();
     initNavSlider();
@@ -1745,6 +2181,7 @@ if (document.readyState === 'loading') {
     initOnboardingHint();
     initSlidersButton();
     initShareButton();
+    initContextNote();
     const starContainer = document.getElementById('three-container') || document.getElementById('background-stars');
     if (starContainer) initGlobalStarField(starContainer.id);
     setTimeout(centerActiveNavItems, 100);

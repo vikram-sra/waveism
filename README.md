@@ -65,6 +65,8 @@
 | **Parallax Starfield** | Multi-layer depth simulation |
 | **Force Feedback** | "Create Wave" touch/force interaction |
 | **Scanline Overlay** | Retro CRT glitch effect |
+| **Manifesto Gate** | Thesis + disclaimer overlay with localStorage opt-out |
+| **Gravitational Time Dilation** | Disk particles slow near the Schwarzschild radius |
 | **PWA Support** | Installable, offline-capable manifest |
 | **iOS Safe Areas** | `env(safe-area-inset-*)` padding |
 
@@ -124,3 +126,20 @@ You are free to use, modify, and distribute this project with attribution.
 
 *Built with curiosity about the fundamental nature of reality.*
 
+---
+
+## ⚛ Scientific Accuracy
+
+This project is **scientific communication**, not a physics engine. All established physics — equations, descriptions, and concepts — is sourced from standard textbooks and peer-reviewed literature.
+
+Content labeled **"Waveism"** represents speculative interpretive bridges between established theories.
+
+A manifesto/disclaimer overlay appears on the homepage to clearly frame this distinction for visitors. Users may opt out of seeing it again via a checkbox.
+
+### Accuracy Audit
+The codebase has undergone a physics accuracy audit verifying:
+- ✅ Heisenberg uncertainty (`Δx·Δp ≥ ℏ/2`) — correct inverse relationship
+- ✅ Lorenz attractor (σ=10, ρ=28, β=8/3) — canonical parameters with RK4 integration
+- ✅ Double-slit interference — textbook superposition with Fraunhofer intensity
+- ✅ Gravitational time dilation — `√(1 - rₛ/r)` factor on disk particle velocities
+- ✅ Landauer's principle — Maxwell's Demon equation corrected to `ΔS_erase ≥ k_B ln 2`

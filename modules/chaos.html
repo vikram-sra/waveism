@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -153,7 +153,14 @@
                     { term: 'Lyapunov Exponent', definition: 'The rate of trajectory divergence over time.' },
                     { term: 'Perturbation', definition: 'A slight deviation in the starting state.' }
                 ],
-                physics: 'Waveism: Reality is a balancing act. A single decoherent ripple can shatter the standing-wave manifold.'
+                physics: 'Waveism: Reality is a balancing act. A single decoherent ripple can shatter the standing-wave manifold.',
+                sliderConfig: { label: 'Initial δ', min: 0, max: 100, step: 1, default: 50, units: 'μm', decimals: 4 },
+                contextNote: 'A perfect crystal collapses — one tiny perturbation grows exponentially until order is destroyed.',
+                relevance: 'Why you can\'t predict the weather past 10 days. Tiny errors now become massive catastrophes later.',
+                sources: [
+                    'Lorenz, E.N. (1963). Deterministic Nonperiodic Flow. Journal of the Atmospheric Sciences.',
+                    'Gleick, J. (1987). Chaos: Making a New Science.'
+                ]
             },
             'lorenz': {
                 name: 'Strange Attractor', year: 'Edward Lorenz',
@@ -165,7 +172,14 @@
                     { term: 'Butterfly Effect', definition: 'Infinitesimal perturbations cause macroscopic divergence.' },
                     { term: 'Fractal Dimension', definition: 'The non-integer geometry of chaotic sets.' }
                 ],
-                physics: 'Waveism: Chaos is the emergent interference of high-frequency wave-packet collisions.'
+                physics: 'Waveism: Chaos is the emergent interference of high-frequency wave-packet collisions.',
+                sliderConfig: { label: 'Sensitivity (ρ)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 4 },
+                contextNote: 'Deterministic but unpredictable — the butterfly-shaped attractor traps trajectories forever.',
+                relevance: 'Shows that order is not the opposite of chaos; they are entangled. Complex systems settle into beautiful, distinct shapes (Attractors).',
+                sources: [
+                    'Strogatz, S.H. (1994). Nonlinear Dynamics and Chaos.',
+                    'Mandelbrot, B.B. (1982). The Fractal Geometry of Nature.'
+                ]
             },
             'three-body': {
                 name: '3-Body Problem', year: 'Orbital Chaos',
@@ -177,7 +191,14 @@
                     { term: 'KAM Theory', definition: 'The physics of near-integrable stability.' },
                     { term: 'Symplectic Flow', definition: 'Energy-conserving paths in phase space.' }
                 ],
-                physics: 'Waveism: Gravitational bodies are resonant spikes whose worldlines tangle in the manifold.'
+                physics: 'Waveism: Gravitational bodies are resonant spikes whose worldlines tangle in the manifold.',
+                sliderConfig: { label: '3rd Body Mass', min: 0, max: 100, step: 1, default: 50, units: ' M', decimals: 2 },
+                contextNote: 'Three orbiting bodies — their mutual gravity creates unsolvable, chaotic trajectories.',
+                relevance: 'There is no formula for the future. Even simple systems like our solar system are fundamentally unstable over long timescales.',
+                sources: [
+                    'Poincaré, H. (1890). Sur le problème des trois corps et les équations de la dynamique.',
+                    'Musielak, Z.E., & Quarles, B. (2014). The three-body problem. Reports on Progress in Physics.'
+                ]
             },
             'pendulum': {
                 name: 'Double Pendulum', year: 'Lagrangian Chaos',
@@ -189,7 +210,14 @@
                     { term: 'Bifurcation', definition: 'The threshold where stable orbits split into chaos.' },
                     { term: 'Feedback Loops', definition: 'Energy transfer between coupled oscillatory modes.' }
                 ],
-                physics: 'Waveism: Mechanical manifestation of multi-modal wave interference.'
+                physics: 'Waveism: Mechanical manifestation of multi-modal wave interference.',
+                sliderConfig: { label: 'Start Offset', min: 0, max: 100, step: 1, default: 50, units: '°', decimals: 0 },
+                contextNote: 'Coupled weights in non-linear feedback — motion that defies all intuition.',
+                relevance: 'Mechanical proof that "simple" laws (Newton\'s) can produce infinitely complex behavior.',
+                sources: [
+                    'Shinbrot, T. et al. (1992). Chaos in a Double Pendulum. American Journal of Physics.',
+                    'Levien, R.B., & Tan, S.M. (1993). Double Pendulum: An experiment in chaos.'
+                ]
             },
             'logistic': {
                 name: 'Logistic Map', year: 'Universal Chaos',
@@ -201,7 +229,14 @@
                     { term: 'Feigenbaum Constant', definition: 'The universal ratio governing the onset of chaos.' },
                     { term: 'Self-Similarity', definition: 'Infinite nested copies of the system structure.' }
                 ],
-                physics: 'Waveism: Geometric template for entropy production in high-energy manifolds.'
+                physics: 'Waveism: Geometric template for entropy production in high-energy manifolds.',
+                sliderConfig: { label: 'Grain Size', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'A simple equation that reveals the universal path to chaos through period-doubling.',
+                relevance: 'Universality: The same mathematical constant (Feigenbaum\'s 4.669...) governs dripping faucets, heart fibrillations, and population crashes.',
+                sources: [
+                    'Feigenbaum, M.J. (1978). Quantitative universality for a class of nonlinear transformations. Journal of Statistical Physics.',
+                    'May, R.M. (1976). Simple mathematical models with very complicated dynamics. Nature.'
+                ]
             }
         };
 
@@ -425,6 +460,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

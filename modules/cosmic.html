@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -153,7 +153,14 @@
                     { term: 'Proper Time (τ)', definition: 'The time experienced by an object traveling along its worldline.' },
                     { term: 'Invariant Interval', definition: 'The "distance" in spacetime that remains constant regardless of the observer\'s frame.' }
                 ],
-                physics: 'In Waveism, a worldline is the "Phase-Trace" of a signal. Every object is a wave-packet moving through the substrate; its path is the coherent history of its constructive interference.'
+                physics: 'In Waveism, a worldline is the "Phase-Trace" of a signal. Every object is a wave-packet moving through the substrate; its path is the coherent history of its constructive interference.',
+                sliderConfig: { label: 'Metric Warp', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'In 4D spacetime, a planet’s orbit becomes a helix — all objects move at the speed of light through the manifold.',
+                relevance: 'You are a 4D worm stretching through time. Your life is a static geometric shape in the block universe.',
+                sources: [
+                    'Minkowski, H. (1908). Space and Time.',
+                    'Wheeler, J.A. (1990). A Journey into Gravity and Spacetime.'
+                ]
             },
             'emc2': {
                 name: 'Mass-Energy Symmetry', year: 'Wave-Knot Protocol',
@@ -165,7 +172,14 @@
                     { term: 'Rest Mass', definition: 'The invariant energy of a static system.' },
                     { term: 'Wave-Knot', definition: 'Localization of free waves into standing resonant structures.' }
                 ],
-                physics: 'Waveism: E=mc² is the conversion factor between free propagation and localized standing waves.'
+                physics: 'Waveism: E=mc² is the conversion factor between free propagation and localized standing waves.',
+                sliderConfig: { label: 'Energy Density', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Mass is energy trapped in a standing-wave knot — E=mc² converts between motion and substance.',
+                relevance: 'Matter is just frozen energy. This principle powers the sun and nuclear reactors.',
+                sources: [
+                    'Einstein, A. (1905). Does the Inertia of a Body Depend Upon Its Energy Content?',
+                    'Okun, L.B. (1989). The Concept of Mass.'
+                ]
             },
             'gravity': {
                 name: 'Metric Warping', year: 'Einstein Manifold',
@@ -177,7 +191,14 @@
                     { term: 'Energy Flux', definition: 'The flow of momentum density through the manifold.' },
                     { term: 'Ricci Curvature', definition: 'The geometric measure of local volume distortion.' }
                 ],
-                physics: 'Waveism: Gravity is the refractive index of the cosmic substrate.'
+                physics: 'Waveism: Gravity is the refractive index of the cosmic substrate.',
+                sliderConfig: { label: 'Mass Density (M)', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Mass tells space how to curve, curvature tells mass how to move — gravity is geometry.',
+                relevance: 'Gravity determines the shape of the cosmos. Its pull fights against expansion to form galaxies and stars.',
+                sources: [
+                    'Peebles, P.J.E. (1980). The Large-Scale Structure of the Universe.',
+                    'Zel\'dovich, Y.B. (1970). Gravitational instability: An approximate theory for large density perturbations.'
+                ]
             },
             'funnel': {
                 name: 'Cosmic Funnel', year: 'Expansion Era',
@@ -189,7 +210,14 @@
                     { term: 'Hubble Flow', definition: 'Metric stretching of space between clusters.' },
                     { term: 'Phase Shift', definition: 'The global transition from coherent node to multi-frequency field.' }
                 ],
-                physics: 'Waveism: The Big Bang was a global phase-shift in the vacuum state.'
+                physics: 'Waveism: The Big Bang was a global phase-shift in the vacuum state.',
+                sliderConfig: { label: 'Scale Factor', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'The holographic history of the cosmos — from initial singularity to dark-energy acceleration.',
+                relevance: 'Visualizes the history of the universe as a widening funnel, accelerating outward due to dark energy.',
+                sources: [
+                    'Perlmutter, S. et al. (1999). Measurements of Omega and Lambda from 42 High-Redshift Supernovae.',
+                    'Schmidt, B.P. et al. (1998). The High-Z Supernova Search: Measuring Cosmic Deceleration and Global Curvature.'
+                ]
             },
             'singularity': {
                 name: 'Event Horizon', year: 'Schwarzschild Limit',
@@ -201,7 +229,14 @@
                     { term: 'Spaghettification', definition: 'Extreme tidal forces stretching objects into worldline filaments.' },
                     { term: 'Lensing', definition: 'The bending of information-carrying waves around the gravitational well.' }
                 ],
-                physics: 'Waveism: A singularity is a point of destructive interference in the metric field where all phase-information is localized and lost.'
+                physics: 'Waveism: A singularity is a point of destructive interference in the metric field where all phase-information is localized and lost.',
+                sliderConfig: { label: 'Curvature κ', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Total spacetime breakdown — the metric disconnects where curvature diverges to infinity.',
+                relevance: 'The breakdown of physics. At this point, our variables become infinite and our theories useless.',
+                sources: [
+                    'Penrose, R., & Hawking, S.W. (1970). The Singularities of Gravitational Collapse and Cosmology.',
+                    'Geroch, R. (1968). What is a Singularity in General Relativity?'
+                ]
             }
         };
 
@@ -413,6 +448,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

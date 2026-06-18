@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wormholes | Metric Bridges</title>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -137,7 +137,7 @@
         const theories = {
             'morris-thorne': {
                 name: 'Morris-Thorne Metric', year: 'Morris & Thorne, 1988',
-                equation: 'z(r) = b₀ ln[...] [Embedding]',
+                equation: 'z(r) = ±b₀ ln(r/b₀ + √(r²/b₀² − 1))',
                 equationExpl: 'The embedding formula for a traversable wormhole. It describes the geometric shape of the bridge connecting two distant regions of spacetime.',
                 facts: [{ text: 'Traversable', status: 'yes' }, { text: 'Exotic Matter', status: 'required' }],
                 description: 'The standard model for a shortcut through spacetime. Unlike Schwarzschild holes, this metric is designed to be traversable, meaning an observer can pass through the throat in finite proper time without being crushed by tidal forces.',
@@ -146,7 +146,14 @@
                     { term: 'Null Energy Condition', definition: 'A fundamental rule that must be violated by "negative energy" to keep the throat open.' },
                     { term: 'Proper Distance l', definition: 'The physical length of the tunnel as experienced by the traveler.' }
                 ],
-                physics: 'In Waveism, a wormhole is a "Phase Tunnel"—a localized shortcut in the cosmic substrate where the wave-function maps one spatial coordinate directly onto another across the manifold.'
+                physics: 'In Waveism, a wormhole is a "Phase Tunnel"—a localized shortcut in the cosmic substrate where the wave-function maps one spatial coordinate directly onto another across the manifold.',
+                sliderConfig: { label: 'Throat r₀', min: 1, max: 100, step: 1, default: 30, units: ' r₀', decimals: 0 },
+                contextNote: 'A traversable shortcut through spacetime — requiring exotic matter to keep the throat open.',
+                relevance: 'The only theoretically valid way to travel faster than light without breaking causality (maybe).',
+                sources: [
+                    'Morris, M.S., & Thorne, K.S. (1988). Wormholes in spacetime and their use for interstellar travel.',
+                    'Visser, M. (1995). Lorentzian Wormholes: From Einstein to Hawking.'
+                ]
             },
             'ellis': {
                 name: 'Ellis Drainhole', year: 'Homer Ellis, 1973',
@@ -158,7 +165,14 @@
                     { term: 'Catenoid Geometry', definition: 'The minimal surface area formed by stretching a manifold between two points.' },
                     { term: 'Phantom Matter', definition: 'A theoretical substance with negative kinetic energy used to support the drainhole.' }
                 ],
-                physics: 'The Ellis bridge represents a "Static Harmonic Node" in the vacuum. It is a stable, non-collapsing topological defect in the universal field.'
+                physics: 'The Ellis bridge represents a "Static Harmonic Node" in the vacuum. It is a stable, non-collapsing topological defect in the universal field.',
+                sliderConfig: { label: 'Bridge Width (a)', min: 1, max: 100, step: 1, default: 30, units: '', decimals: 0 },
+                contextNote: 'A catenoid-shaped bridge — a minimal surface connecting two sheets of spacetime.',
+                relevance: 'A topological tunnel that acts as a particle-like structure (Geon) and doesn\'t collapse immediately.',
+                sources: [
+                    'Ellis, H.G. (1973). Ether flow through a drainhole: A particle model in general relativity.',
+                    'Bronnikov, K.A. (1973). Scalar-tensor theory and scalar charge.'
+                ]
             },
             'visser': {
                 name: 'Visser Thin-Shell', year: 'Matt Visser, 1989',
@@ -170,7 +184,14 @@
                     { term: 'Junction Conditions', definition: 'The mathematical rules for sewing disparate spacetimes together.' },
                     { term: 'Polyhedral Wormhole', definition: 'Visser’s extension where the shells form 3D shapes like cubes for even greater stability.' }
                 ],
-                physics: 'A "Metric Stitch". Waveism views this as a high-frequency interference boundary where two distinct regions of the substrate are forcefully synchronized.'
+                physics: 'A "Metric Stitch". Waveism views this as a high-frequency interference boundary where two distinct regions of the substrate are forcefully synchronized.',
+                sliderConfig: { label: 'Shell Stress', min: 1, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Two flat spacetimes sewn together at a thin shell — minimizing the exotic matter cost.',
+                relevance: 'Minimizes the "magic" material needed to build a stargate by restricting it to the edges, making it (slightly) more presumably buildable.',
+                sources: [
+                    'Visser, M. (1989). Traversable wormholes: Some simple examples. Physical Review D.',
+                    'Poisson, E., & Visser, M. (1995). Thin-shell wormholes: Linearization stability.'
+                ]
             },
             'alcubierre': {
                 name: 'Alcubierre Warp Drive', year: 'Miguel Alcubierre, 1994',
@@ -179,10 +200,17 @@
                 facts: [{ text: 'Apparent FTL', status: 'yes' }, { text: 'Space Expansion', status: 'yes' }],
                 description: 'While not a wormhole, it uses similar metric-warping physics. It contracts space in front and expands it behind, allowing a ship to travel faster than light relative to distant stars while remaining stationary in its local "bubble".',
                 concepts: [
-                    { term: 'Warp Bubble', definition: 'The region of distorted spacetime that surounds and protects the traveler.' },
+                    { term: 'Warp Bubble', definition: 'The region of distorted spacetime that surrounds and protects the traveler.' },
                     { term: 'Tension Metric', definition: 'The extreme metric pressure required to "push" and "pull" space at FTL speeds.' }
                 ],
-                physics: 'Warp travel is "Metric Surfing"—creating a wave-pulse in the vacuum and riding its crest across the universe.'
+                physics: 'Warp travel is "Metric Surfing"—creating a wave-pulse in the vacuum and riding its crest across the universe.',
+                sliderConfig: { label: 'Warp Velocity', min: 1, max: 100, step: 1, default: 50, units: 'c', decimals: 1 },
+                contextNote: 'Contract space ahead, expand it behind — the ship stays still while the universe moves around it.',
+                relevance: 'Star Trek physics made real(ish). The ship doesn\'t move; it surfs a wave of twisted space, bypassing the speed of light limit.',
+                sources: [
+                    'Alcubierre, M. (1994). The warp drive: hyper-fast travel within general relativity.',
+                    'White, H. (2013). Warp Field Mechanics 101.'
+                ]
             }
         };
 
@@ -257,26 +285,124 @@
             const gridRes = 40;
             const radius = 150;
 
-            const createWormholeMesh = (thickness) => {
+            const createLensingStars = () => {
+                const pCount = 800;
+                const pPos = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount; i++) {
+                    const r = 250 + Math.random() * 150;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(Math.random() * 2 - 1);
+                    pPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                    pPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                    pPos[i * 3 + 2] = r * Math.cos(phi);
+                }
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                
+                const lensingStarsMat = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uThroatRadius: { value: p1 },
+                        uTension: { value: 1.0 }
+                    },
+                    vertexShader: `
+                        uniform float uThroatRadius;
+                        uniform float uTension;
+                        varying vec3 vColor;
+                        
+                        void main() {
+                            vec3 pos = position;
+                            float d = length(pos);
+                            if (d > 0.0) {
+                                float strength = uTension * 22.0;
+                                float warp = (uThroatRadius * uThroatRadius) / (d * d);
+                                pos = pos + normalize(pos) * warp * strength;
+                            }
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            gl_Position = projectionMatrix * mvPosition;
+                            gl_PointSize = 1.5 * (300.0 / -mvPosition.z);
+                            
+                            vColor = vec3(0.0, 0.9, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        void main() {
+                            vec2 temp = gl_PointCoord - vec2(0.5);
+                            float dist = dot(temp, temp);
+                            if (dist > 0.25) discard;
+                            gl_FragColor = vec4(vColor * (1.0 - dist * 4.0), 0.85);
+                        }
+                    `,
+                    transparent: true,
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const stars = new THREE.Points(pGeo, lensingStarsMat);
+                stars.name = "lensing_stars";
+                activeGroup.add(stars);
+            };
+
+            const createWormholeMesh = (isWireframe = true) => {
                 const points = [];
                 for (let i = -gridRes; i <= gridRes; i++) {
                     const l = (i / gridRes) * radius;
-                    const r = p1 + (l * l) / (radius * 0.5); // Simplified catenoid-ish
+                    const r = p1 + (l * l) / (radius * 0.5);
                     points.push(new THREE.Vector2(r, l));
                 }
                 const geo = new THREE.LatheGeometry(points, 32);
-                const mat = new THREE.MeshPhongMaterial({
-                    color: 0x00ffff,
-                    wireframe: true,
+                
+                const shaderMat = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uThroatRadius: { value: p1 }
+                    },
+                    vertexShader: `
+                        uniform float uTime;
+                        varying vec3 vPosition;
+                        varying vec2 vUv;
+
+                        void main() {
+                            vUv = uv;
+                            vec3 pos = position;
+                            float ripple = sin(pos.y * 0.15 - uTime * 6.0) * 1.5;
+                            vec2 dir = normalize(pos.xz);
+                            pos.x += dir.x * ripple;
+                            pos.z += dir.y * ripple;
+                            
+                            vPosition = pos;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec2 vUv;
+                        varying vec3 vPosition;
+                        uniform float uTime;
+
+                        void main() {
+                            float grid = sin(vUv.x * 128.0) * sin(vUv.y * 64.0);
+                            grid = step(0.85, grid);
+                            
+                            float flow = sin(vUv.y * 12.0 - uTime * 4.0) * 0.5 + 0.5;
+                            vec3 color = vec3(0.0, 1.0, 1.0);
+                            
+                            float alpha = 0.12 + grid * 0.25 + flow * 0.15;
+                            gl_FragColor = vec4(color * (0.8 + flow * 0.4), alpha);
+                        }
+                    `,
+                    wireframe: isWireframe,
                     transparent: true,
-                    opacity: 0.3,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending
                 });
-                return new THREE.Mesh(geo, mat);
+                return new THREE.Mesh(geo, shaderMat);
             };
 
+            // Unconditionally add lensing stars background to all wormhole modes
+            createLensingStars();
+
             if (mode === 'morris-thorne' || mode === 'ellis') {
-                const mesh = createWormholeMesh();
+                const mesh = createWormholeMesh(true);
                 mesh.name = "bridge";
                 activeGroup.add(mesh);
 
@@ -287,9 +413,8 @@
                 throat.name = "throat";
                 activeGroup.add(throat);
             } else if (mode === 'visser') {
-                const mesh = createWormholeMesh();
-                mesh.material.wireframe = false;
-                mesh.material.opacity = 0.1;
+                const mesh = createWormholeMesh(false);
+                mesh.name = "bridge";
                 activeGroup.add(mesh);
 
                 const shellGeo = new THREE.BoxGeometry(p1 * 3, 2, p1 * 3);
@@ -320,6 +445,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 
@@ -327,13 +454,21 @@
             const dt = 0.01 * timeScale;
             time += dt;
 
-            if (currentMode === 'morris-thorne' || currentMode === 'ellis') {
+            if (currentMode === 'morris-thorne' || currentMode === 'ellis' || currentMode === 'visser') {
                 const bridge = activeGroup.getObjectByName("bridge");
-                if (bridge) {
-                    bridge.rotation.y += dt * 0.5;
-                    // Dynamic update of geometry based on p1
+                if (bridge && bridge.material.uniforms) {
+                    bridge.material.uniforms.uTime.value = time;
+                    bridge.material.uniforms.uThroatRadius.value = p1;
                 }
-            } else if (currentMode === 'alcubierre') {
+            }
+
+            const lensingStars = activeGroup.getObjectByName("lensing_stars");
+            if (lensingStars && lensingStars.material.uniforms) {
+                lensingStars.material.uniforms.uThroatRadius.value = p1;
+                lensingStars.material.uniforms.uTension.value = timeScale;
+            }
+
+            if (currentMode === 'alcubierre') {
                 const ring = activeGroup.getObjectByName("warp_ring");
                 if (ring) {
                     ring.position.z = Math.sin(time * 2) * 5;

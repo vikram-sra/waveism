@@ -308,7 +308,84 @@ body:not(.ui-open) .nav-counter {
 
 .nav-scale {
     display: none;
-    /* Removed for hyper-compactness */
+}
+
+/* ============ SCALE PROGRESS BAR ============ */
+.nav-scale-bar {
+    position: fixed;
+    top: calc(44px + var(--safe-area-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 95vw;
+    padding: 4px 15px 2px;
+    box-sizing: border-box;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.nav-scale-bar.visible {
+    opacity: 1;
+}
+
+body:not(.ui-open) .nav-scale-bar {
+    opacity: 0;
+}
+
+.scale-track {
+    position: relative;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: visible;
+}
+
+.scale-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg,
+            rgba(0, 255, 170, 0.6) 0%,
+            rgba(0, 255, 255, 0.5) 40%,
+            rgba(191, 64, 191, 0.6) 100%);
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    transition: width 0.5s ease;
+}
+
+.scale-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 9px;
+    height: 9px;
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(0, 255, 255, 0.4);
+    transition: left 0.5s ease;
+}
+
+.scale-indicator .scale-label {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.45rem;
+    color: rgba(0, 255, 255, 0.8);
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+.scale-endpoints {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.35rem;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 0.03em;
 }
 
 /* Home button special styling */
@@ -350,8 +427,8 @@ body:not(.ui-open) .nav-counter {
 
 .theory-tabs {
     position: fixed;
-    top: calc(52px + var(--safe-area-top, 0px));
-    /* Gap below main nav bar */
+    top: calc(66px + var(--safe-area-top, 0px));
+    /* Gap below scale bar (44 + ~22 bar height) */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -402,6 +479,54 @@ body:not(.ui-open) .nav-counter {
 .theory-tab.active {
     background: rgba(0, 255, 255, 0.1);
     color: #00ffff;
+}
+
+/* ============ CONTEXT NOTE (ONE-LINER BELOW TABS) ============ */
+.context-note {
+    position: fixed;
+    top: calc(98px + var(--safe-area-top, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9998;
+    text-align: center;
+    max-width: 500px;
+    width: calc(100% - 40px);
+    padding: 6px 16px;
+    background: rgba(0, 10, 20, 0.75);
+    border: 1px solid rgba(0, 255, 255, 0.12);
+    border-radius: 6px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    opacity: 1;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    pointer-events: none;
+}
+
+.context-note.faded {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+body:not(.ui-open) .context-note {
+    /* Handled by the unified ui-open rule in the UI STATE MANAGEMENT section */
+}
+
+@media (max-width: 700px) {
+    .context-note {
+        top: calc(104px + var(--safe-area-top, 0px));
+        font-size: 0.6rem;
+        padding: 5px 12px;
+    }
+
+    .nav-scale-bar {
+        top: calc(50px + var(--safe-area-top, 0px));
+        padding: 4px 10px 2px;
+    }
 }
 
 /* Page Specific Tab Colors (Overrides) */
@@ -491,8 +616,8 @@ body:not(.ui-open) .nav-counter {
     }
 
     .theory-tabs {
-        top: 54px;
-        /* Stacked below main nav (10 + 36 + 8 gap) */
+        top: 68px;
+        /* Stacked below scale bar (10 + 36 + ~22 bar) */
         justify-content: flex-start;
         padding: 4px;
         max-width: 95vw;
@@ -980,15 +1105,15 @@ body:not(.ui-open) .share-btn {
     .params-panel {
         left: 50% !important;
         transform: translateX(-50%) !important;
-        top: 105px !important;
-        /* Lowered to clear stacked navs (10+36+8+32+20 approx) */
+        top: 120px !important;
+        /* Lowered to clear stacked navs + scale bar */
         width: 90% !important;
     }
 
 
     /* Prevent theory tabs overlap */
     .theory-tabs {
-        top: 54px !important;
+        top: 68px !important;
     }
 }
 
@@ -1110,9 +1235,11 @@ body:not(.ui-open) .ui-sub-controls {
 }
 
 body:not(.ui-open) .main-nav,
+body:not(.ui-open) .nav-scale-bar,
 body:not(.ui-open) .theory-tabs,
 body:not(.ui-open) .params-panel,
-body:not(.ui-open) .info-panel {
+body:not(.ui-open) .info-panel,
+body:not(.ui-open) .context-note {
     opacity: 0;
     pointer-events: none;
     transform: translateY(-10px);
@@ -1723,4 +1850,61 @@ body.share-popup-open .ui-orb {
         right: calc(10px + var(--safe-area-right, 0px));
         width: 180px;
     }
+}
+
+/* ============ NATIVE VIEW TRANSITIONS ============ */
+@view-transition {
+    navigation: auto;
+}
+
+/* Cyberpunk Switch Toggle */
+.switch-container {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 20px;
+    margin-top: 5px;
+}
+
+.switch-container input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 170, 0.3);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 255, 170, 0.1);
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #00ffaa;
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00ffaa;
+}
+
+input:checked + .switch-slider {
+    background-color: rgba(0, 255, 170, 0.15);
+    border-color: #00ffaa;
+}
+
+input:checked + .switch-slider:before {
+    transform: translateX(26px);
+    box-shadow: 0 0 12px #00ffaa, 0 0 4px #fff;
 }

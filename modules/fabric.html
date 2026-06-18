@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Fabric of Cosmos | Eternalism & Block Time</title>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -150,7 +150,14 @@
                     { term: 'Simultaneity', definition: 'The "Now" slice shifts based on orientation in the block.' },
                     { term: 'Eternalism', definition: 'All parts of the loaf are equally real at all times.' }
                 ],
-                physics: 'Lorentz transformations physically rotate your "plane of simultaneity" within the 4D manifold. There is no universal clock. This proves reality is a static geometric object, the perfect substrate for resonant waveforms.'
+                physics: 'Lorentz transformations physically rotate your "plane of simultaneity" within the 4D manifold. There is no universal clock. This proves reality is a static geometric object, the perfect substrate for resonant waveforms.',
+                sliderConfig: { label: 'Lorentz Boost', min: -90, max: 90, step: 1, default: 0, units: 'c', decimals: 1 },
+                contextNote: 'Your velocity rotates your Now-slice through a static 4D block — there is no universal clock.',
+                relevance: 'Your motion literally rotates your definition of "Now". Simultaneous events for you are sequential for someone else.',
+                sources: [
+                    'Greene, B. (2004). The Fabric of the Cosmos.',
+                    'Putnam, H. (1967). Time and Physical Geometry.'
+                ]
             },
             'river': {
                 name: 'The Frozen River', year: 'Static Manifold',
@@ -162,7 +169,14 @@
                     { term: 'Worldline', definition: 'The fixed path of an object through the manifold.' },
                     { term: 'Cursor of Now', definition: 'The narrow window of experience sliding along the worldline.' }
                 ],
-                physics: 'General Relativity treats spacetime as a field equation solution. This static field is the non-local medium through which Waveism propagates.'
+                physics: 'General Relativity treats spacetime as a field equation solution. This static field is the non-local medium through which Waveism propagates.',
+                sliderConfig: { label: 'Flow Rate', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'If time flows, what does it flow with respect to? The river is frozen — only your cursor moves.',
+                relevance: 'Challenges the feeing that time "moves". Physics suggests the river is frozen; only your consciousness creates the flow.',
+                sources: [
+                    'Weyl, H. (1949). Philosophy of Mathematics and Natural Science.',
+                    'McTaggart, J.E. (1908). The Unreality of Time.'
+                ]
             },
             'entropy': {
                 name: 'The Entropy Arrow', year: 'Second Law',
@@ -174,7 +188,14 @@
                     { term: 'Phase Space', definition: 'The map of all possible configurations of the system.' },
                     { term: 'Degradation', definition: 'The irreversible transition from order to statistical chaos.' }
                 ],
-                physics: 'Entropy is the decoherence of wave-functions. Time is the measurement of this phase-drift from order to noise.'
+                physics: 'Entropy is the decoherence of wave-functions. Time is the measurement of this phase-drift from order to noise.',
+                sliderConfig: { label: 'Disorder (S)', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Order decays — the future is simply the direction of higher entropy.',
+                relevance: 'The only physical difference between past and future is that the past was tidier. Time is just a measure of mess.',
+                sources: [
+                    'Carroll, S.M. (2010). From Eternity to Here.',
+                    'Prigogine, I. (1980). From Being to Becoming.'
+                ]
             },
             'expansion': {
                 name: 'Metric Expansion', year: 'Hubble-Lemaître',
@@ -186,7 +207,14 @@
                     { term: 'Hubble Flow', definition: 'The rate at which volume increases between distant points.' },
                     { term: 'Metric Scaling', definition: 'The scaling factor a(t) that describes the size of the universe.' }
                 ],
-                physics: 'Expansion is the literal "tuning" of the universal cavity. As the metric grows, the fundamental resonant frequencies of the cosmos shift.'
+                physics: 'Expansion is the literal "tuning" of the universal cavity. As the metric grows, the fundamental resonant frequencies of the cosmos shift.',
+                sliderConfig: { label: 'Scale Factor a(t)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
+                contextNote: 'Galaxies aren’t flying apart — the space between them is literally stretching.',
+                relevance: 'The universe isn\'t expanding *into* anything; the grid itself is getting bigger, stretching light into invisibility.',
+                sources: [
+                    'Hubble, E. (1929). A Relation between Distance and Radial Velocity among Extra-Galactic Nebulae.',
+                    'Lemaître, G. (1927). Un Univers homogène de masse constante et de rayon croissant.'
+                ]
             }
         };
 
@@ -347,6 +375,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

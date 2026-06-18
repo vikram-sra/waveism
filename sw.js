@@ -3,7 +3,7 @@
  * Enables offline PWA support with intelligent caching strategies
  */
 
-const CACHE_VERSION = 'waveism-v1.2.1';
+const CACHE_VERSION = 'waveism-v1.3.0';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const DYNAMIC_CACHE = CACHE_VERSION + '-dynamic';
 

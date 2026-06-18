@@ -74,9 +74,9 @@
             font-display: block;
         }
     </style>
-    <link rel="stylesheet" href="components/shared.css?v=2">
+    <link rel="stylesheet" href="components/shared.css?v=4">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="components/shared.js?v=2"></script>
+    <script src="components/shared.js?v=4"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=JetBrains+Mono:wght@300;400;500&display=swap"
         rel="stylesheet">
@@ -192,6 +192,16 @@
             margin-bottom: 5px;
             opacity: 0.8;
             text-shadow: 0 0 10px var(--accent);
+        }
+
+        .phase-significance {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            font-style: italic;
         }
 
         /* CYBER TITLE LINK */
@@ -502,6 +512,196 @@
             display: none !important;
         }
 
+        /* ============ INTRO SLIDE ============ */
+        .intro-content {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center !important;
+            text-align: center;
+            gap: 0 !important;
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            transform: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100%;
+            padding: 40px 20px !important;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        .section.active .intro-content {
+            transform: none !important;
+        }
+
+        .intro-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 300;
+            letter-spacing: 0.8em;
+            color: #fff;
+            margin-bottom: 0.2em;
+        }
+
+        .intro-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.5em;
+            color: rgba(0, 221, 255, 0.6);
+            margin-bottom: 1.2em;
+        }
+
+        .intro-thesis {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            margin-bottom: 1em;
+            max-width: 500px;
+        }
+
+        .intro-scale {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 1em;
+        }
+
+        .intro-arrow {
+            color: rgba(0, 221, 255, 0.5);
+            margin: 0 0.2em;
+        }
+
+        .intro-disclaimer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.25);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0.8em 1.5em;
+            margin-bottom: 1.2em;
+            max-width: 520px;
+        }
+
+        .intro-interactions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 1em;
+        }
+
+        .intro-interact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 60px;
+        }
+
+        .intro-icon {
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(0, 221, 255, 0.15);
+            border-radius: 6px;
+            background: rgba(0, 221, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: rgba(0, 221, 255, 0.6);
+        }
+
+        .intro-interact-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.4rem;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .intro-instructions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 1em;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .intro-instruction {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 0.03em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .intro-key {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(0, 221, 255, 0.06);
+            border: 1px solid rgba(0, 221, 255, 0.15);
+            border-radius: 3px;
+            color: rgba(0, 221, 255, 0.6);
+            font-size: 0.5rem;
+        }
+
+        .intro-begin {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            color: rgba(0, 221, 255, 0.5);
+            animation: introBeginPulse 2.5s infinite ease-in-out;
+        }
+
+        @keyframes introBeginPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: translateX(0);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: translateX(5px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .intro-title {
+                font-size: 1.5rem;
+                letter-spacing: 0.4em;
+            }
+
+            .intro-thesis {
+                font-size: 0.8rem;
+            }
+
+            .intro-scale {
+                font-size: 0.5rem;
+            }
+
+            .intro-interactions {
+                gap: 10px;
+            }
+
+            .intro-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+        }
+
         #reel .section[data-id="create_wave"] .create-wave-hint {
             position: absolute;
             top: 40%;
@@ -545,10 +745,11 @@
 </head>
 
 <body>
+
+
     <div id="background-stars"></div>
     <div id="nav-container"></div>
     <div class="scanlines"></div>
-
 
 
     <!-- Native Scroll Container -->
@@ -569,19 +770,20 @@
 
     <script>
         const phases = [
-            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa', scale: '10⁻³⁵m' },
-            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd', scale: '10⁻³⁰m' },
-            { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'Unified framework of oscillatory reality.', color: '#7b2cbf', scale: '10⁻¹⁵m' },
-            { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Coherent interference and entrainment protocols.', color: '#ff0055', scale: '10⁻⁶m' },
-            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d', scale: '10⁰m' },
-            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500', scale: '10⁵m' },
-            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The metric tensor substrate of reality.', color: '#00ddff', scale: '10¹⁰m' },
-            { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Topological bridges through the manifold.', color: '#4cc9f0', scale: '10¹⁵m' },
-            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The 4D continuum of light cones and worldlines.', color: '#ff6b9d', scale: '10¹⁸m' },
-            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Infinite curvature and causal singularities.', color: '#ffaa00', scale: '10²¹m' },
-            { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Metric acceleration of the cosmic substrate.', color: '#b5179e', scale: '10²⁴m' },
-            { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'Large-scale structure of galactic filaments.', color: '#0088ff', scale: '10²⁶m' },
-            { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Manual interaction with the cosmic medium.', color: '#ffffff', scale: '∞' }
+            { id: 'intro', title: 'WAVEISM', question: 'What if the universe is not made of things, but of vibrations?', desc: 'An epistemic interface — from quantum to cosmic scale.', color: '#00ddff', scale: '∞', scaleSignificance: 'The Portal' },
+            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa', scale: '10⁻³⁵m', scaleSignificance: 'The Pixel Grid of Reality' },
+            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd', scale: '10⁻³⁰m', scaleSignificance: 'The Blur of Existence' },
+            { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'Unified framework of oscillatory reality.', color: '#7b2cbf', scale: '10⁻¹⁵m', scaleSignificance: 'The Vibration of Matter' },
+            { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Coherent interference and entrainment protocols.', color: '#ff0055', scale: '10⁻⁶m', scaleSignificance: 'The Frequency of Life' },
+            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d', scale: '10⁰m', scaleSignificance: 'The Complexity of Now' },
+            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500', scale: '10⁵m', scaleSignificance: 'The Drift of Time' },
+            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The metric tensor substrate of reality.', color: '#00ddff', scale: '10¹⁰m', scaleSignificance: 'The Geometry of Space' },
+            { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Topological bridges through the manifold.', color: '#4cc9f0', scale: '10¹⁵m', scaleSignificance: 'The Bridge of Causality' },
+            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The 4D continuum of light cones and worldlines.', color: '#ff6b9d', scale: '10¹⁸m', scaleSignificance: 'The Block Universe' },
+            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Infinite curvature and causal singularities.', color: '#ffaa00', scale: '10²¹m', scaleSignificance: 'The Edge of Physics' },
+            { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Metric acceleration of the cosmic substrate.', color: '#b5179e', scale: '10²⁴m', scaleSignificance: 'The Cosmic Stretch' },
+            { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'Large-scale structure of galactic filaments.', color: '#0088ff', scale: '10²⁶m', scaleSignificance: 'The Web of Galaxies' },
+            { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Manual interaction with the cosmic medium.', color: '#ffffff', scale: '∞', scaleSignificance: 'The Observer\'s Touch' }
         ];
 
         const reel = document.getElementById('reel');
@@ -657,17 +859,94 @@
                 }
             };
             canvas.onclick = () => {
-                if (p.id !== 'create_wave') window.location.href = 'modules/' + p.id + '.html';
+                if (p.id !== 'create_wave' && p.id !== 'intro') window.location.href = 'modules/' + p.id + '.html';
             };
             sec.appendChild(canvas);
 
-            const content = document.createElement('div');
-            content.className = 'content' + (p.id === 'create_wave' ? ' hidden' : '');
-            content.innerHTML = `
-                <div class="phase-question">${p.question}</div>
-                <a href="modules/${p.id}.html" class="phase-link"><h1 class="phase-title">${p.title}</h1></a>
-                <div class="phase-desc">${p.desc}</div>
+            let content;
+            if (p.id === 'intro') {
+                // Intro slide — manifesto content + instructions
+                content = document.createElement('div');
+                content.className = 'content intro-content';
+                content.innerHTML = `
+                    <div class="intro-title">WAVEISM</div>
+                    <div class="intro-subtitle">AN EPISTEMIC INTERFACE</div>
+                    <div class="intro-thesis">
+                        "What if the universe is not made of things,<br>but of vibrations?"
+                    </div>
+                    <div class="intro-scale">
+                        10<sup>−35</sup>m <span class="intro-arrow">→</span>
+                        QUANTUM <span class="intro-arrow">→</span>
+                        HUMAN <span class="intro-arrow">→</span>
+                        COSMIC <span class="intro-arrow">→</span>
+                        10<sup>26</sup>m
+                    </div>
+                    <div class="intro-disclaimer">
+                        The established physics — equations, descriptions, and concepts — is sourced from standard textbooks and
+                        peer-reviewed literature. Content labeled <strong style="color: rgba(0,221,255,0.6)">"Waveism"</strong>
+                        represents speculative interpretive bridges between those theories.
+                    </div>
+                    <div class="intro-interactions">
+                        <div class="intro-interact-item">
+                            <div class="intro-icon">⟷</div>
+                            <div class="intro-interact-label">Scroll</div>
+                        </div>
+                        <div class="intro-interact-item">
+                            <div class="intro-icon">👆</div>
+                            <div class="intro-interact-label">Tap</div>
+                        </div>
+                        <div class="intro-interact-item">
+                            <div class="intro-icon">✋</div>
+                            <div class="intro-interact-label">Drag</div>
+                        </div>
+                        <div class="intro-interact-item">
+                            <div class="intro-icon">⊕</div>
+                            <div class="intro-interact-label">Zoom</div>
+                        </div>
+                        <div class="intro-interact-item">
+                            <div class="intro-icon">⟳</div>
+                            <div class="intro-interact-label">Rotate</div>
+                        </div>
+                        <div class="intro-interact-item">
+                            <div class="intro-icon">◉</div>
+                            <div class="intro-interact-label">Orb</div>
+                        </div>
+                    </div>
+                    <div class="intro-instructions">
+                        <div class="intro-instruction"><span class="intro-key">←  →</span> Navigate</div>
+                        <div class="intro-instruction"><span class="intro-key">TAP</span> Explore</div>
+                        <div class="intro-instruction"><span class="intro-key">H</span> Hide UI</div>
+                    </div>
+                    <div class="intro-begin">SCROLL RIGHT TO BEGIN →</div>
+                `;
+            } else {
+                content = document.createElement('div');
+                if (p.id !== 'intro' && p.id !== 'create_wave') {
+                    content.className = 'content';
+                    content.innerHTML = `
+                <div class="phase-significance">${p.scaleSignificance || ''}</div>
+                <div class="phase-meta" style="color: ${p.color}; text-shadow: 0 0 10px ${p.color}">SCALE: ${p.scale}</div>
+                <a href="${p.id === 'intro' ? '#' : 'modules/' + p.id + '.html'}" class="phase-link" style="pointer-events: auto;">
+                    <h2 class="phase-title">${p.title}</h2>
+                </a>
+                <div class="phase-desc" style="border-color: ${p.color}33">
+                    <h3 class="phase-question" style="color: ${p.color}">${p.question}</h3>
+                    <p>${p.desc}</p>
+                </div>
             `;
+                } else if (p.id === 'create_wave') {
+                    content.className = 'content hidden';
+                    content.innerHTML = `
+                        <div class="phase-significance">${p.scaleSignificance || ''}</div>
+                        <div class="phase-meta" style="color: ${p.color}; text-shadow: 0 0 10px ${p.color}">SCALE: ${p.scale}</div>
+                        <h2 class="phase-title">${p.title}</h2>
+                        <div class="phase-desc" style="border-color: ${p.color}33">
+                            <h3 class="phase-question" style="color: ${p.color}">${p.question}</h3>
+                            <p>${p.desc}</p>
+                        </div>
+                    `;
+                }
+            }
             sec.appendChild(content);
             if (p.id === 'create_wave') {
                 const hint = document.createElement('div');
@@ -693,16 +972,17 @@
         // Initial Position (Skip first clone)
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-        // Robust Initial Scroll Logic to Start at WAVEISM (Index 1)
+        // Robust Initial Scroll Logic to Start at INTRO (Index 0 in phases, index 1 in displayPhases)
         function initReelPosition() {
             isTeleporting = true;
             reel.style.scrollBehavior = 'auto';
 
+            // Start at the intro slide (index 1 in displayPhases, since 0 is the last-clone)
             const startPos = window.innerWidth;
             reel.scrollLeft = startPos;
             reel.scrollTo(startPos, 0);
 
-            // Immediate HUD sync for Waveism
+            // Immediate HUD sync for Intro
             updateHUD(0);
 
             setTimeout(() => {
@@ -798,6 +1078,13 @@
             progress.style.setProperty('--freq', freq + 'px');
 
             document.documentElement.style.setProperty('--accent', phase.color);
+
+            // Audio frequency slide for the landing page scales
+            if (window.WaveAudio && window.audioEnabled) {
+                const t = idx / (phases.length - 1); // 0 to 1
+                const f = 880 * Math.pow(0.0625, t); // 880 Hz down to 55 Hz
+                window.WaveAudio.setFrequency(f, 0.4);
+            }
         }
 
         // Nav Helpers
@@ -813,7 +1100,7 @@
             if (e.key === 'Enter') {
                 const centerIdx = Math.round(reel.scrollLeft / W);
                 const p = displayPhases[centerIdx];
-                if (p) window.location.href = 'modules/' + p.id + '.html';
+                if (p && p.id !== 'intro' && p.id !== 'create_wave') window.location.href = 'modules/' + p.id + '.html';
             }
         });
 
@@ -856,8 +1143,10 @@
                     visFns[vizId](ctx, w, h, scaledT);
                 }
 
-                // Draw Totem
-                drawTotem(ctx, w, h, scaledT, vizId, phase ? phase.color : '#fff');
+                // Draw Totem (skip on intro - has its own text)
+                if (vizId !== 'intro') {
+                    drawTotem(ctx, w, h, scaledT, vizId, phase ? phase.color : '#fff');
+                }
             });
             requestAnimationFrame(loop);
         }
@@ -967,6 +1256,7 @@
             c.globalAlpha = 0.6;
 
             const techData = {
+                intro: "10\u207b\u00b3\u2075m \u2192 10\u00b2\u2076m [MANIFOLD]",
                 fabric: "METRIC TENSOR G\u1D6D\u1D78 [DIM:11]",
                 spacetime: "MINKOWSKI METRIC [DS\u00B2]",
                 blackhole: "EVENT HORIZON [RS:2GM/C\u00B2]",
@@ -1457,20 +1747,29 @@
                         initCreateWaveWebGL(glCanvas);
                         glCanvas.fiveInitialized = true;
                     }
-                    if (glCanvas.width !== w || glCanvas.height !== h) {
-                        glCanvas.width = w; glCanvas.height = h;
+                    // Resize handled inside the WebGL animate loop — don't touch canvas dimensions here
+                    if (glCanvas.waveRenderer && (glCanvas.waveRendererW !== w || glCanvas.waveRendererH !== h)) {
+                        glCanvas.waveRenderer.setSize(w, h);
+                        glCanvas.waveRendererW = w;
+                        glCanvas.waveRendererH = h;
                     }
                     if (glCanvas.waveUniforms) {
                         glCanvas.waveUniforms.uTime.value = t;
 
-                        // Interpolate mouse and pressure for smoothness
-                        const targetX = parseFloat(topCanvas.dataset.mx || 0.5);
-                        const targetY = parseFloat(topCanvas.dataset.my || 0.5);
                         const targetP = parseFloat(topCanvas.dataset.pressure || 0);
-
-                        glCanvas.waveUniforms.uMouse.value.x += (targetX - glCanvas.waveUniforms.uMouse.value.x) * 0.15;
-                        glCanvas.waveUniforms.uMouse.value.y += (targetY - glCanvas.waveUniforms.uMouse.value.y) * 0.15;
                         glCanvas.waveUniforms.uPressure.value += (targetP - glCanvas.waveUniforms.uPressure.value) * 0.15;
+
+                        // Only follow cursor when actively pressing; otherwise snap back to center
+                        if (targetP > 0) {
+                            const targetX = parseFloat(topCanvas.dataset.mx || 0.5);
+                            const targetY = parseFloat(topCanvas.dataset.my || 0.5);
+                            glCanvas.waveUniforms.uMouse.value.x += (targetX - glCanvas.waveUniforms.uMouse.value.x) * 0.15;
+                            glCanvas.waveUniforms.uMouse.value.y += (targetY - glCanvas.waveUniforms.uMouse.value.y) * 0.15;
+                        } else {
+                            // Return to center when not interacting
+                            glCanvas.waveUniforms.uMouse.value.x += (0.5 - glCanvas.waveUniforms.uMouse.value.x) * 0.08;
+                            glCanvas.waveUniforms.uMouse.value.y += (0.5 - glCanvas.waveUniforms.uMouse.value.y) * 0.08;
+                        }
                     }
                 }
             };
@@ -1483,11 +1782,15 @@
         function initCreateWaveWebGL(canvas) {
             if (!window.THREE) return;
 
-            const w = canvas.width;
-            const h = canvas.height;
+            const w = canvas.parentElement.clientWidth || window.innerWidth;
+            const h = canvas.parentElement.clientHeight || window.innerHeight;
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            // Use pixel ratio 1 — CSS handles display scaling. Avoids buffer/viewport mismatch.
+            renderer.setPixelRatio(1);
             renderer.setSize(w, h);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            canvas.waveRenderer = renderer;
+            canvas.waveRendererW = w;
+            canvas.waveRendererH = h;
 
             const scene = new THREE.Scene();
             // Flat Layout for "Natural" Feel
@@ -1533,24 +1836,59 @@
 
                     void main() {
                         vec2 uv = vUv;
-                        float d = distance(uv, uMouse);
+                        vec2 center = vec2(0.5, 0.5);
                         
-                        // Layered Natural Waves
-                        float n = noise(uv * 4.0 + uTime * 0.3) * 0.1;
-                        n += noise(uv * 8.0 - uTime * 0.5) * 0.05;
+                        // === CENTRAL WAVE (always active, emanating from center) ===
+                        float dCenter = distance(uv, center);
                         
-                        // Dynamic Ripple based on Pressure
-                        float ripple = sin(d * 50.0 - uTime * 10.0) * 0.5 + 0.5;
-                        ripple *= exp(-d * 4.0);
+                        // Concentric rings expanding outward
+                        float wave1 = sin(dCenter * 30.0 - uTime * 3.0) * 0.5 + 0.5;
+                        float wave2 = sin(dCenter * 20.0 - uTime * 2.2 + 1.5) * 0.5 + 0.5;
+                        float wave3 = sin(dCenter * 45.0 - uTime * 4.5 + 3.0) * 0.5 + 0.5;
                         
-                        float intensity = 0.1 + uPressure * 2.5;
-                        float field = n + ripple * intensity;
+                        // Layered rings with falloff from center
+                        float centerFalloff = exp(-dCenter * 2.5);
+                        float centerWave = (wave1 * 0.5 + wave2 * 0.3 + wave3 * 0.2) * centerFalloff;
                         
-                        vec3 color = mix(vec3(0.0, 0.05, 0.1), uColor, field);
-                        color += vec3(0.5, 0.0, 1.0) * pow(field, 4.0); // Spectral peaks
+                        // Breathing glow at the origin
+                        float breathe = 0.5 + 0.5 * sin(uTime * 1.5);
+                        float originGlow = exp(-dCenter * 8.0) * (0.3 + 0.2 * breathe);
                         
-                        float alpha = clamp(field * 1.2, 0.0, 0.85);
-                        gl_FragColor = vec4(color, alpha);
+                        // === ORGANIC NOISE FIELD (ambient texture) ===
+                        float n = noise(uv * 5.0 + uTime * 0.2) * 0.08;
+                        n += noise(uv * 10.0 - uTime * 0.35) * 0.04;
+                        n += noise(uv * 20.0 + uTime * 0.15) * 0.02;
+                        
+                        // === INTERACTIVE RIPPLE (from user touch/click) ===
+                        float dMouse = distance(uv, uMouse);
+                        float interactRipple = sin(dMouse * 50.0 - uTime * 8.0) * 0.5 + 0.5;
+                        interactRipple *= exp(-dMouse * 5.0);
+                        float interactIntensity = uPressure * 3.0;
+                        float interactField = interactRipple * interactIntensity;
+                        
+                        // === COMBINE ALL LAYERS ===
+                        float totalField = centerWave * 0.6 + originGlow + n + interactField;
+                        
+                        // === COLOR MIXING ===
+                        // Base: deep dark blue
+                        vec3 baseColor = vec3(0.0, 0.03, 0.08);
+                        // Center wave: cyan tones
+                        vec3 waveColor = uColor * centerWave * 0.8;
+                        // Origin glow: bright core
+                        vec3 glowColor = uColor * 1.5 * originGlow;
+                        // Interaction: spectral shift (cyan → violet when pressed)
+                        vec3 interactColor = mix(uColor, vec3(0.6, 0.0, 1.0), 0.4) * interactField;
+                        // Spectral peaks on high-energy areas
+                        vec3 spectral = vec3(0.4, 0.0, 0.8) * pow(totalField, 3.0) * 0.5;
+                        
+                        vec3 finalColor = baseColor + waveColor + glowColor + interactColor + spectral;
+                        
+                        // Vignette (darken edges)
+                        float vignette = 1.0 - smoothstep(0.3, 0.9, dCenter);
+                        finalColor *= (0.5 + 0.5 * vignette);
+                        
+                        float alpha = clamp(totalField * 1.4, 0.0, 0.9);
+                        gl_FragColor = vec4(finalColor, alpha);
                     }
                 `
             });
@@ -1562,12 +1900,11 @@
                 if (!canvas.parentElement) return;
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);
-                if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                }
             }
             animate();
         }
+
+        // Manifesto is now the first slide — no overlay needed
     </script>
 </body>
 

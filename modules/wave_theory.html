@@ -9,12 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Epistemic Topology | The Unified Field</title>
 
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="../components/hamiltonian_physics.js"></script>
     <script src="../components/physics_ontology.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         /* Epistemic Specific Overrides */
@@ -228,6 +227,13 @@
                     { term: 'Scale Dependency', definition: 'Physical laws (General Relativity vs. QFT) are effective theories valid only within specific magnitude ranges.' },
                     { term: 'Emergent Form', definition: 'Solidity is an emergent property of phase-locked wave functions, not an intrinsic quality of matter.' },
                     { term: 'The Substrate', definition: 'The non-local foundation from which space, time, and causality emerge via quantum decoherence.' }
+                ],
+                sliderConfig: { label: 'Scale Factor (S)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
+                contextNote: 'Reality is a multi-layered manifold — different physics emerge at different scales of observation.',
+                relevance: 'Just as water looks smooth but is actually molecules, spacetime looks smooth but is actually a discrete web of relations.',
+                sources: [
+                    'Wolfram, S. (2002). A New Kind of Science.',
+                    'Rovelli, C. (2014). Reality Is Not What It Seems: The Journey to Quantum Gravity.'
                 ]
             }
 
@@ -249,27 +255,35 @@
                     term: 'Excitations', definition: 'Localized peaks in field amplitude perceived as particles.'
                 }
 
+                ],
+                sliderConfig: { label: 'Field Excitation (φ)', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Particles are not things — they are localized excitations in a universal energy field.',
+                relevance: 'You are not made of solid stuff; you are a standing wave in an ancient, invisible field.',
+                sources: [
+                    'Peskin, M.E., & Schroeder, D.V. (1995). An Introduction to Quantum Field Theory.',
+                    'Carroll, S. (2012). The Particle at the End of the Universe.'
                 ]
             }
 
             ,
             'pilot': {
-
-                name: 'Pilot Wave',
+                name: 'Pilot Wave Theory',
                 param: 'GUIDANCE',
-                equation: 'v = ∇S/m',
-                physics: 'Bohmian Fluid Dynamics',
-                description: 'Particle guided by a physical pilot wave. The wave informs the particle of global conditions instantly.',
-                quote: { text: "No cat has ever been both dead and alive.", author: "John Bell" },
-                concepts: [{
-                    term: 'Non-Locality', definition: 'Instantaneous wave-particle information exchange.'
-                }
-
-                    ,
-                {
-                    term: 'Equilibrium', definition: 'State where particle distribution matches field intensity.'
-                }
-
+                equation: 'v = (ħ/m) Im(∇lnΨ)',
+                physics: 'De Broglie-Bohm Mechanics',
+                description: 'Restores reality to the quantum world. While standard physics says particles are "everywhere at once" (superposition), Pilot Wave theory argues particles always have a definite position. They are steered by a "ghostly" pilot wave that feels the entire environment (like both slits) even if the particle only passes through one.',
+                quote: { text: "It is a very simple and natural idea... the particle moves as guided by the wave.", author: "David Bohm" },
+                concepts: [
+                    { term: 'Guidance Equation', definition: 'The law dictate how the wave\'s phase gradient steers the particle\'s velocity.' },
+                    { term: 'Determinstic Paths', definition: 'Particles follow definite, non-crossing trajectories—removing "randomness" from physics.' },
+                    { term: 'Ghostly Influence', definition: 'The wave explores all possible paths, while the particle only takes one.' }
+                ],
+                sliderConfig: { label: 'Guidance Factor', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Particles aren\'t waves—they are definite objects being "pushed" by a wave that explores every possible path.',
+                relevance: 'Restores a common-sense reality where things exist even when you don\'t look at them—but at the cost of non-local "ghost" forces.',
+                sources: [
+                    'Bohm, D. (1952). A Suggested Interpretation of the Quantum Theory in Terms of "Hidden" Variables. Physical Review.',
+                    'Bell, J.S. (1987). Speakable and Unspeakable in Quantum Mechanics.'
                 ]
             }
 
@@ -291,6 +305,13 @@
                     term: 'Coherence', definition: 'The degree of phase-locking between neural nodes.'
                 }
 
+                ],
+                sliderConfig: { label: 'Gamma Sync (γ)', min: 20, max: 100, step: 1, default: 40, units: ' Hz', decimals: 0 },
+                contextNote: 'Consciousness as 3D phase-locked resonance — 40Hz binding across the cerebral manifold.',
+                relevance: 'Your unified sense of "self" is actually a temporal synchronization of millions of disparate neural firings.',
+                sources: [
+                    'Crick, F., & Koch, C. (1990). Towards a neurobiological theory of consciousness. Seminars in the Neurosciences.',
+                    'Singer, W. (1999). Neuronal Synchrony: A Versatile Code for the Definition of Relations? Neuron.'
                 ]
             }
 
@@ -312,6 +333,13 @@
                     term: 'Contagion', definition: 'The phase-driven spread of information via resonance.'
                 }
 
+                ],
+                sliderConfig: { label: 'Contagion (R₀)', min: 0, max: 10, step: 0.1, default: 2.5, units: '', decimals: 1 },
+                contextNote: 'Spherical influence fields propagate memetic information through the social manifold.',
+                relevance: 'Ideas spread like viruses. Your beliefs may be the result of "social resonance" rather than independent thought.',
+                sources: [
+                    'Centola, D. (2010). The Spread of Behavior in an Online Social Network Experiment. Science.',
+                    'Christakis, N.A., & Fowler, J.H. (2007). The Spread of Obesity in a Large Social Network over 32 Years. NEJM.'
                 ]
             }
 
@@ -330,6 +358,13 @@
                     term: 'Fitness Payoff', definition: 'Optimization for survival rather than objective accuracy.'
                 }
 
+                ],
+                sliderConfig: { label: 'Model Complexity', min: 0, max: 100, step: 1, default: 30, units: '%', decimals: 0 },
+                contextNote: 'Your senses provide a fitness-optimized desktop interface — simplified survival model, not truth.',
+                relevance: 'You don\'t see reality; you see a user interface designed to keep you alive. The "icon" of a snake is not the snake itself.',
+                sources: [
+                    'Hoffman, D.D. (2019). The Case Against Reality: Why Evolution Hid the Truth from Our Eyes.',
+                    'Von Uexküll, J. (1934). A Stroll Through the Worlds of Animals and Men.'
                 ]
             }
         }
@@ -507,6 +542,8 @@
                 ;
             updateInfoPanel(t);
             updateInfoModalContent(t);
+            updateSliderConfig(t);
+            updateContextNote(t.contextNote);
             document.getElementById('eq-name').innerText = t.param || 'PARAM';
 
             if (mode === 'map') {
@@ -1002,30 +1039,25 @@
         }
 
 
-        // REDESIGNED PILOT WAVE: Beautiful Quantum Interference & Trajectories
+        // REDESIGNED PILOT WAVE: Accurate Bohmian Mechanics Visualization
         const pilotState3D = {
-
             particles: [],
-            barrier: {
-                x: 0, width: 20, slitWidth: 60, slitSeparation: 200
-            }
-        }
+            barrier: { x: 0, width: 20, slitWidth: 60, slitSeparation: 220 }
+        };
 
-            ;
+        ;
 
         // Initialize multiple particles
         function initPilotParticles() {
             if (pilotState3D.particles.length === 0) {
-                const numParticles = 8;
-
+                const numParticles = 14;
                 for (let i = 0; i < numParticles; i++) {
                     pilotState3D.particles.push({
-                        x: -600,
+                        x: -650,
                         y: 0,
-                        z: (Math.random() - 0.5) * 300,
+                        z: (Math.random() - 0.5) * 450,
                         trail: [],
-                        phase: Math.random() * Math.PI * 2,
-                        speed: 3.5 + Math.random() * 1.5
+                        speed: 1.5 + Math.random() * 0.5
                     });
                 }
             }
@@ -1034,291 +1066,177 @@
         function drawPilot3D(t, rx, ry) {
             initPilotParticles();
 
-            const slitGap = 80 + (eqParam * 160);
             const barrier = pilotState3D.barrier;
+            const slit1 = { x: barrier.x, z: -barrier.slitSeparation / 2 };
+            const slit2 = { x: barrier.x, z: barrier.slitSeparation / 2 };
 
-            const slit1 = {
-                x: barrier.x, z: -barrier.slitSeparation / 2
-            }
+            // Physics Constants
+            const wavelength = 100 + (eqParam * 100);
+            const k = (2 * Math.PI) / wavelength;
+            const omega = 6.0; // Wave frequency
 
-                ;
+            // Complex Wave Function: Ψ(x, z, t)
+            const getPsi = (x, z, time) => {
+                let re = 0, im = 0;
 
-            const slit2 = {
-                x: barrier.x, z: barrier.slitSeparation / 2
-            }
+                // 1. Incident Wave from Left (Planar Wave)
+                const phaseIn = k * (x + 650) - omega * time;
+                const incidentAtten = 0.5 * (1 - Math.tanh((x - barrier.x) * 0.1)); // Smooth fade at barrier
+                re += Math.cos(phaseIn) * incidentAtten;
+                im += Math.sin(phaseIn) * incidentAtten;
 
-                ;
+                // 2. Huygens Sources at Slits (Spherical Waves)
+                [slit1, slit2].forEach(s => {
+                    const d = Math.hypot(x - s.x, z - s.z);
+                    const phaseOut = k * d - omega * time;
+                    // Source only "activates" at the slit and propagates forward/backward
+                    const distanceForward = x - s.x;
+                    const slitAtten = 0.8 * Math.exp(-d * 0.0008) * (0.5 + 0.5 * Math.tanh(distanceForward * 0.2));
+                    re += Math.cos(phaseOut) * slitAtten;
+                    im += Math.sin(phaseOut) * slitAtten;
+                });
 
-            // ========== 1. DRAW BEAUTIFUL WAVE FIELD ==========
+                const ampSq = re * re + im * im;
+                return { re, im, amp: Math.sqrt(ampSq), ampSq, phase: Math.atan2(im, re) };
+            };
+
+            // Guidance Velocity: v = (∇S)/m ≈ Im(∇Ψ / Ψ)
+            const getGuidanceVelocity = (x, z, time) => {
+                const eps = 1.0;
+                const p0 = getPsi(x, z, time);
+                const px = getPsi(x + eps, z, time);
+                const pz = getPsi(x, z + eps, time);
+
+                const gradReX = (px.re - p0.re) / eps;
+                const gradImX = (px.im - p0.im) / eps;
+                const gradReZ = (pz.re - p0.re) / eps;
+                const gradImZ = (pz.im - p0.im) / eps;
+
+                const den = p0.ampSq + 0.0001;
+                let vx = (p0.re * gradImX - p0.im * gradReX) / den;
+                let vz = (p0.re * gradImZ - p0.im * gradReZ) / den;
+
+                // Guidance Strength Factor (Interpolate between classical and quantum)
+                const gStrength = (currentMode === 'pilot') ? (eqParam * 4.0) : 1.0;
+
+                return {
+                    vx: 2.0 + (vx * gStrength * 0.5),
+                    vz: vz * gStrength * 2.0
+                };
+            };
+
+            // ========== 1. DRAW WAVE FIELD ==========
             const gridSize = 700;
-            const gridRes = 20;
+            const gridRes = 25;
 
-            // Function to calculate wave amplitude at any point
-            const getWaveAmplitude = (x, z, time) => {
-                let amplitude = 0;
-                const wavelength = slitGap;
-
-                // Interference from both slits
-                const d1 = Math.hypot(x - slit1.x, z - slit1.z);
-                const d2 = Math.hypot(x - slit2.x, z - slit2.z);
-
-                // Wave contribution from each slit with proper phase
-                amplitude += Math.sin((d1 / wavelength) * 2 * Math.PI - time * 4) * Math.exp(-d1 * 0.001);
-                amplitude += Math.sin((d2 / wavelength) * 2 * Math.PI - time * 4) * Math.exp(-d2 * 0.001);
-
-                // Add source wave from left
-                if (x < barrier.x - 50) {
-                    const sourcePhase = (x * 0.015 - time * 4);
-                    amplitude += Math.sin(sourcePhase) * 0.5 * Math.exp((x + 600) * 0.002);
-                }
-
-                return amplitude;
-            }
-
-                ;
-
-            // Draw wave field as a beautiful 3D surface with color-coded amplitude
+            ctx.lineWidth = 1.2;
             for (let z = -gridSize; z <= gridSize; z += gridSize / gridRes) {
                 ctx.beginPath();
-                let prevAlpha = 0;
-
-                for (let x = -gridSize; x <= gridSize; x += 25) {
-                    const amplitude = getWaveAmplitude(x, z, t);
-                    const y = amplitude * 40;
-
+                for (let x = -gridSize; x <= gridSize; x += 35) {
+                    const psi = getPsi(x, z, t);
+                    const y = psi.re * 50;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
 
-                    // Color based on amplitude (blue for negative, cyan for positive)
-                    const normalizedAmp = (amplitude + 2) / 4; // Normalize to 0-1
-                    const hue = 180 + normalizedAmp * 60; // Blue to cyan
-                    const alpha = Math.max(0.1, Math.min(0.6, Math.abs(amplitude) * 0.3));
+                    const alpha = Math.max(0.05, Math.min(0.5, psi.amp * 0.3));
+                    const hue = 190 + (psi.phase / Math.PI) * 40;
+                    ctx.strokeStyle = `hsla(${hue}, 80%, 65%, ${alpha})`;
 
-                    ctx.strokeStyle = `hsla($ {
-                                hue
-                            }
-
-                                , 80 %, 60 %, $ {
-                                alpha
-                            })`;
-
-                    if (x === -gridSize) {
-                        ctx.moveTo(p.x, p.y);
-                    }
-
-                    else {
-                        ctx.lineTo(p.x, p.y);
-                    }
-
-                    prevAlpha = alpha;
+                    if (x === -gridSize) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
                 }
-
-                ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
 
             // Cross-grid for depth
-            for (let x = -gridSize; x <= gridSize; x += gridSize / gridRes) {
+            for (let x = -gridSize; x <= gridSize; x += gridSize / (gridRes / 1.5)) {
                 ctx.beginPath();
-
-                for (let z = -gridSize; z <= gridSize; z += 25) {
-                    const amplitude = getWaveAmplitude(x, z, t);
-                    const y = amplitude * 40;
+                for (let z = -gridSize; z <= gridSize; z += 35) {
+                    const psi = getPsi(x, z, t);
+                    const y = psi.re * 50;
                     const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
+
+                    const alpha = Math.max(0.05, Math.min(0.2, psi.amp * 0.15));
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
 
                     if (z === -gridSize) ctx.moveTo(p.x, p.y);
                     else ctx.lineTo(p.x, p.y);
                 }
-
-                const sampleAmp = getWaveAmplitude(x, 0, t);
-                const normalizedAmp = (sampleAmp + 2) / 4;
-                const hue = 180 + normalizedAmp * 60;
-                const alpha = Math.max(0.05, Math.min(0.4, Math.abs(sampleAmp) * 0.2));
-
-                ctx.strokeStyle = `hsla($ {
-                                hue
-                            }
-
-                                , 80 %, 60 %, $ {
-                                alpha
-                            })`;
-                ctx.lineWidth = 1;
                 ctx.stroke();
             }
 
-            // ========== 2. DRAW BARRIER WITH SLITS ==========
-            const barrierHeight = 150;
+            // ========== 2. DRAW BARRIER ==========
+            const bh = 180;
+            const drawWall = (z1, z2) => {
+                const p1 = project3D(barrier.x, -bh, z1, rx, ry, 0, 0, zoomLevel);
+                const p2 = project3D(barrier.x, bh, z1, rx, ry, 0, 0, zoomLevel);
+                const p3 = project3D(barrier.x, bh, z2, rx, ry, 0, 0, zoomLevel);
+                const p4 = project3D(barrier.x, -bh, z2, rx, ry, 0, 0, zoomLevel);
 
-            // Draw barrier segments (avoiding slits)
-            const drawBarrierSegment = (zStart, zEnd) => {
-                ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
-                ctx.lineWidth = 4;
+                ctx.fillStyle = 'rgba(255, 60, 60, 0.1)';
+                ctx.strokeStyle = 'rgba(255, 120, 120, 0.4)';
                 ctx.beginPath();
-                const p1 = project3D(barrier.x, -barrierHeight, zStart, rx, ry, 0, 0, zoomLevel);
-                const p2 = project3D(barrier.x, barrierHeight, zStart, rx, ry, 0, 0, zoomLevel);
-                const p3 = project3D(barrier.x, barrierHeight, zEnd, rx, ry, 0, 0, zoomLevel);
-                const p4 = project3D(barrier.x, -barrierHeight, zEnd, rx, ry, 0, 0, zoomLevel);
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.lineTo(p3.x, p3.y);
-                ctx.lineTo(p4.x, p4.y);
-                ctx.closePath();
-                ctx.stroke();
+                ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+            };
+            drawWall(-gridSize, slit1.z - barrier.slitWidth / 2);
+            drawWall(slit1.z + barrier.slitWidth / 2, slit2.z - barrier.slitWidth / 2);
+            drawWall(slit2.z + barrier.slitWidth / 2, gridSize);
 
-                // Fill with gradient
-                const grad = ctx.createLinearGradient(p1.x, p1.y, p3.x, p3.y);
-                grad.addColorStop(0, 'rgba(255, 80, 80, 0.3)');
-                grad.addColorStop(1, 'rgba(255, 120, 120, 0.1)');
-                ctx.fillStyle = grad;
-                ctx.fill();
-            }
+            // ========== 3. PARTICLES & TRAJECTORIES ==========
+            pilotState3D.particles.forEach((p, idx) => {
+                const vel = getGuidanceVelocity(p.x, p.z, t);
+                p.x += vel.vx;
+                p.z += vel.vz;
 
-                ;
+                const psi = getPsi(p.x, p.z, t);
+                p.y = psi.re * 50;
 
-            // Top barrier segment
-            drawBarrierSegment(slit2.z + barrier.slitWidth / 2, 400);
-            // Middle barrier segment
-            drawBarrierSegment(slit1.z + barrier.slitWidth / 2, slit2.z - barrier.slitWidth / 2);
-            // Bottom barrier segment
-            drawBarrierSegment(-400, slit1.z - barrier.slitWidth / 2);
+                if (p.x > 700) {
+                    p.x = -650; p.z = (Math.random() - 0.5) * 450; p.trail = [];
+                }
 
-            // Highlight slits with glow
-            [slit1,
-                slit2].forEach(slit => {
-                    const p1 = project3D(slit.x, -barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
-                    const p2 = project3D(slit.x, barrierHeight, slit.z - barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
-                    const p3 = project3D(slit.x, barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
-                    const p4 = project3D(slit.x, -barrierHeight, slit.z + barrier.slitWidth / 2, rx, ry, 0, 0, zoomLevel);
+                p.trail.push({ x: p.x, y: p.y, z: p.z });
+                if (p.trail.length > 180) p.trail.shift();
 
-                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
-                    ctx.lineWidth = 2;
+                // Draw Trail
+                if (p.trail.length > 2) {
                     ctx.beginPath();
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.moveTo(p3.x, p3.y);
-                    ctx.lineTo(p4.x, p4.y);
-                    ctx.stroke();
-                });
-
-            // ========== 3. UPDATE AND DRAW PARTICLES ==========
-            pilotState3D.particles.forEach((particle, idx) => {
-                // Calculate wave gradient for guidance
-                const px = particle.x;
-                const pz = particle.z;
-                const gradZ = (getWaveAmplitude(px, pz + 3, t) - getWaveAmplitude(px, pz - 3, t)) * 15;
-                const gradX = (getWaveAmplitude(px + 3, pz, t) - getWaveAmplitude(px - 3, pz, t)) * 2;
-
-                // Update position based on wave guidance
-                particle.x += particle.speed + gradX * 0.15;
-                particle.z += gradZ * 0.6;
-                particle.y = getWaveAmplitude(px, pz, t) * 40;
-
-                // Reset if particle goes too far
-                if (particle.x > 700) {
-                    particle.x = -600;
-                    particle.z = (Math.random() - 0.5) * 300;
-                    particle.trail = [];
-                    particle.phase = Math.random() * Math.PI * 2;
-                }
-
-                // Add to trail
-                particle.trail.push({
-                    x: particle.x, y: particle.y, z: particle.z
-                });
-                if (particle.trail.length > 150) particle.trail.shift();
-
-                // Draw trail with fade effect
-                if (particle.trail.length > 1) {
-                    for (let i = 1; i < particle.trail.length; i++) {
-                        const prev = particle.trail[i - 1];
-                        const curr = particle.trail[i];
-                        const alpha = (i / particle.trail.length) * 0.8;
-
-                        const p1 = project3D(prev.x, prev.y, prev.z, rx, ry, 0, 0, zoomLevel);
-                        const p2 = project3D(curr.x, curr.y, curr.z, rx, ry, 0, 0, zoomLevel);
-
-                        // Color based on particle index for variety
-                        const hue = 160 + (idx * 30) % 80;
-
-                        ctx.strokeStyle = `hsla($ {
-                                hue
-                            }
-
-                                , 90 %, 70 %, $ {
-                                alpha
-                            })`;
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
+                    ctx.lineWidth = 1.5;
+                    for (let i = 1; i < p.trail.length; i++) {
+                        const t1 = project3D(p.trail[i - 1].x, p.trail[i - 1].y, p.trail[i - 1].z, rx, ry, 0, 0, zoomLevel);
+                        const t2 = project3D(p.trail[i].x, p.trail[i].y, p.trail[i].z, rx, ry, 0, 0, zoomLevel);
+                        ctx.strokeStyle = `hsla(${200 + idx * 15}, 100%, 75%, ${i / p.trail.length * 0.7})`;
+                        ctx.moveTo(t1.x, t1.y); ctx.lineTo(t2.x, t2.y);
                     }
+                    ctx.stroke();
                 }
 
-                // Draw particle with glow
-                const pPos = project3D(particle.x, particle.y, particle.z, rx, ry, 0, 0, zoomLevel);
-                const particleSize = 5 * pPos.scale;
-                const hue = 160 + (idx * 30) % 80;
+                // Draw Particle Glow
+                const pos = project3D(p.x, p.y, p.z, rx, ry, 0, 0, zoomLevel);
+                const size = 5 * pos.scale;
+                const grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, size * 4);
+                grad.addColorStop(0, '#fff');
+                grad.addColorStop(0.2, `hsla(${200 + idx * 15}, 100%, 80%, 0.8)`);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(pos.x, pos.y, size * 4, 0, Math.PI * 2); ctx.fill();
 
-                // Outer glow
-                const glowGrad = ctx.createRadialGradient(pPos.x, pPos.y, 0, pPos.x, pPos.y, particleSize * 3);
-
-                glowGrad.addColorStop(0, `hsla($ {
-                                hue
-                            }
-
-                                , 100 %, 70 %, 0.6)`);
-                glowGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = glowGrad;
-                ctx.beginPath();
-                ctx.arc(pPos.x, pPos.y, particleSize * 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Core particle
-                ctx.fillStyle = '#ffffff';
-                ctx.shadowBlur = 15;
-
-                ctx.shadowColor = `hsla($ {
-                                    hue
-                                }
-
-                                    , 100 %, 70 %, 0.9)`;
-                ctx.beginPath();
-                ctx.arc(pPos.x, pPos.y, particleSize, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath(); ctx.arc(pos.x, pos.y, size * 0.8, 0, Math.PI * 2); ctx.fill();
             });
 
-            // ========== 4. DRAW WAVE INTENSITY VISUALIZATION ==========
-            // Show interference pattern on detection screen (right side)
-            const screenX = 500;
-            const screenSamples = 40;
-
-            for (let i = 0; i < screenSamples; i++) {
-                const z = -300 + (i / screenSamples) * 600;
-                const amplitude = getWaveAmplitude(screenX, z, t);
-                const intensity = Math.abs(amplitude);
-
+            // ========== 4. DETECTION SCREEN ==========
+            const screenX = 650;
+            for (let i = 0; i < 40; i++) {
+                const z = -450 + (i / 40) * 900;
+                const psi = getPsi(screenX, z, t);
+                const intensity = psi.ampSq;
                 const p1 = project3D(screenX, 0, z, rx, ry, 0, 0, zoomLevel);
-                const p2 = project3D(screenX + intensity * 50, 0, z, rx, ry, 0, 0, zoomLevel);
+                const p2 = project3D(screenX + intensity * 60, 0, z, rx, ry, 0, 0, zoomLevel);
 
-                const alpha = Math.min(0.8, intensity * 0.5);
-
-                ctx.strokeStyle = `rgba(255, 200, 100, $ {
-                                        alpha
-                                    })`;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.stroke();
-
-                // Dot at end
-                ctx.fillStyle = `rgba(255, 220, 150, $ {
-                                        alpha
-                                    })`;
-                ctx.beginPath();
-                ctx.arc(p2.x, p2.y, 2, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.strokeStyle = `rgba(255, 220, 100, ${Math.min(1, intensity * 0.5)})`;
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
             }
         }
 
@@ -1336,18 +1254,16 @@
                 const p = project3D(x, y, z, rx, ry, 0, 0, zoomLevel);
                 const center = project3D(0, 0, 0, rx, ry, 0, 0, zoomLevel);
 
-                ctx.strokeStyle = `rgba(0, 255, 255, $ {
-                                        0.1 + pulse * 0.5
-                                    })`;
+                ctx.strokeStyle = `rgba(0, 255, 255, ${0.1 + pulse * 0.5
+                    })`;
                 ctx.lineWidth = p.scale;
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(center.x, center.y);
                 ctx.stroke();
 
-                ctx.fillStyle = `rgba(0, 255, 255, $ {
-                                        0.3 + pulse * 0.7
-                                    })`;
+                ctx.fillStyle = `rgba(0, 255, 255, ${0.3 + pulse * 0.7
+                    })`;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, 5 * p.scale, 0, 6.28);
                 ctx.fill();

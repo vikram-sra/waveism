@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arrow of Time | The Irreversibility Engine</title>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -155,7 +155,14 @@
                     { term: 'Microstates (Ω)', definition: 'The hidden configurations that result in a macrostate.' },
                     { term: 'Past Hypothesis', definition: 'The initial state was uniquely ordered (Low Entropy).' }
                 ],
-                physics: 'Entropy is the decoherence of wave-functions into statistical noise. In the context of Waveism, it is the drift from phase-coherence to destructive interference/randomness.'
+                physics: 'Entropy is the decoherence of wave-functions into statistical noise. In the context of Waveism, it is the drift from phase-coherence to destructive interference/randomness.',
+                sliderConfig: { label: 'System Agitation', min: 0, max: 100, step: 1, default: 50, units: '% Disorder', decimals: 0 },
+                contextNote: 'Particles drift from order to disorder — double-tap to inject energy and reverse the arrow.',
+                relevance: 'Explains why you can break an egg but never un-break it. The future is simply the direction of more mess.',
+                sources: [
+                    'Boltzmann, L. (1877). Über die Beziehung zwischen dem zweiten Hauptsatze der mechanischen Wärmetheorie und der Wahrscheinlichkeitsrechnung.',
+                    'Eddington, A.S. (1928). The Nature of the Physical World.'
+                ]
             },
             'block': {
                 name: 'Static Temporal Block', year: 'Minkowski Space',
@@ -167,19 +174,33 @@
                     { term: 'Simultaneity', definition: 'The "Now" is a slice determined by the observer\'s speed.' },
                     { term: 'Immutable Past', definition: 'The worldline is a fixed geometric object in the block.' }
                 ],
-                physics: 'The Block Universe satisfies the requirements of Relativity. The "flow" of time is a cognitive artifact, not a property of the geometric solution.'
+                physics: 'The Block Universe satisfies the requirements of Relativity. The "flow" of time is a cognitive artifact, not a property of the geometric solution.',
+                sliderConfig: { label: 'Time Slice', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Past, present, and future coexist as fixed geometry — time is a dimension, not a flow.',
+                relevance: 'Suggests that the past is not "gone" and the future is not "unwritten". They are just places you aren\'t looking at right now.',
+                sources: [
+                    'Minkowski, H. (1908). Space and Time.',
+                    'Einstein, A. (1905). On the Electrodynamics of Moving Bodies.'
+                ]
             },
             'demon': {
                 name: "Maxwell's Demon", year: 'Information Paradox',
-                equation: 'ΔS_Total = 8πG - ☠️',
-                equationExpl: 'A playful representation of the Maxwell\'s Demon paradox. It highlights that sorting molecules requires information processing, which generates its own entropy.',
+                equation: 'ΔS_erase ≥ k_B ln 2',
+                equationExpl: 'Landauer\'s Principle. It proves that erasing one bit of information dissipates a minimum of k_B ln 2 entropy into the environment. This resolves the Maxwell Demon paradox: the demon must erase its memory to continue sorting, and this erasure generates more entropy than the sorting saves.',
                 facts: [{ text: 'Information Cost', status: 'high' }, { text: 'Sorting Power', status: 'yes' }],
                 description: 'A thought experiment where a demon sorts fast and slow molecules to reverse entropy. The paradox is resolved by Information Theory: the demon creates more entropy erasing its memory than it saves by sorting.',
                 concepts: [
                     { term: 'Landauer Limit', definition: 'The energetic cost of erasing one bit of information.' },
                     { term: 'Entropy/Information', definition: 'Information is the negative of entropy (Negentropy).' }
                 ],
-                physics: 'The demon proves that knowing the state of a system (low entropy) requires the consumption of energy. Information is physical.'
+                physics: 'The demon proves that knowing the state of a system (low entropy) requires the consumption of energy. Information is physical.',
+                sliderConfig: { label: 'Sorting Efficiency', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'A demon that sorts molecules to reverse entropy — but erasing its memory costs more energy than it saves.',
+                relevance: 'Proves that information is physical. You cannot "know" something without paying an energy cost to store or erase it.',
+                sources: [
+                    'Landauer, R. (1961). Irreversibility and heat generation in the computing process.',
+                    'Bennett, C.H. (1982). The thermodynamics of computation—a review.'
+                ]
             },
             'subjective': {
                 name: 'The Specious Now', year: 'Biological Time',
@@ -191,7 +212,14 @@
                     { term: 'Metabolic Clock', definition: 'Our internal oscillators are chemical and biological.' },
                     { term: 'Now-Buffer', definition: 'The short delay between experience and conscious perception.' }
                 ],
-                physics: 'The subjective arrow is the biological alignment with the thermodynamic arrow. We perceive the increase of entropy as the "passage" of time.'
+                physics: 'The subjective arrow is the biological alignment with the thermodynamic arrow. We perceive the increase of entropy as the "passage" of time.',
+                sliderConfig: { label: 'Processing Rate', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Your brain samples reality at variable rates — intensity makes time appear to slow down.',
+                relevance: 'Why time flies when you\'re having fun (or in danger). Your brain\'s "frame rate" changes based on arousal and novelty.',
+                sources: [
+                    'James, W. (1890). The Principles of Psychology.',
+                    'Eagleman, D.M. (2008). Human time perception and its illusions.'
+                ]
             }
         };
 
@@ -242,6 +270,22 @@
             renderer.domElement.addEventListener('mouseup', (e) => {
                 if (window.clickPrevented) { window.clickPrevented = false; return; }
                 drag.autoRotate = !drag.autoRotate;
+            });
+
+            // ENTROPY REVERSAL: Double-tap injects "energy" to reverse the arrow
+            renderer.domElement.addEventListener('dblclick', (e) => {
+                if (currentMode === 'entropy') {
+                    const points = entropyParticles.getObjectByName("particles");
+                    if (points) {
+                        const pos = points.geometry.attributes.position.array;
+                        const init = points.userData.initial;
+                        // Snap all particles back to initial ordered state
+                        for (let i = 0; i < pos.length; i++) {
+                            pos[i] = init[i];
+                        }
+                        points.geometry.attributes.position.needsUpdate = true;
+                    }
+                }
             });
 
             initTheoryTabs(mode => switchMode(mode));
@@ -359,6 +403,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

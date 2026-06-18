@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -125,6 +125,13 @@
             <div class="param-value" id="param1-value">1</div>
             <input type="range" class="param-slider" id="param1-slider" min="1" max="10" value="1">
         </div>
+        <div class="param-group" id="observer-group" style="display: none;">
+            <div class="param-label">Observer Detector</div>
+            <label class="switch-container">
+                <input type="checkbox" id="observer-toggle">
+                <span class="switch-slider"></span>
+            </label>
+        </div>
         <div class="param-group">
             <div class="param-label">Decherence Rate</div>
             <div class="param-value" id="speed-value">1.0×</div>
@@ -194,7 +201,14 @@
                     { term: 'Collapse', definition: 'The reduction of possibilities into a concrete reality upon measurement.' },
                     { term: 'Complementarity', definition: 'Duality of nature that cannot be observed simultaneously.' }
                 ],
-                physics: 'Waveism: Reality is a probability cloud that solidifies only when questioned.'
+                physics: 'Waveism: Reality is a probability cloud that solidifies only when questioned.',
+                sliderConfig: { label: 'State Mixture (α)', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'The object exists as both forms simultaneously — choosing only upon interaction.',
+                relevance: 'Every decision you make effectively collapses a mental superposition of possibilities into a single experienced reality.',
+                sources: [
+                    'Dirac, P.A.M. (1947). The Principles of Quantum Mechanics. Oxford University Press.',
+                    'Schrödinger, E. (1935). Die gegenwärtige Situation in der Quantenmechanik. Naturwissenschaften.'
+                ]
             },
             'double-slit': {
                 name: 'Interference Patterns', year: 'Wave-Particle Duality',
@@ -207,7 +221,14 @@
                     { term: 'Probability Amplitude', definition: 'A complex number (ψ) whose squared magnitude gives probability.' },
                     { term: 'Fringe Spacing', definition: 'The distance between maxima, governed by wavelength and slit separation.' }
                 ],
-                physics: 'Waveism: Phase-coherence test. The substrate maintains parallel states until a decoherence event forces a reset.'
+                physics: 'Waveism: Phase-coherence test. The substrate maintains parallel states until a decoherence event forces a reset.',
+                sliderConfig: { label: 'Wavelength (λ)', min: 0, max: 100, step: 1, default: 50, units: ' nm', decimals: 1 },
+                contextNote: 'Particles interfere with themselves — creating deterministic patterns even sent one at a time.',
+                relevance: 'Demonstrates that the act of observation physically alters the history of the particle.',
+                sources: [
+                    'Feynman, R.P. (1965). The Feynman Lectures on Physics, Vol III.',
+                    'Young, T. (1804). Experiments and Calculations relative to Physical Optics.'
+                ]
             },
             'orbitals': {
                 name: 'Atomic Orbitals', year: 'Harmonic States',
@@ -220,7 +241,14 @@
                     { term: 'Nodal Planes', definition: 'Regions of zero probability where the wavefunction changes sign.' },
                     { term: 'Shell Stability', definition: 'The geometric arrangement defining all chemical properties.' }
                 ],
-                physics: 'Waveism: Orbitals are the harmonic resonances of the atomic substrate.'
+                physics: 'Waveism: Orbitals are the harmonic resonances of the atomic substrate.',
+                sliderConfig: { label: 'Principal Quantum Number (n)', min: 1, max: 10, step: 1, default: 3, units: '', decimals: 0 },
+                contextNote: 'Probability clouds of electron residence — standing-wave patterns around the nucleus.',
+                relevance: 'The shape of these clouds determines all chemistry, biology, and the solidity of matter you touch.',
+                sources: [
+                    'Griffiths, D.J. (2018). Introduction to Quantum Mechanics. Cambridge University Press.',
+                    'Pauling, L. (1960). The Nature of the Chemical Bond.'
+                ]
             },
             'strings': {
                 name: 'Superstring Manifolds', year: 'Harmonic Elements',
@@ -233,7 +261,14 @@
                     { term: 'Calabi-Yau', definition: 'Extra dimensions curled into complex geometric manifolds.' },
                     { term: 'Planck Scale', definition: 'The distance (10⁻³⁵m) where string effects dominate.' }
                 ],
-                physics: 'Waveism: The universe as a multi-dimensional interference pattern of a fundamental string.'
+                physics: 'Waveism: The universe as a multi-dimensional interference pattern of a fundamental string.',
+                sliderConfig: { label: 'Vibration Mode (k)', min: 1, max: 20, step: 1, default: 5, units: '', decimals: 0 },
+                contextNote: 'Point-particles as vibrating strings — different modes produce electrons, photons, gravitons.',
+                relevance: 'Suggests that all matter and forces are just different notes played on the same fundamental cosmic string.',
+                sources: [
+                    'Polyakov, A.M. (1981). Quantum geometry of bosonic strings. Physics Letters B.',
+                    'Witten, E. (1995). String theory dynamics in various dimensions. Nuclear Physics B.'
+                ]
             },
             'crystal': {
                 name: 'Time Crystals', year: 'Temporal Order',
@@ -246,7 +281,14 @@
                     { term: 'Floquet Protocol', definition: 'Periodic drive leading to stable non-equilibrium phases.' },
                     { term: 'Temporal Rigidity', definition: 'Resistance to noise, maintaining rhythmic oscillation.' }
                 ],
-                physics: 'Waveism: Time crystals prove time is a phase-dimension capable of crystallization.'
+                physics: 'Waveism: Time crystals prove time is a phase-dimension capable of crystallization.',
+                sliderConfig: { label: 'Drive Frequency (ω)', min: 1, max: 100, step: 1, default: 30, units: ' Hz', decimals: 0 },
+                contextNote: 'Matter that repeats through time, not space — breaking continuous temporal symmetry.',
+                relevance: 'A new phase of matter that ticks forever without energy loss, challenging the Second Law of Thermodynamics.',
+                sources: [
+                    'Wilczek, F. (2012). Quantum Time Crystals. Physical Review Letters.',
+                    'Zhang, J. et al. (2017). Observation of a discrete time crystal. Nature.'
+                ]
             },
             'gedanken': {
                 name: "Schrödinger's Cat", year: 'Measurement Problem',
@@ -259,7 +301,14 @@
                     { term: 'Many Worlds', definition: 'Interpretation where all outcomes occur in branching manifolds.' },
                     { term: 'Decoherence', definition: 'Interaction with environment forcing state selection.' }
                 ],
-                physics: 'Waveism: Illustration of the measurement problem and state-selection.'
+                physics: 'Waveism: Illustration of the measurement problem and state-selection.',
+                sliderConfig: { label: 'Decoherence Rate', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'A cat simultaneously alive and dead — until the box is opened and the system interacts with the environment.',
+                relevance: 'highlights the absurdity of applying quantum logic to everyday objects—and the mystery of where the boundary lies.',
+                sources: [
+                    'Schrödinger, E. (1935). Die gegenwärtige Situation in der Quantenmechanik.',
+                    'Zurek, W.H. (2003). Decoherence, einselection, and the quantum origins of the classical. Reviews of Modern Physics.'
+                ]
             },
             'tunneling': {
                 name: 'Quantum Tunneling', year: 'Barrier Penetration',
@@ -272,7 +321,14 @@
                     { term: 'Evanescence', definition: 'The exponential decay of the field within the forbidden zone.' },
                     { term: 'Alpha Decay', definition: 'The mechanism of nuclear particle escape via tunneling.' }
                 ],
-                physics: 'Waveism: Non-local resonance through classically forbidden regions.'
+                physics: 'Waveism: Non-local resonance through classically forbidden regions.',
+                sliderConfig: { label: 'Barrier Width (L)', min: 1, max: 100, step: 1, default: 40, units: ' nm', decimals: 0 },
+                contextNote: 'The wave permeates through a forbidden barrier — classically impossible, quantum-mechanically ordinary.',
+                relevance: 'Without this, the sun wouldn\'t shine (protons tunneling to fuse) and your computer chips wouldn\'t work.',
+                sources: [
+                    'Gamow, G. (1928). Zür Quantentheorie des Atomkernes. Zeitschrift für Physik.',
+                    'Esaki, L. (1958). New Phenomenon in Narrow Germanium p-n Junctions. Physical Review.'
+                ]
             },
             'entanglement': {
                 name: 'Quantum Entanglement', year: 'EPR Paradox',
@@ -285,7 +341,14 @@
                     { term: 'Bell State', definition: 'Maximally entangled quantum states.' },
                     { term: 'Non-locality', definition: 'Instantaneous synchronization across spatial separation.' }
                 ],
-                physics: 'Waveism: Space is not a separator but a medium; entangled points are phase-locked across the manifold.'
+                physics: 'Waveism: Space is not a separator but a medium; entangled points are phase-locked across the manifold.',
+                sliderConfig: { label: 'Correlation Strength', min: 0, max: 100, step: 1, default: 100, units: '%', decimals: 0 },
+                contextNote: 'Measuring one instantly defines the other — Einstein’s "spooky action at a distance."',
+                relevance: 'Implies that at a fundamental level, separation in space is an illusion; the universe is interconnected.',
+                sources: [
+                    'Einstein, A., Podolsky, B., & Rosen, N. (1935). Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?',
+                    'Aspect, A. et al. (1982). Experimental Test of Bell\'s Inequalities using Time-Varying Analyzers.'
+                ]
             },
             'teleportation': {
                 name: 'Quantum Teleportation', year: 'Bennett Protocol',
@@ -298,7 +361,14 @@
                     { term: 'Bell Measure', definition: 'Projecting qubits onto maximally entangled states.' },
                     { term: 'Qubit Geometry', definition: 'The informational footprint of matter in the field.' }
                 ],
-                physics: 'Waveism: Matter is local geometry. Replicating geometry elsewhere identicals the object.'
+                physics: 'Waveism: Matter is local geometry. Replicating the geometry elsewhere recreates the object.',
+                sliderConfig: { label: 'Channel Fidelity', min: 0, max: 100, step: 1, default: 90, units: '%', decimals: 0 },
+                contextNote: 'State transfer via entanglement — the original is destroyed, re-appearing at the destination.',
+                relevance: 'The ultimate secure communication channel—and the theoretical basis for a "Star Trek" transporter.',
+                sources: [
+                    'Bennett, C.H. et al. (1993). Teleporting an unknown quantum state via dual classical and Einstein-Podolsky-Rosen channels.',
+                    'Bouwmeester, D. et al. (1997). Experimental quantum teleportation. Nature.'
+                ]
             },
             'zeno': {
                 name: 'Quantum Zeno Effect', year: 'Turing Paradox',
@@ -311,7 +381,14 @@
                     { term: 'Unitary Drift', definition: 'The smooth change of a system over time.' },
                     { term: 'Measurement Bias', definition: 'The physical pressure exerted by the act of observation.' }
                 ],
-                physics: 'Waveism: Observation as an active force. Repeated collapse prevents the phase-shift of the substrate.'
+                physics: 'Waveism: Observation as an active force. Repeated collapse prevents the phase-shift of the substrate.',
+                sliderConfig: { label: 'Measurement Rate (f)', min: 0, max: 100, step: 1, default: 80, units: ' Hz', decimals: 0 },
+                contextNote: 'Frequent measurement freezes evolution — a watched quantum pot truly never boils.',
+                relevance: 'Suggests that the act of monitoring a system can arrest its change—awareness stabilizes reality.',
+                sources: [
+                    'Misra, B., & Sudarshan, E.C.G. (1977). The Zeno’s paradox in quantum theory. Journal of Mathematical Physics.',
+                    'Itano, W.M. et al. (1990). Quantum Zeno effect. Physical Review A.'
+                ]
             }
         };
 
@@ -358,10 +435,18 @@
             const zoomControl = initZoomHandler(renderer.domElement, { initialZoom: 0.8 });
             window.zoomControl = zoomControl;
 
-            renderer.domElement.addEventListener('mouseup', (e) => {
-                if (window.clickPrevented) { window.clickPrevented = false; return; }
-                drag.autoRotate = !drag.autoRotate;
-            });
+            // Observer toggle initialization
+            window.observerActive = false;
+            const obsToggle = document.getElementById('observer-toggle');
+            if (obsToggle) {
+                obsToggle.checked = false;
+                obsToggle.addEventListener('change', function() {
+                    window.observerActive = this.checked;
+                    if (window.WaveAudio && window.audioEnabled) {
+                        window.WaveAudio.ping(this.checked ? 660 : 330, 0.4);
+                    }
+                });
+            }
 
             initTheoryTabs(mode => switchMode(mode));
             initInfoModal();
@@ -430,6 +515,45 @@
             }
         }
 
+        function resetPhoton(i, pPos) {
+            const data = window.photonData;
+            if (!data) return;
+            
+            pPos[i * 3 + 2] = -200 - Math.random() * 100; // Reset Z
+            pPos[i * 3 + 1] = 10 + (Math.random() - 0.5) * 10; // Y
+            
+            data.startX[i] = (Math.random() - 0.5) * 40;
+            data.slitX[i] = Math.random() > 0.5 ? 15 : -15; // Choose slit
+            data.speed[i] = 3.5 + Math.random() * 1.5; // Custom speed
+            
+            const slitDist = 30;
+            const wavelength = p1 * 10 + 2;
+            const screenZ = 150;
+            const wallZ = -80;
+            const L = screenZ - wallZ;
+            
+            if (window.observerActive) {
+                // Classical: land in two bands centered at the chosen slit
+                data.targetX[i] = data.slitX[i] + (Math.random() - 0.5) * 20;
+            } else {
+                // Quantum: choose an interference fringe
+                const fringes = [-3, -2, -1, 0, 1, 2, 3];
+                const weights = [0.05, 0.25, 0.7, 1.0, 0.7, 0.25, 0.05];
+                
+                let rVal = Math.random() * 3.0;
+                let fringe = 0;
+                let sum = 0;
+                for (let j = 0; j < fringes.length; j++) {
+                    sum += weights[j];
+                    if (rVal <= sum) {
+                        fringe = fringes[j];
+                        break;
+                    }
+                }
+                data.targetX[i] = fringe * (L * wavelength / slitDist) + (Math.random() - 0.5) * 8;
+            }
+        }
+
         function switchMode(mode) {
             currentMode = mode;
             scene.children.forEach(c => { if (c.type === "Group") scene.remove(c); });
@@ -437,17 +561,72 @@
             activeGroup = new THREE.Group();
             activeGroup.position.y = 2;
 
+            const obsGrp = document.getElementById('observer-group');
+            if (obsGrp) obsGrp.style.display = (mode === 'double-slit') ? 'flex' : 'none';
+
             if (mode === 'double-slit') {
-                // WAVE PLANE: High-res for interference
+                // WAVE PLANE: GPU ShaderMaterial for high performance & collapse
                 const geo = new THREE.PlaneGeometry(240, 400, 120, 200);
-                const mat = new THREE.MeshPhongMaterial({
-                    color: 0x00ffaa,
+                const shaderMat = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uWavelength: { value: p1 * 10 + 2 },
+                        uSlitDist: { value: 30.0 },
+                        uObserved: { value: window.observerActive ? 1.0 : 0.0 }
+                    },
+                    vertexShader: `
+                        uniform float uTime;
+                        uniform float uWavelength;
+                        uniform float uSlitDist;
+                        uniform float uObserved;
+                        varying vec3 vPosition;
+
+                        void main() {
+                            vec3 pos = position;
+                            float px = position.x;
+                            float py = position.y;
+                            float worldZ = -py;
+                            float zDisp = 0.0;
+
+                            if (worldZ < -80.0) {
+                                float d = sqrt(px * px + (worldZ + 180.0) * (worldZ + 180.0));
+                                zDisp = sin(2.0 * 3.14159265 * (d / uWavelength) - uTime * 10.0) * 4.0;
+                            } else {
+                                float d1 = sqrt((px - uSlitDist / 2.0) * (px - uSlitDist / 2.0) + (worldZ + 80.0) * (worldZ + 80.0));
+                                float d2 = sqrt((px + uSlitDist / 2.0) * (px + uSlitDist / 2.0) + (worldZ + 80.0) * (worldZ + 80.0));
+                                
+                                float w1 = sin(2.0 * 3.14159265 * (d1 / uWavelength) - uTime * 10.0);
+                                float w2 = sin(2.0 * 3.14159265 * (d2 / uWavelength) - uTime * 10.0);
+
+                                if (uObserved > 0.5) {
+                                    float intensity = sqrt(w1 * w1 + w2 * w2);
+                                    zDisp = intensity * sin(2.0 * 3.14159265 * ((d1 + d2) / (2.0 * uWavelength)) - uTime * 10.0) * 2.8;
+                                } else {
+                                    zDisp = (w1 + w2) * 2.0;
+                                }
+                            }
+
+                            pos.z = zDisp;
+                            vPosition = pos;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vPosition;
+                        uniform float uObserved;
+
+                        void main() {
+                            float height = abs(vPosition.z) / 4.0;
+                            vec3 color = (uObserved > 0.5) ? vec3(0.0, 0.75, 1.0) : vec3(0.0, 1.0, 0.66);
+                            gl_FragColor = vec4(color * (0.3 + height * 0.7), 0.25);
+                        }
+                    `,
                     wireframe: true,
                     transparent: true,
-                    opacity: 0.2,
                     blending: THREE.AdditiveBlending
                 });
-                const plane = new THREE.Mesh(geo, mat);
+                
+                const plane = new THREE.Mesh(geo, shaderMat);
                 plane.rotation.x = -Math.PI / 2;
                 plane.position.y = -20;
                 plane.name = "wave_plane";
@@ -485,15 +664,53 @@
                 intensity.name = "intensity_graph";
                 activeGroup.add(intensity);
 
+                // 3D Detectors at slits
+                const detGeo = new THREE.BoxGeometry(8, 20, 8);
+                const detMat = new THREE.MeshPhongMaterial({
+                    color: 0x00ffaa,
+                    emissive: 0x00ffaa,
+                    emissiveIntensity: 0.2
+                });
+                const detLeft = new THREE.Mesh(detGeo, detMat.clone());
+                detLeft.position.set(-30, 10, -80);
+                detLeft.name = "det_left";
+                
+                const detRight = new THREE.Mesh(detGeo, detMat.clone());
+                detRight.position.set(30, 10, -80);
+                detRight.name = "det_right";
+                
+                activeGroup.add(detLeft, detRight);
+
+                // Laser beam scanning the slits
+                const laserGeo = new THREE.CylinderGeometry(0.5, 0.5, 60);
+                const laserMat = new THREE.MeshBasicMaterial({
+                    color: 0x00ffaa,
+                    transparent: true,
+                    opacity: 0.0
+                });
+                const laser = new THREE.Mesh(laserGeo, laserMat);
+                laser.rotation.z = Math.PI / 2;
+                laser.position.set(0, 10, -80);
+                laser.name = "laser_beam";
+                activeGroup.add(laser);
+
                 // PHOTONS
                 const pCount = 100;
                 const pPos = new Float32Array(pCount * 3);
-                const pVel = new Float32Array(pCount); // Stores velocity/lifetime
+                
+                window.photonData = {
+                    startX: new Float32Array(pCount),
+                    slitX: new Float32Array(pCount),
+                    targetX: new Float32Array(pCount),
+                    speed: new Float32Array(pCount)
+                };
+                
                 for (let i = 0; i < pCount; i++) {
-                    pPos[i * 3] = (Math.random() - 0.5) * 40;
-                    pPos[i * 3 + 1] = 10 + (Math.random() - 0.5) * 10;
                     pPos[i * 3 + 2] = -200 - Math.random() * 200;
+                    pPos[i * 3 + 1] = 10 + (Math.random() - 0.5) * 10;
+                    resetPhoton(i, pPos);
                 }
+                
                 const pGeo = new THREE.BufferGeometry();
                 pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
                 const parts = new THREE.Points(pGeo, new THREE.PointsMaterial({
@@ -689,6 +906,8 @@
             }
 
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 
@@ -701,33 +920,44 @@
                 const slitDist = 30; // 15 each side
                 const wavelength = p1 * 10 + 2;
 
-                if (plane) {
-                    const pos = plane.geometry.attributes.position;
-                    for (let i = 0; i < pos.count; i++) {
-                        const px = pos.getX(i);
-                        const pz = pos.getY(i); // Local Y is world -Z
-
-                        // Plane ranges from Y: -200 to 200 (World Z: -200 to 200)
-                        // Slit wall at World Z: -80 (Local Y: 80)
-                        const worldZ = -pz;
-
-                        if (worldZ < -80) {
-                            // Single source wave before slits
-                            const d = Math.sqrt(px ** 2 + (worldZ + 180) ** 2);
-                            pos.setZ(i, Math.sin(2 * Math.PI * (d / wavelength) - time * 10) * 4);
-                        } else {
-                            // Two sources from slits
-                            const d1 = Math.sqrt((px - slitDist / 2) ** 2 + (worldZ + 80) ** 2);
-                            const d2 = Math.sqrt((px + slitDist / 2) ** 2 + (worldZ + 80) ** 2);
-                            const w1 = Math.sin(2 * Math.PI * (d1 / wavelength) - time * 10);
-                            const w2 = Math.sin(2 * Math.PI * (d2 / wavelength) - time * 10);
-                            pos.setZ(i, (w1 + w2) * 2);
-                        }
-                    }
-                    pos.needsUpdate = true;
+                // 1. Update wave plane shader uniforms (GPU wave propagation & collapse)
+                if (plane && plane.material.uniforms) {
+                    plane.material.uniforms.uTime.value = time;
+                    plane.material.uniforms.uWavelength.value = wavelength;
+                    plane.material.uniforms.uObserved.value = window.observerActive ? 1.0 : 0.0;
                 }
 
-                // Update Intensity Graph on Screen
+                // 2. Update 3D Detector state and laser beams
+                const detLeft = activeGroup.getObjectByName("det_left");
+                const detRight = activeGroup.getObjectByName("det_right");
+                const laser = activeGroup.getObjectByName("laser_beam");
+                
+                if (detLeft && detRight && laser) {
+                    if (window.observerActive) {
+                        detLeft.material.color.setHex(0x00aaff);
+                        detLeft.material.emissive.setHex(0x00aaff);
+                        detLeft.material.emissiveIntensity = 1.0 + Math.sin(time * 10) * 0.3;
+                        
+                        detRight.material.color.setHex(0x00aaff);
+                        detRight.material.emissive.setHex(0x00aaff);
+                        detRight.material.emissiveIntensity = 1.0 + Math.sin(time * 10) * 0.3;
+                        
+                        laser.material.color.setHex(0x00aaff);
+                        laser.material.opacity = 0.7 + Math.sin(time * 20) * 0.1;
+                    } else {
+                        detLeft.material.color.setHex(0x00ffaa);
+                        detLeft.material.emissive.setHex(0x00ffaa);
+                        detLeft.material.emissiveIntensity = 0.2;
+                        
+                        detRight.material.color.setHex(0x00ffaa);
+                        detRight.material.emissive.setHex(0x00ffaa);
+                        detRight.material.emissiveIntensity = 0.2;
+                        
+                        laser.material.opacity = 0.0;
+                    }
+                }
+
+                // 3. Update Intensity Graph on Screen
                 const intensity = activeGroup.getObjectByName("intensity_graph");
                 if (intensity) {
                     const pos = intensity.geometry.attributes.position;
@@ -736,56 +966,55 @@
                     const L = screenZ - wallZ;
                     for (let i = 0; i < pos.count; i++) {
                         const px = pos.getX(i);
-                        const theta = Math.atan(px / L);
-                        // Interference intensity formula: I = 4 * I0 * cos^2(delta/2)
-                        // delta = 2pi/lambda * d * sin(theta)
-                        const delta = (2 * Math.PI / wavelength) * slitDist * Math.sin(theta);
-                        const val = Math.pow(Math.cos(delta / 2), 2);
-                        pos.setY(i, val * 30); // Local Y of vertical graph
+                        if (window.observerActive) {
+                            // Two localized classical bands
+                            const val1 = Math.exp(-((px - slitDist / 2) ** 2) / 600);
+                            const val2 = Math.exp(-((px + slitDist / 2) ** 2) / 600);
+                            const val = (val1 + val2) * 0.85;
+                            pos.setY(i, val * 30);
+                        } else {
+                            // Quantum interference graph
+                            const theta = Math.atan(px / L);
+                            const delta = (2 * Math.PI / wavelength) * slitDist * Math.sin(theta);
+                            const val = Math.pow(Math.cos(delta / 2), 2) * Math.exp(-(px ** 2) / 6000);
+                            pos.setY(i, val * 30);
+                        }
                     }
                     pos.needsUpdate = true;
                 }
 
+                // 4. Update Photons via Interpolation Pathing
                 const parts = activeGroup.getObjectByName("photons");
-                if (parts) {
+                if (parts && window.photonData) {
                     const pos = parts.geometry.attributes.position;
                     const screenZ = 150;
                     const wallZ = -80;
-                    const L = screenZ - wallZ;
+                    const data = window.photonData;
 
                     for (let i = 0; i < pos.count; i++) {
-                        let x = pos.getX(i);
-                        let y = pos.getY(i);
                         let z = pos.getZ(i);
-
-                        z += 4 * timeScale;
+                        z += data.speed[i] * timeScale;
 
                         if (z > screenZ) {
-                            // Reset to start
-                            z = -200 - Math.random() * 100;
-                            x = (Math.random() - 0.5) * 40;
-                            y = 10 + (Math.random() - 0.5) * 10;
-                        } else if (z > wallZ && z < wallZ + 5) {
-                            // Probability-based slit choice or bounce
-                            // For simplicity, we snap them to slits if they are close
-                            if (Math.abs(x - slitDist / 2) < 5 || Math.abs(x + slitDist / 2) < 5) {
-                                // Pass through
-                            } else {
-                                // Reflect or block (reset)
-                                z = -200 - Math.random() * 100;
-                            }
-                        } else if (z > wallZ + 5) {
-                            // Move according to interference distribution?
-                            // Accurate way: pick a target X based on distribution when passing slit
-                            // Simple way: keep straight or slightly spread
+                            resetPhoton(i, pos.array);
+                            z = pos.getZ(i);
+                        }
+
+                        let x = 0;
+                        if (z < wallZ) {
+                            const t = (z - (-200)) / (wallZ - (-200));
+                            x = data.startX[i] * (1 - t) + data.slitX[i] * t;
+                        } else {
+                            const t = (z - wallZ) / (screenZ - wallZ);
+                            x = data.slitX[i] * (1 - t) + data.targetX[i] * t;
                         }
 
                         pos.setX(i, x);
-                        pos.setY(i, y);
                         pos.setZ(i, z);
                     }
                     pos.needsUpdate = true;
                 }
+            }
             } else if (currentMode === 'superposition') {
                 const points = activeGroup.getObjectByName("morph_points");
                 if (points) {

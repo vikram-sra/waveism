@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uncertainty | Quantum Limits</title>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -126,7 +126,14 @@
                     { term: 'Squeezed State', definition: 'A quantum state where uncertainty in one variable is reduced below the symmetric limit at the cost of the other.' },
                     { term: 'Minimal Packet', definition: 'The Gaussian wave-packet which satisfies the equality ΔxΔp = ℏ/2.' }
                 ],
-                physics: 'In Waveism, uncertainty is the "Tiling of the Vacuum". The substrate has a finite bandwidth. You can resolve a high-frequency (momentum) signal or a localized (position) pulse, but the total area in Phase Space remains constant.'
+                physics: 'In Waveism, uncertainty is the "Tiling of the Vacuum". The substrate has a finite bandwidth. You can resolve a high-frequency (momentum) signal or a localized (position) pulse, but the total area in Phase Space remains constant.',
+                sliderConfig: { label: 'Momentum Precision (Δp)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
+                contextNote: 'Squeeze the momentum and the position leaks — the universe has a finite information bandwidth.',
+                relevance: 'Limits the resolution of reality. You cannot know the "now" and the "future" (momentum) with infinite precision simultaneously.',
+                sources: [
+                    'Heisenberg, W. (1927). Über den anschaulichen Inhalt der quantentheoretischen Kinematik und Mechanik. Zeitschrift für Physik.',
+                    'Kennard, E.H. (1927). Zur Quantenmechanik einfacher Bewegungstypen. Zeitschrift für Physik.'
+                ]
             },
             'measurement': {
                 name: 'The Measurement Crunch', year: 'State Reduction',
@@ -138,7 +145,14 @@
                     { term: 'Decoherence', definition: 'The leakage of quantum phase information into the environment.' },
                     { term: 'Eigenvalue Reduction', definition: 'The moment the wave-function maps to a discrete observable result.' }
                 ],
-                physics: 'Waveism views collapse as "Node Selection". The broad interference field is localized by a high-energy hit, forcing the wave-packet to snap to a single spatial grid-point.'
+                physics: 'Waveism views collapse as "Node Selection". The broad interference field is localized by a high-energy hit, forcing the wave-packet to snap to a single spatial grid-point.',
+                sliderConfig: { label: 'Interaction Strength', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Measurement is not passive — it violently forces a fuzzy superposition into a single point.',
+                relevance: 'The transition from probability to actuality. It suggests that reality remains undecided until an interaction forces a choice.',
+                sources: [
+                    'Von Neumann, J. (1932). Mathematical Foundations of Quantum Mechanics.',
+                    'Wheeler, J.A., & Zurek, W.H. (1983). Quantum Theory and Measurement.'
+                ]
             },
             'momentum': {
                 name: 'Wigner Quasi-Probability', year: 'Phase Space Topology',
@@ -150,7 +164,14 @@
                     { term: 'Phasor Field', definition: 'The rotational representation of wave-functions in complex space.' },
                     { term: 'Quantum Troughs', definition: 'Negative regions of the Wigner function indicating non-classical behavior.' }
                 ],
-                physics: 'Phase Space is the "Substrate Map". It shows the underlying density of wave-action. Large peaks indicate classical presence, while troughs indicate purely resonant interference patterns.'
+                physics: 'Phase Space is the "Substrate Map". It shows the underlying density of wave-action. Large peaks indicate classical presence, while troughs indicate purely resonant interference patterns.',
+                sliderConfig: { label: 'Interference Res', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Negative probabilities exist here — quantum interference has no classical equivalent.',
+                relevance: 'Visualizes the "impossible" negative probabilities that allow quantum computers to cancel out wrong answers and find the truth.',
+                sources: [
+                    'Wigner, E. (1932). On the Quantum Correction For Thermodynamic Equilibrium. Physical Review.',
+                    'Case, W.B. (2008). Wigner functions and Weyl transforms for pedestrians. American Journal of Physics.'
+                ]
             },
             'foam': {
                 name: 'Planck Topology Flux', year: 'Spacetime Jitter',
@@ -162,7 +183,14 @@
                     { term: 'Quantum Foam', definition: 'The boiling nature of the vacuum at the smallest possible scales.' },
                     { term: 'Metric Discontinuity', definition: 'The breakdown of traditional calculus-based geometry.' }
                 ],
-                physics: 'The Foam is the vacuum\'s "Noise Floor". It is the broadband, high-entropy background radiation of the Wave-Field before it organizes into coherent particles.'
+                physics: 'The Foam is the vacuum\'s "Noise Floor". It is the broadband, high-entropy background radiation of the Wave-Field before it organizes into coherent particles.',
+                sliderConfig: { label: 'Energy Density (Flux)', min: 0, max: 100, step: 1, default: 50, units: ' GeV', decimals: 0 },
+                contextNote: 'At 10⁻³⁵m, spacetime dissolves into a boiling ocean of virtual wormholes and topological foam.',
+                relevance: 'The bedrock of existence. At this scale, "smooth" space is a lie, and geometry itself is a boiling, chaotic froth.',
+                sources: [
+                    'Wheeler, J.A. (1955). Geons. Physical Review.',
+                    'Hawking, S.W. (1978). Spacetime foam. Nuclear Physics B.'
+                ]
             }
         };
 
@@ -322,6 +350,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

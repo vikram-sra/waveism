@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -156,7 +156,14 @@
                     { term: 'Eternalism', definition: 'The view that all temporal points are equally objective.' },
                     { term: 'World-Tube', definition: 'The 4D geometric extrusion of a 3D object\'s total history.' }
                 ],
-                physics: 'Waveism: The universe is a standing wave in 4D. Experience is the phase-front propagation of consciousness.'
+                physics: 'Waveism: The universe is a standing wave in 4D. Experience is the phase-front propagation of consciousness.',
+                sliderConfig: { label: 'Now Slice', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Past, present, and future exist simultaneously — your Now is merely a cross-sectional slice.',
+                relevance: 'Physics treats the future as just another place in space—it is already there, waiting for you to arrive.',
+                sources: [
+                    'Riemann, B. (1854). On the Hypotheses which lie at the Bases of Geometry.',
+                    'Einstein, A. (1915). The Field Equations of Gravitation.'
+                ]
             },
             'light-cone': {
                 name: 'Light Cone Topology', year: 'Minkowski Geometry',
@@ -168,7 +175,14 @@
                     { term: 'Causal Horizon', definition: 'The limit where signal propagation is blocked by light speed.' },
                     { term: 'Null Geodesic', definition: 'The trajectory of photons along the surface of the cone.' }
                 ],
-                physics: 'Waveism: Coherence boundary of the cosmic signal. Represents the maximum info-velocity in the vacuum.'
+                physics: 'Waveism: Coherence boundary of the cosmic signal. Represents the maximum info-velocity in the vacuum.',
+                sliderConfig: { label: 'Cone Angle', min: 0, max: 100, step: 1, default: 50, units: '°', decimals: 0 },
+                contextNote: 'Light defines the absolute causal boundary — nothing outside the cone can ever reach you.',
+                relevance: 'This cone defines your entire potential future. Anything outside it is physically impossible for you to influence.',
+                sources: [
+                    'Minkowski, H. (1908). Space and Time.',
+                    'Penrose, R. (2004). The Road to Reality.'
+                ]
             },
             'gravity': {
                 name: 'Einstein Geometry', year: 'Metric Warping',
@@ -180,7 +194,14 @@
                     { term: 'Metric Tensor', definition: 'A function defining the distance between points in the manifold.' },
                     { term: 'Geodesic', definition: 'The natural path followed by a free-falling particle.' }
                 ],
-                physics: 'Waveism: Gravity is the refractive index of the vacuum. Waves curve through high-density subregions.'
+                physics: 'Waveism: Gravity is the refractive index of the vacuum. Waves curve through high-density subregions.',
+                sliderConfig: { label: 'Mass Density', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Mass bends the manifold — gravity is just the straightest path through curved geometry.',
+                relevance: 'Gravity isn\'t a force pulling you; it\'s the ground rushing up to meet you because space itself is curved.',
+                sources: [
+                    'Misner, C.W., Thorne, K.S., & Wheeler, J.A. (1973). Gravitation.',
+                    'Wald, R.M. (1984). General Relativity.'
+                ]
             },
             'dilation': {
                 name: 'Lorentz Dilation', year: 'Temporal Distortion',
@@ -192,7 +213,14 @@
                     { term: 'Proper Time', definition: 'Time as measured by a clock following the worldline.' },
                     { term: 'Lorentz Shift', definition: 'The compression of space-time axes during high-β transit.' }
                 ],
-                physics: 'Waveism: Doppler-shift of internal oscillator frequency. Moving clocks beat slower relative to substrate.'
+                physics: 'Waveism: Doppler-shift of internal oscillator frequency. Moving clocks beat slower relative to substrate.',
+                sliderConfig: { label: 'Velocity (β)', min: 0, max: 100, step: 1, default: 50, units: 'c', decimals: 2 },
+                contextNote: 'Moving clocks tick slower — high velocity stretches time to keep light speed invariant.',
+                relevance: 'GPS satellites must adjust their clocks for this effect, or your map location would drift by kilometers every day.',
+                sources: [
+                    'Hafele, J.C., & Keating, R.E. (1972). Around-the-World Atomic Clocks.',
+                    'Einstein, A. (1905). On the Electrodynamics of Moving Bodies.'
+                ]
             },
             'twin': {
                 name: 'Twin Paradox', year: 'Asymmetry Protocol',
@@ -204,7 +232,14 @@
                     { term: 'Acceleration', definition: 'The act of breaking inertial frames to traverse the metric.' },
                     { term: 'Path Invariant', definition: 'The length of a worldline through 4D space.' }
                 ],
-                physics: 'Waveism: The traveler cuts across cosmic phase-lines, returning with a permanent lag in internal frequency.'
+                physics: 'Waveism: The traveler cuts across cosmic phase-lines, returning with a permanent lag in internal frequency.',
+                sliderConfig: { label: 'Trip Duration', min: 0, max: 100, step: 1, default: 50, units: ' yr', decimals: 0 },
+                contextNote: 'The traveler accelerates and returns younger — a tangible phase-offset in aging.',
+                relevance: 'If you travel fast enough, you can outlive everyone you know. Interpretation implies time travel to the future is physically possible.',
+                sources: [
+                    'Langevin, P. (1911). L\'Évolution de l\'Espace et du Temps.',
+                    'Resnick, R. (1968). Introduction to Special Relativity.'
+                ]
             },
             'time-spiral': {
                 name: 'Temporal Spiral', year: 'Cyclical Drift',
@@ -216,7 +251,14 @@
                     { term: 'Helical Time', definition: 'Motion through time combining oscillation and linear progress.' },
                     { term: 'Frequency Match', definition: 'The phenomenon of history repeating when the spiral radius aligns.' }
                 ],
-                physics: 'Waveism: The "Twist" of the vacuum. Energy recycled through cycles during forward drift.'
+                physics: 'Waveism: The "Twist" of the vacuum. Energy recycled through cycles during forward drift.',
+                sliderConfig: { label: 'Helix Pitch', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Time as a helix — cyclical repetition layered on linear forward drift.',
+                relevance: 'A visual metaphor for how cycles (days, years) compound into linear history.',
+                sources: [
+                    'Gödel, K. (1949). An Example of a New Type of Cosmological Solution.',
+                    'Novikov, I.D. (1992). Time Machine and Time Travel.'
+                ]
             },
             'einstein-sr': {
                 name: 'Lorentz Scissoring', year: 'Axiomatic Geometry',
@@ -228,7 +270,14 @@
                     { term: 'Hyperbolic Shift', definition: 'Rotation in Minkowski space by an imaginary angle.' },
                     { term: 'Simultaneity', definition: 'The collapse of "Now" into a relative observer slice.' }
                 ],
-                physics: 'Waveism: Geometric representation of phase-coherence. Observer rotates to align with signal flux.'
+                physics: 'Waveism: Geometric representation of phase-coherence. Observer rotates to align with signal flux.',
+                sliderConfig: { label: 'Boost Speed', min: 0, max: 100, step: 1, default: 50, units: 'c', decimals: 2 },
+                contextNote: 'Spacetime axes scissor toward the light line as velocity approaches c.',
+                relevance: 'Visualizes how "simultaneity" is relative. Two events can be simultaneous for you but sequential for a moving observer.',
+                sources: [
+                    'Lorentz, H.A. (1904). Electromagnetic phenomena in a system moving with any velocity smaller than that of light.',
+                    'Poincaré, H. (1906). Sur la dynamique de l\'électron.'
+                ]
             },
             'causal-net': {
                 name: 'Causal Network', year: 'Events & Nodes',
@@ -240,7 +289,14 @@
                     { term: 'Node Density', definition: 'The concentration of events in a local metric patch.' },
                     { term: 'Signal Latency', definition: 'The delay inherent in 4D connectivity dictated by c.' }
                 ],
-                physics: 'Waveism: The quantum graph of interconnected phase-oscillators.'
+                physics: 'Waveism: The quantum graph of interconnected phase-oscillators.',
+                sliderConfig: { label: 'Node Density', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Spacetime as a directed graph — discrete events linked by light-speed signals.',
+                relevance: 'The universe might not be continuous but a discrete network of events, like a cosmic 3D printer updating voxel by voxel.',
+                sources: [
+                    'Sorkin, R.D. (1987). Spacetime and Singularities.',
+                    'Rovelli, C. (2004). Quantum Gravity.'
+                ]
             },
             'event-horizon': {
                 name: 'Event Horizon', year: 'The Final Frontier',
@@ -252,7 +308,14 @@
                     { term: 'Schwarzschild Radius', definition: 'The radius where the escape velocity equals the speed of light.' },
                     { term: 'Temporal Tipping', definition: 'The rotation of spacetime axes where time becomes space.' }
                 ],
-                physics: 'Waveism: The critical damping point where the medium stops propagating signals outward.'
+                physics: 'Waveism: The critical damping point where the medium stops propagating signals outward.',
+                sliderConfig: { label: 'Schwarzschild R', min: 0, max: 100, step: 1, default: 50, units: ' km', decimals: 0 },
+                contextNote: 'Beyond this shell all light cones tip inward — every path leads to the singularity.',
+                relevance: 'The ultimate edge of the known universe. Crossing this line removes you from the causal history of the outside world.',
+                sources: [
+                    'Finkelstein, D. (1958). Past-Future Asymmetry of the Gravitational Field of a Point Particle.',
+                    'Penrose, R. (1965). Gravitational Collapse and Space-Time Singularities.'
+                ]
             }
         };
 
@@ -864,6 +927,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 

@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css">
-    <script src="../components/shared.js"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=4">
+    <script src="../components/shared.js?v=4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -233,7 +233,14 @@
                     { term: 'Stigmergy', definition: 'Indirect coordination via environmental traces.' },
                     { term: 'Path Dependence', definition: 'The current state as a product of system history.' }
                 ],
-                physics: 'Waveism: Society as a standing wave. Constructive interference creates "Culture" in the cognitive manifold.'
+                physics: 'Waveism: Society as a standing wave. Constructive interference creates "Culture" in the cognitive manifold.',
+                sliderConfig: { label: 'Synaptic Gain', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Visitors leave ghost-traces that weave into a collective social interference pattern.',
+                relevance: 'We are never truly alone. Every action leaves a digital/physical trace that influences the paths of future others (Stigmergy).',
+                sources: [
+                    'Heylighen, F. (2016). Stigmergy with human-Stigmergy. Cognitive Systems Research.',
+                    'Durkheim, E. (1893). The Division of Labour in Society.'
+                ]
             },
             'neural': {
                 name: 'Neural Binding', year: 'Synchrony Protocol',
@@ -245,19 +252,33 @@
                     { term: 'Gamma Binding', definition: '30-100Hz oscillations linking perceptual objects.' },
                     { term: 'Neural Synchrony', definition: 'Simultaneous firing enabling cross-regional communication.' }
                 ],
-                physics: 'Waveism: Neural binding acts as macro-scale coherence, mimicking vacuum phase-locking.'
+                physics: 'Waveism: Neural binding acts as macro-scale coherence, mimicking vacuum phase-locking.',
+                sliderConfig: { label: 'Binding Frequency', min: 0, max: 100, step: 1, default: 50, units: ' Hz', decimals: 0 },
+                contextNote: 'Gamma oscillations at 40Hz bind disparate brain regions into unified conscious perception.',
+                relevance: 'Your sensation of a unified "self" is a temporal illusion created by the synchronous firing of disparate brain regions.',
+                sources: [
+                    'Varela, F. et al. (2001). The brainweb: Phase synchronization and large-scale integration. Nature Reviews Neuroscience.',
+                    'Engel, A.K., & Singer, W. (2001). Temporal binding and the neural correlates of consciousness. Trends in Cognitive Sciences.'
+                ]
             },
             'gravity': {
                 name: 'Metrical Ripples', year: 'Gravitational Waves',
                 equation: 'h_μν ∝ d²Q_μν/dt²',
                 equationExpl: 'The quadrupole formula for gravitational radiation. Ripples in the metric (h) are produced by the second time-derivative of the mass-quadrupole moment (Q).',
                 facts: [{ text: 'Metric Warp', status: 'yes' }, { text: 'Transverse Strain', status: 'yes' }],
-                description: 'Oscillations in spacetime. Massive accelerations radiate quadropolar energy, physically stretching and squeezing the cosmic substrate.',
+                description: 'Oscillations in spacetime. Massive accelerations radiate quadrupolar energy, physically stretching and squeezing the cosmic substrate.',
                 concepts: [
                     { term: 'Strain (h)', definition: 'Fractional change in metric distance.' },
                     { term: 'Inspiral Chirp', definition: 'The freq-amplitude increase during binary collisions.' }
                 ],
-                physics: 'Waveism: Space is a dynamic resonant medium. Gravitational waves are metric "Sound".'
+                physics: 'Waveism: Space is a dynamic resonant medium. Gravitational waves are metric "Sound".',
+                sliderConfig: { label: 'Mass Scaling', min: 0, max: 100, step: 1, default: 50, units: ' M☉', decimals: 0 },
+                contextNote: 'Spacetime itself ripples — massive accelerations radiate quadrupolar energy through the cosmos.',
+                relevance: 'Space is not a stiff stage; it is a jello-like medium that wobbles when massive objects collide, carrying news of cataclysms.',
+                sources: [
+                    'Abbott, B.P. et al. (LIGO Scientific Collaboration). (2016). Observation of Gravitational Waves from a Binary Black Hole Merger. Physical Review Letters.',
+                    'Einstein, A. (1916). Näherungsweise Integration der Feldgleichungen der Gravitation.'
+                ]
             },
             'pilot': {
                 name: 'De Broglie-Bohm Pilot', year: 'Deterministic Quantum Fluid',
@@ -269,7 +290,14 @@
                     { term: 'Bohmian Trajectory', definition: 'The deterministic path a particle takes when driven by the phase of the wavefunction.' },
                     { term: 'Quantum Potential', definition: 'A non-local force that accounts for all "weird" quantum effects in a mechanical way.' }
                 ],
-                physics: 'The pilot-wave is a hydrodynamic model of Waveism. It views the vacuum as a "Superfluid" where particles are simply topological singularities (droplets) walking on their own surface-waves.'
+                physics: 'The pilot-wave is a hydrodynamic model of Waveism. It views the vacuum as a "Superfluid" where particles are simply topological singularities (droplets) walking on their own surface-waves.',
+                sliderConfig: { label: 'Surface Tension', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                contextNote: 'Particles ride their own pilot wave — deterministic paths guided by a physical wavefunction.',
+                relevance: 'Offers a logical alternative to quantum randomness: God does not play dice; hidden variables guide the outcome.',
+                sources: [
+                    'Couder, Y., & Fort, E. (2006). Single-Particle Diffraction and Interference at a Macroscopic Scale. Physical Review Letters.',
+                    'Bush, J.W.M. (2015). Pilot-Wave Hydrodynamics. Annual Review of Fluid Mechanics.'
+                ]
             },
             'cymatics': {
                 name: 'Eigenmode Manifolds', year: 'Hans Jenny / Chladni',
@@ -281,7 +309,14 @@
                     { term: 'Nodal Point', definition: 'A location in a standing wave where the amplitude is always zero.' },
                     { term: 'Resonance Curve', definition: 'A chart of a system\'s response frequency, peaking at its fundamental and harmonic modes.' }
                 ],
-                physics: 'Cymatics is "Structure from Sound". It shows how harmonic energy creates complex geometry, mirroring how the Big Bang seeded the distribution of all galaxies.'
+                physics: 'Cymatics is "Structure from Sound". It shows how harmonic energy creates complex geometry, mirroring how the Big Bang seeded the distribution of all galaxies.',
+                sliderConfig: { label: 'Driving Freq', min: 0, max: 100, step: 1, default: 50, units: ' Hz', decimals: 0 },
+                contextNote: 'Sound creates visible geometry — vibrating surfaces force matter into intricate nodal patterns.',
+                relevance: 'Demonstrates how invisible vibration can organize physical matter into complex, ordered structures (morphogenesis).',
+                sources: [
+                    'Jenny, H. (1967). Cymatics: A Study of Wave Phenomena and Vibration.',
+                    'Chladni, E.F.F. (1787). Entdeckungen über die Theorie des Klanges.'
+                ]
             }
         };
 
@@ -536,6 +571,8 @@
             updateTheoryHeader(theories[mode].name, theories[mode].description);
             updateInfoPanel(theories[mode]);
             updateInfoModalContent(theories[mode]);
+            updateSliderConfig(theories[mode]);
+            updateContextNote(theories[mode].contextNote);
             updateParamDisplay();
         }
 
