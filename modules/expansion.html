@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expansion | Cosmic Metric Manifold</title>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -93,7 +93,7 @@
         <div class="theory-name" id="theory-name">Hubble-Lemaître Flow</div>
         <div class="theory-year" id="theory-year">Expanding Metric Geometry (1929)</div>
         <div class="equation-box">
-            <div class="equation-label">The Hubble Law</div>
+            <div class="equation-label" id="equation-label">The Hubble Law</div>
             <div class="equation" id="equation">v = H₀ × d</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -138,11 +138,12 @@
             'hubble': {
                 name: 'Hubble-Lemaître Flow', year: 'Edwin Hubble, 1929',
                 equation: 'v = H₀ d',
+                equationLabel: 'Hubble-Lemaitre Law',
                 equationExpl: 'The Hubble-Lemaître Law. It relates the recession velocity (v) of a galaxy to its distance (d) from the observer, where H₀ is the expansion rate.',
                 facts: [{ text: 'Universal Recession', status: 'yes' }, { text: 'Metric Stretching', status: 'yes' }],
                 description: 'The discovery that galaxies are moving away from us at speeds proportional to their distance. This is not galaxies moving *through* space, but space itself expanding between them.',
                 concepts: [
-                    { term: 'Hubble Constant (H₀)', definition: 'The rate of expansion, currently estimated around 70 km/s/Mpc.' },
+                    { term: 'Hubble Constant (H₀)', definition: 'The present expansion rate, around 70 km/s/Mpc. The two best measurements disagree — supernova distance ladders give ≈73 while the CMB gives ≈67.4. This unresolved gap is the "Hubble tension".' },
                     { term: 'Comoving Distance', definition: 'The distance between two objects that remains constant despite the expansion of space.' },
                     { term: 'Peculiar Velocity', definition: 'A galaxy\'s actual motion through the local cluster, separate from the Hubble flow.' }
                 ],
@@ -158,6 +159,7 @@
             'redshift': {
                 name: 'Metric Redshift (z)', year: 'Spectroscopic Dilation',
                 equation: '1 + z = λ_obs / λ_emit',
+                equationLabel: 'Cosmological Redshift',
                 equationExpl: 'The definition of cosmological redshift (z). It measures how much the wavelength of light has been stretched by the expansion of the universe since emission.',
                 facts: [{ text: 'Photon Stretching', status: 'yes' }, { text: 'Metric Dilation', status: 'yes' }],
                 description: 'As light travels through expanding space, its wavelength is physically stretched. A blue photon emitted billions of years ago arrives as a red photon today, carrying the record of the universe\'s growth.',
@@ -165,7 +167,7 @@
                     { term: 'Scale Factor a(t)', definition: 'A dimensionless number representing the relative expansion of the universe.' },
                     { term: 'Cosmological Time Dilation', definition: 'Processes in distant galaxies (like Supernovae) appear to run slower by a factor of (1+z).' }
                 ],
-                physics: 'Light is a wave in the metric. If the metric stretches, the wave MUST stretch with it. Redshift is the Doppler-effect of existence itself.',
+                physics: 'Light is a wave in the metric. If the metric stretches, the wave stretches with it: 1 + z = a(t_obs)/a(t_emit). This is NOT a Doppler shift — no relative motion through space is involved, which is why redshifts far above z = 1 are routine without anything travelling faster than light.',
                 sliderConfig: { label: 'Redshift (z)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 2 },
                 contextNote: 'Blue photons arrive red after billions of years — their wavelength stretched by cosmic expansion.',
                 relevance: 'How we know the age of the universe. Light stretches as it travels, acting as a cosmic odometer.',
@@ -177,6 +179,7 @@
             'cmb': {
                 name: 'Last Scattering Surface', year: 'CMB Sky (380,000 BB)',
                 equation: 'T ≈ 2.73 K',
+                equationLabel: 'CMB Temperature',
                 equationExpl: 'The blackbody temperature of the Cosmic Microwave Background. This near-uniform heat is the remnant of the hot Big Bang, now cooled to near absolute zero.',
                 facts: [{ text: 'Opaque to Transparent', status: 'yes' }, { text: 'Frozen Acoustic Waves', status: 'yes' }],
                 description: 'The Cosmic Microwave Background. The oldest light in the universe, emitted when the early hot soup of plasma cooled enough for atoms to form, allowing photons to finally fly free.',
@@ -196,16 +199,17 @@
             },
             'timeline': {
                 name: 'Spacetime Cone History', year: 'Friedmann-Lemaître Epochs',
-                equation: 'H² = (8πG/3)ρ - k/a²',
-                equationExpl: 'The Friedmann equation. It relates the expansion rate (H) to the energy density (ρ) and the curvature (k) of the universe geometry.',
+                equation: 'H² = (8πG/3)ρ − kc²/a² + Λc²/3',
+                equationLabel: 'The Friedmann Equation',
+                equationExpl: 'The Friedmann equation relates the expansion rate H to energy density ρ, spatial curvature k, and the cosmological constant Λ. The Λ term is what drives the accelerating era described here — without it this equation only ever decelerates. Acceleration itself comes from the second Friedmann equation, ä/a = −(4πG/3)(ρ + 3p/c²) + Λc²/3.',
                 facts: [{ text: 'Big Bang Apex', status: 'yes' }, { text: 'Acceleration Era', status: 'yes' }],
                 description: 'The holographic history of the universe. From the high-energy density of the Big Bang to the matter-dominated era, and finally into the current era of Dark Energy-driven acceleration.',
                 concepts: [
-                    { term: 'Radiation Era', definition: 'The first few thousand years where light controlled the expansion.' },
-                    { term: 'Dark Energy (Λ)', definition: 'The unknown pressure that is currently causing expansion to accelerate.' },
+                    { term: 'Radiation Era', definition: 'The first ~50,000 years, when radiation dominated the energy density. Matter-radiation equality occurs at z ≈ 3400 — long before the CMB was released at 380,000 years.' },
+                    { term: 'Dark Energy (Λ)', definition: 'A positive energy density with NEGATIVE pressure (w ≈ −1). It is the negative pressure, not a push, that drives the acceleration.' },
                     { term: 'Particle Horizon', definition: 'The limit of the observable universe—the furthest distance light could have traveled to us.' }
                 ],
-                physics: 'The cosmic timeline is a diverging manifold. We exist on the accelerating outer edge of a wave-pulse that began 13.8 billion years ago.',
+                physics: 'The cosmos has no edge and no centre. Expansion looks the same from every galaxy: there is no outer boundary we sit on, and no point in space the Big Bang happened at — it happened everywhere at once.',
                 sliderConfig: { label: 'Epoch Zoom', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
                 contextNote: 'From radiation era to dark-energy acceleration — the holographic history of the expanding cosmos.',
                 relevance: 'The story of everything. From a hot soup of particles to the cold, dark energy-dominated future we face today.',
@@ -299,12 +303,18 @@
                     activeGroup.add(m);
                 }
             } else if (mode === 'redshift') {
-                const curve = new THREE.CatmullRomCurve3([
-                    new THREE.Vector3(-100, 0, 0),
-                    new THREE.Vector3(100, 0, 0)
-                ]);
-                const geo = new THREE.TubeGeometry(curve, 100, 0.5, 8, false);
-                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa, wireframe: true });
+                // An actual oscillating wave along the propagation axis (x), so
+                // there is a wavelength to stretch. Previously this was a
+                // perfectly straight tube — scaling y/z only inflated its radius,
+                // never touching the wavelength at all.
+                const baseWavelength = 12;
+                const wavePts = [];
+                for (let x = -100; x <= 100; x += 2) {
+                    wavePts.push(new THREE.Vector3(x, Math.sin((x / baseWavelength) * Math.PI * 2) * 6, 0));
+                }
+                const curve = new THREE.CatmullRomCurve3(wavePts);
+                const geo = new THREE.TubeGeometry(curve, 200, 0.6, 8, false);
+                const mat = new THREE.MeshPhongMaterial({ color: 0x00ffaa, emissive: 0x004433 });
                 const wave = new THREE.Mesh(geo, mat);
                 wave.name = "wave";
                 activeGroup.add(wave);
@@ -390,8 +400,14 @@
             } else if (currentMode === 'redshift') {
                 const wave = activeGroup.getObjectByName("wave");
                 if (wave) {
-                    const scale = 1 + (p1 * 2);
-                    wave.scale.set(1, scale, scale);
+                    // Stretch ALONG the propagation axis (x) — 1+z = a_obs/a_emit
+                    // lengthens the wavelength itself, not the tube's cross-section.
+                    const stretch = 1 + (p1 * 2);
+                    wave.scale.set(stretch, 1, 1);
+                    // Redward color shift as the stretch grows.
+                    const t = Math.min(1, p1);
+                    wave.material.color.setRGB(t, (1 - t) * 1.0, (1 - t) * 0.67);
+                    wave.material.emissive.setRGB(t * 0.4, (1 - t) * 0.27, (1 - t) * 0.2);
                     wave.rotation.x += dt;
                 }
             } else if (currentMode === 'cmb') {
@@ -425,7 +441,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

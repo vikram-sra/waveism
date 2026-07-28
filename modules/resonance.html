@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -181,7 +181,7 @@
         <div class="theory-name" id="theory-name">Resonance Loops</div>
         <div class="theory-year" id="theory-year">Coupled Oscillators (19th-21st Century)</div>
         <div class="equation-box">
-            <div class="equation-label">The Eigenstate</div>
+            <div class="equation-label" id="equation-label">The Eigenstate</div>
             <div class="equation" id="equation">Ĥψ = Eψ</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -226,6 +226,7 @@
             'social': {
                 name: 'Social Resonance', year: 'Emergent Collectivity',
                 equation: 'Ψ_total = Σ ψ_i',
+                equationLabel: 'Linear Superposition',
                 equationExpl: 'The principle of social superposition. The total conscious manifold is the summation of individual cognitive wavefunctions.',
                 facts: [{ text: 'Path Memory', status: 'yes' }, { text: 'Collective Drift', status: 'yes' }],
                 description: 'Visitors leave "Ghosts"—traces of interaction. This mode visualizes individual agency weaving into a collective social manifold.',
@@ -244,10 +245,11 @@
             },
             'neural': {
                 name: 'Neural Binding', year: 'Synchrony Protocol',
-                equation: 'γ(synchrony)',
-                equationExpl: 'The Gamma oscillation binding function. It represents the phase-locking of neural clusters into a unified conscious experience.',
+                equation: 'PLV = |⟨e^(iΔφ)⟩|',
+                equationLabel: 'Phase-Locking Value',
+                equationExpl: 'The phase-locking value: the magnitude of the average unit phasor between two signals. PLV = 1 is perfect phase locking, 0 is none. Binding-by-synchrony — the claim that this is HOW the brain unifies perception — is an influential but actively contested hypothesis.',
                 facts: [{ text: 'Phase Locking', status: 'yes' }, { text: 'Info Gating', status: 'yes' }],
-                description: 'Synchronized oscillations across brain regions. Gamma waves (40Hz) bind disparate sensory data into unified conscious experience.',
+                description: 'Synchronized oscillations across brain regions. Gamma-band activity (~40Hz) correlates with perceptual binding; whether the synchrony causes the binding, or merely accompanies it, remains disputed.',
                 concepts: [
                     { term: 'Gamma Binding', definition: '30-100Hz oscillations linking perceptual objects.' },
                     { term: 'Neural Synchrony', definition: 'Simultaneous firing enabling cross-regional communication.' }
@@ -255,7 +257,7 @@
                 physics: 'Waveism: Neural binding acts as macro-scale coherence, mimicking vacuum phase-locking.',
                 sliderConfig: { label: 'Binding Frequency', min: 0, max: 100, step: 1, default: 50, units: ' Hz', decimals: 0 },
                 contextNote: 'Gamma oscillations at 40Hz bind disparate brain regions into unified conscious perception.',
-                relevance: 'Your sensation of a unified "self" is a temporal illusion created by the synchronous firing of disparate brain regions.',
+                relevance: 'One leading proposal for how the brain stitches separate features into a single percept. It is a hypothesis under active debate, not a settled account of consciousness.',
                 sources: [
                     'Varela, F. et al. (2001). The brainweb: Phase synchronization and large-scale integration. Nature Reviews Neuroscience.',
                     'Engel, A.K., & Singer, W. (2001). Temporal binding and the neural correlates of consciousness. Trends in Cognitive Sciences.'
@@ -264,6 +266,7 @@
             'gravity': {
                 name: 'Metrical Ripples', year: 'Gravitational Waves',
                 equation: 'h_μν ∝ d²Q_μν/dt²',
+                equationLabel: 'The Quadrupole Formula',
                 equationExpl: 'The quadrupole formula for gravitational radiation. Ripples in the metric (h) are produced by the second time-derivative of the mass-quadrupole moment (Q).',
                 facts: [{ text: 'Metric Warp', status: 'yes' }, { text: 'Transverse Strain', status: 'yes' }],
                 description: 'Oscillations in spacetime. Massive accelerations radiate quadrupolar energy, physically stretching and squeezing the cosmic substrate.',
@@ -283,6 +286,7 @@
             'pilot': {
                 name: 'De Broglie-Bohm Pilot', year: 'Deterministic Quantum Fluid',
                 equation: 'v = ∇S / m',
+                equationLabel: 'The Guidance Equation',
                 equationExpl: 'The guidance equation of Bohmian mechanics. The velocity of a particle is determined by the gradient of the phase of its pilot wave.',
                 facts: [{ text: 'Guidance Field', status: 'yes' }, { text: 'Non-Local Potential', status: 'yes' }],
                 description: 'An alternative to standard quantum mechanics where particles are real and follow exact paths. They are "guided" by a pilot wave (the wavefunction) that creates interference and tunneling through fluid-like dynamics.',
@@ -293,7 +297,7 @@
                 physics: 'The pilot-wave is a hydrodynamic model of Waveism. It views the vacuum as a "Superfluid" where particles are simply topological singularities (droplets) walking on their own surface-waves.',
                 sliderConfig: { label: 'Surface Tension', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'Particles ride their own pilot wave — deterministic paths guided by a physical wavefunction.',
-                relevance: 'Offers a logical alternative to quantum randomness: God does not play dice; hidden variables guide the outcome.',
+                relevance: 'A logical alternative to quantum randomness: the outcome is fixed by hidden variables. But they must be NON-LOCAL ones — Bell\'s theorem rules out local hidden variables entirely — and the theory\'s predictions are identical to standard quantum mechanics.',
                 sources: [
                     'Couder, Y., & Fort, E. (2006). Single-Particle Diffraction and Interference at a Macroscopic Scale. Physical Review Letters.',
                     'Bush, J.W.M. (2015). Pilot-Wave Hydrodynamics. Annual Review of Fluid Mechanics.'
@@ -302,17 +306,19 @@
             'cymatics': {
                 name: 'Eigenmode Manifolds', year: 'Hans Jenny / Chladni',
                 equation: '∇²ψ + k²ψ = 0',
+                equationLabel: 'The Helmholtz Equation',
                 equationExpl: 'The Helmholtz Equation. It describes the spatial distribution of standing waves in a medium, where physical vibration creates geometric nodal patterns.',
                 facts: [{ text: 'Nodal Patterning', status: 'yes' }, { text: 'Geometric Nodes', status: 'yes' }],
                 description: 'The visual manifestation of sound and vibration. When a surface is vibrated at resonant frequencies, matter organizes itself into intricate geometric patterns at the nodal points where the field is at rest.',
                 concepts: [
                     { term: 'Nodal Point', definition: 'A location in a standing wave where the amplitude is always zero.' },
-                    { term: 'Resonance Curve', definition: 'A chart of a system\'s response frequency, peaking at its fundamental and harmonic modes.' }
+                    { term: 'Resonance Curve', definition: 'Response AMPLITUDE plotted against DRIVING frequency — a Lorentzian peak at each eigenfrequency, of width f₀/Q.' },
+                    { term: 'Plate Eigenmodes', definition: 'A 2D plate\'s modes are NOT a harmonic series. Integer multiples of a fundamental (f_n = n·v/2L) apply to a 1D string; plate frequencies follow a quite different, non-integer spacing.' }
                 ],
                 physics: 'Cymatics is "Structure from Sound". It shows how harmonic energy creates complex geometry, mirroring how the Big Bang seeded the distribution of all galaxies.',
                 sliderConfig: { label: 'Driving Freq', min: 0, max: 100, step: 1, default: 50, units: ' Hz', decimals: 0 },
                 contextNote: 'Sound creates visible geometry — vibrating surfaces force matter into intricate nodal patterns.',
-                relevance: 'Demonstrates how invisible vibration can organize physical matter into complex, ordered structures (morphogenesis).',
+                relevance: 'Demonstrates how vibration organises loose matter into ordered nodal patterns. Jenny\'s further claim that cymatics explains biological morphogenesis has no support — real morphogenesis runs on chemical gradients and gene regulation.',
                 sources: [
                     'Jenny, H. (1967). Cymatics: A Study of Wave Phenomena and Vibration.',
                     'Chladni, E.F.F. (1787). Entdeckungen über die Theorie des Klanges.'
@@ -585,7 +591,7 @@
                 waveBands.forEach((band, idx) => {
                     const cluster = activeGroup.getObjectByName("cluster_" + band.id);
                     const hudEl = document.getElementById("band-" + band.id);
-                    const isActive = p1 >= (idx * 20) && p1 < ((idx + 1) * 20);
+                    const isActive = p1 >= band.range[0] && p1 < band.range[1];
 
                     if (hudEl) {
                         if (isActive) hudEl.classList.add('active');
@@ -595,7 +601,11 @@
                     if (cluster) {
                         const neurons = cluster.getObjectByName("neurons");
                         const synapses = cluster.getObjectByName("synapses");
-                        const pulse = Math.sin(time * band.range[1] * 0.5) * gain;
+                        // Oscillate at the band's own characteristic rate, not its
+                        // upper edge — a mid-band value (e.g. gamma ~40Hz) should
+                        // pulse near 40, not slam to 100.
+                        const bandRate = (band.range[0] + band.range[1]) / 2;
+                        const pulse = Math.sin(time * bandRate * 0.5) * gain;
 
                         if (neurons) {
                             neurons.material.size = 2 + pulse * 5;
@@ -612,19 +622,34 @@
                 const s2 = activeGroup.getObjectByName("bh2");
                 const grid = activeGroup.getObjectByName("grid");
                 if (s1 && s2 && grid) {
-                    const r = 40 + Math.sin(time * 0.5) * 10;
-                    const speed = 4 + (p1 / 50);
-                    s1.position.set(Math.cos(time * speed) * r, 0, Math.sin(time * speed) * r);
-                    s2.position.set(-Math.cos(time * speed) * r, 0, -Math.sin(time * speed) * r);
+                    // Inspiral: separation decays monotonically (never oscillates
+                    // back out) and orbital rate rises as Kepler r^-3/2 demands —
+                    // that rising pitch is the "chirp". p1 sets the decay rate.
+                    const st = activeGroup.userData;
+                    if (st.insp === undefined) st.insp = { r: 55, phase: 0, t: 0 };
+                    const insp = st.insp;
+                    const decayRate = 0.4 + (p1 / 100) * 2.5;
+                    insp.r = Math.max(6, insp.r - decayRate * dt);
+                    const omega = 6 / Math.pow(insp.r, 1.5); // Kepler: Ω ∝ r^-3/2
+                    insp.phase += omega * dt;
+                    if (insp.r <= 6.5) { insp.r = 55; insp.phase = 0; } // merger -> reset
+
+                    const r = insp.r;
+                    s1.position.set(Math.cos(insp.phase) * r, 0, Math.sin(insp.phase) * r);
+                    s2.position.set(-Math.cos(insp.phase) * r, 0, -Math.sin(insp.phase) * r);
 
                     const pos = grid.geometry.attributes.position;
+                    const ampScale = (p1 / 100) * (60 / r); // strain grows as the binary tightens
                     for (let i = 0; i < pos.count; i++) {
                         const px = pos.getX(i);
                         const pz = pos.getZ(i);
+                        const dist = Math.max(1, Math.sqrt(px * px + pz * pz));
+                        const azimuth = Math.atan2(pz, px);
+                        // Quadrupole (m=2) radiation pattern: h ~ cos(2phi - 2*Omega*t) / r,
+                        // frequency = 2x orbital -> f_GW = 2 f_orb, the defining GW relation.
+                        const h = Math.cos(2 * azimuth - 2 * insp.phase - dist * 0.08) / (dist * 0.5 + 5) * 400 * ampScale;
                         const d1 = Math.sqrt((px - s1.position.x) ** 2 + (pz - s1.position.z) ** 2);
                         const d2 = Math.sqrt((px - s2.position.x) ** 2 + (pz - s2.position.z) ** 2);
-                        // Quadrupole ripple math
-                        const h = (Math.sin(d1 * 0.15 - time * 10) / (d1 + 5) + Math.sin(d2 * 0.15 - time * 10) / (d2 + 5)) * 1000 * (p1 / 100);
                         pos.setY(i, h - 50 / (d1 + 5) - 50 / (d2 + 5));
                     }
                     pos.needsUpdate = true;
@@ -654,24 +679,54 @@
                 const plate = activeGroup.getObjectByName("chladni_plate");
                 if (plate) {
                     const pos = plate.geometry.attributes.position;
-                    const freq = p1 / 20;
+                    const L = 200; // plate spans -100..100 on x and z
+
+                    // Integer mode numbers only — a Chladni figure exists because
+                    // the plate satisfies fixed boundary conditions at integer
+                    // (n,m); non-integer values satisfy no boundary condition and
+                    // produce no real nodal pattern.
+                    let n = Math.max(1, Math.min(9, Math.round(p1 / 11)));
+                    let m = Math.max(1, Math.min(9, Math.round(p1 / 20)));
+                    if (m === n) m = n > 1 ? n - 1 : n + 1;
+
+                    const amplitude = (x, z) => {
+                        const u = (x + L / 2) / L, v = (z + L / 2) / L;
+                        // Antisymmetric combination — the actual degenerate-mode
+                        // superposition that produces a Chladni figure.
+                        return Math.sin(n * Math.PI * u) * Math.sin(m * Math.PI * v)
+                             - Math.sin(m * Math.PI * u) * Math.sin(n * Math.PI * v);
+                    };
+
+                    const eps = 2;
                     for (let i = 0; i < pos.count; i++) {
                         const x = pos.getX(i);
                         const z = pos.getZ(i);
+                        const amp = amplitude(x, z);
 
-                        // Chladni Standing Wave Equation
-                        // sin(n*x)*sin(m*y) - sin(m*x)*sin(n*y) = 0
-                        const n = freq, m = freq * 0.5;
-                        const amp = Math.sin(n * x * 0.05) * Math.sin(m * z * 0.05) + Math.sin(m * x * 0.05) * Math.sin(n * z * 0.05);
+                        // Grains migrate down the vibration-energy gradient toward
+                        // nodes (amp ≈ 0) — this accumulation AT the nodes is the
+                        // Chladni phenomenon, not an unbiased random walk.
+                        const e0 = amp * amp;
+                        const gx = ((amplitude(x + eps, z) ** 2) - e0) / eps;
+                        const gz = ((amplitude(x, z + eps) ** 2) - e0) / eps;
+                        const driftSpeed = 4.0;
+                        let nx = x - gx * driftSpeed;
+                        let nz = z - gz * driftSpeed;
 
-                        // Particles drift toward nodes (amp approx 0)
-                        const drift = 0.1;
-                        pos.setX(i, x + (Math.random() - 0.5) * 0.5);
-                        pos.setZ(i, z + (Math.random() - 0.5) * 0.5);
+                        // Jitter scales with local vibration amplitude: grains sit
+                        // still at nodes, hop around at antinodes.
+                        const jitter = Math.min(1, Math.abs(amp)) * 0.6;
+                        nx += (Math.random() - 0.5) * jitter;
+                        nz += (Math.random() - 0.5) * jitter;
 
-                        // Vertical "vibration" based on distance from node
-                        pos.setY(i, amp * 5);
+                        nx = Math.max(-99, Math.min(99, nx));
+                        nz = Math.max(-99, Math.min(99, nz));
+
+                        pos.setX(i, nx);
+                        pos.setZ(i, nz);
+                        pos.setY(i, amp * 4 * Math.sin(time * 20)); // vibration display only
                     }
+                    pos.needsUpdate = true;
                 }
             } else if (currentMode === 'social') {
                 const liveLine = activeGroup.getObjectByName("live_trail");
@@ -763,7 +818,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

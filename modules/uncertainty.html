@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uncertainty | Quantum Limits</title>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -75,7 +75,7 @@
         <div class="theory-name" id="theory-name">Heisenberg Uncertainty</div>
         <div class="theory-year" id="theory-year">Werner Heisenberg, 1927</div>
         <div class="equation-box">
-            <div class="equation-label">The Invariant Bound</div>
+            <div class="equation-label" id="equation-label">The Invariant Bound</div>
             <div class="equation" id="equation">Δx Δp ≥ ℏ/2</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -119,6 +119,7 @@
             'uncertainty': {
                 name: 'Heisenberg Squeezed State', year: 'Conjugate Variables',
                 equation: 'Δx Δp ≥ ℏ/2',
+                equationLabel: 'Heisenberg Uncertainty',
                 equationExpl: 'The Heisenberg Uncertainty Principle. It states that the product of the uncertainties in position (Δx) and momentum (Δp) is bounded by a fundamental constant (ℏ/2).',
                 facts: [{ text: 'Fourier Limit', status: 'yes' }, { text: 'Incompressible', status: 'yes' }],
                 description: 'The fundamental trade-off of the universe. If you squeeze the momentum (Δp) of a wave-packet, its spatial extent (Δx) must leak and spread. Position and momentum are Fourier transforms of each other; high precision in one domain guarantees "fuzziness" in the other.',
@@ -127,9 +128,9 @@
                     { term: 'Minimal Packet', definition: 'The Gaussian wave-packet which satisfies the equality ΔxΔp = ℏ/2.' }
                 ],
                 physics: 'In Waveism, uncertainty is the "Tiling of the Vacuum". The substrate has a finite bandwidth. You can resolve a high-frequency (momentum) signal or a localized (position) pulse, but the total area in Phase Space remains constant.',
-                sliderConfig: { label: 'Momentum Precision (Δp)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
+                sliderConfig: { label: 'Momentum Spread (Δp)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
                 contextNote: 'Squeeze the momentum and the position leaks — the universe has a finite information bandwidth.',
-                relevance: 'Limits the resolution of reality. You cannot know the "now" and the "future" (momentum) with infinite precision simultaneously.',
+                relevance: 'A limit built into the wave nature of matter, not into our instruments. A particle simply does not possess a sharp position and a sharp momentum at the same time — perfect apparatus would not help.',
                 sources: [
                     'Heisenberg, W. (1927). Über den anschaulichen Inhalt der quantentheoretischen Kinematik und Mechanik. Zeitschrift für Physik.',
                     'Kennard, E.H. (1927). Zur Quantenmechanik einfacher Bewegungstypen. Zeitschrift für Physik.'
@@ -138,7 +139,8 @@
             'measurement': {
                 name: 'The Measurement Crunch', year: 'State Reduction',
                 equation: 'ψ → |x₀⟩',
-                equationExpl: 'Wave-function collapse. The broad superposition (ψ) is reduced to a single position eigenstate (|x₀⟩) upon interaction with an observer.',
+                equationLabel: 'State Reduction',
+                equationExpl: 'Wave-function collapse. The broad superposition (ψ) is reduced to a single position eigenstate (|x₀⟩) when the system couples to a measuring device — any sufficiently strong physical interaction will do it.',
                 facts: [{ text: 'Decoherence', status: 'active' }, { text: 'Information Heat', status: 'high' }],
                 description: 'A "Measurement" is an energetic interaction that forces a fuzzy superposition to resolve into a single eigenvalue. This is not a passive observation, but a violent synchronization of the system with the macroscopic environment.',
                 concepts: [
@@ -156,8 +158,9 @@
             },
             'momentum': {
                 name: 'Wigner Quasi-Probability', year: 'Phase Space Topology',
-                equation: 'W(x,p) = (1/πℏ) ∫ ψ*(x-y/2)ψ(x+y/2) e^{ipy/ℏ} dy',
-                equationExpl: 'The Wigner quasi-probability distribution provides a phase space representation of quantum states. The presence of negative values (impossible for classical probabilities) reveals purely quantum interference phenomena.',
+                equation: 'W(x,p) = (1/2πℏ) ∫ ψ*(x+y/2)ψ(x−y/2) e^{ipy/ℏ} dy',
+                equationLabel: 'The Wigner Function',
+                equationExpl: 'The Wigner quasi-probability distribution gives a phase-space representation of a quantum state. The 1/2πℏ prefactor is what makes it integrate to 1 with this x ± y/2 convention. Its negative regions — impossible for a classical probability density — are the signature of quantum interference.',
                 facts: [{ text: 'Negative Prob.', status: 'yes' }, { text: 'interference', status: 'yes' }],
                 description: 'Visualizing quantum states in Phase Space. Unlike classical probability, the Wigner distribution can have negative values—represented by troughs—which signify pure quantum interference that has no classical equivalent.',
                 concepts: [
@@ -176,6 +179,7 @@
             'foam': {
                 name: 'Planck Topology Flux', year: 'Spacetime Jitter',
                 equation: 'l_P = √(ℏG/c³) ≈ 1.6×10⁻³⁵ m',
+                equationLabel: 'The Planck Length',
                 equationExpl: 'The Planck length (~10⁻³⁵ m) marks the scale where quantum gravity effects dominate and classical spacetime geometry breaks down into violent quantum fluctuations.',
                 facts: [{ text: 'Geometric Chaos', status: 'high' }, { text: 'Non-Metric', status: 'yes' }],
                 description: 'At the Planck Scale, the smooth fabric of spacetime dissolves. Reality becomes a violent, boiling ocean of virtual wormholes and topological fluctuations. There is no "distance" or "time" here, only the raw flux of the substrate.',
@@ -474,7 +478,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

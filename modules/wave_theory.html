@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Epistemic Topology | The Unified Field</title>
 
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="../components/hamiltonian_physics.js"></script>
     <script src="../components/physics_ontology.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -125,7 +125,7 @@
         <div class="theory-name" id="theory-name">Epistemic Topology</div>
         <div class="theory-year" id="theory-year">Unified Field Ontology</div>
         <div class="equation-box">
-            <div class="equation-label">Formalism</div>
+            <div class="equation-label" id="equation-label">Formalism</div>
             <div class="equation" id="equation">G = (V, E, Φ)</div>
         </div>
     </div>
@@ -220,9 +220,10 @@
                 name: 'Epistemic Topology',
                 param: 'GRAVITY',
                 equation: 'G = (E, I, S)',
+                equationLabel: 'Epistemic Graph',
                 physics: 'Scale-Invariant Ontology',
-                description: 'Causal mapping of first principles. What we perceive as "physical form" is a scale-dependent reconstruction of the underlying substrate. At the human scale (10^0m), we see solid objects due to electromagnetic repulsion; at the Planck scale (10^-35m), these dissolve into topological fluctuations. Reality is a multi-layered manifold where different physics emerge at different scales.',
-                quote: { text: "The universe is not only stranger than we imagine, it is stranger than we can imagine. What we see as a solid world is only the residue of a deeper wave interference.", author: "Werner Heisenberg" },
+                description: 'Causal mapping of first principles. What we perceive as "physical form" is a scale-dependent reconstruction of the underlying substrate. At the human scale (10^0m), solidity comes mostly from the Pauli exclusion principle — the refusal of electrons to share a state — layered on top of electrostatic repulsion. What happens at the Planck scale (10^-35m) is unknown; discreteness there is a conjecture of quantum-gravity programmes, not established physics.',
+                quote: { text: "The Universe is not only queerer than we suppose, but queerer than we can suppose.", author: "J.B.S. Haldane, Possible Worlds (1927)" },
                 concepts: [
                     { term: 'Scale Dependency', definition: 'Physical laws (General Relativity vs. QFT) are effective theories valid only within specific magnitude ranges.' },
                     { term: 'Emergent Form', definition: 'Solidity is an emergent property of phase-locked wave functions, not an intrinsic quality of matter.' },
@@ -230,7 +231,7 @@
                 ],
                 sliderConfig: { label: 'Scale Factor (S)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
                 contextNote: 'Reality is a multi-layered manifold — different physics emerge at different scales of observation.',
-                relevance: 'Just as water looks smooth but is actually molecules, spacetime looks smooth but is actually a discrete web of relations.',
+                relevance: 'Just as water looks smooth but is actually molecules, spacetime MIGHT be a discrete web of relations at the smallest scales — this is the wager of loop quantum gravity and causal set theory, and it remains untested.',
                 sources: [
                     'Wolfram, S. (2002). A New Kind of Science.',
                     'Rovelli, C. (2014). Reality Is Not What It Seems: The Journey to Quantum Gravity.'
@@ -243,9 +244,10 @@
                 name: 'Quantum Field',
                 param: 'EXCITATION',
                 equation: 'ℒ = ½(∂φ)² - V(φ)',
-                physics: 'Electrodynamics Protocol',
+                equationLabel: 'Scalar Field Lagrangian',
+                physics: 'Scalar Field Protocol',
                 description: 'Energy density field where particles are localized wave-packet excitations. The "Grid" represents the vacuum lattice.',
-                quote: { text: "The field is the only reality.", author: "Albert Einstein" },
+                quote: { text: "The field is the only reality.", author: "attributed to Albert Einstein (unsourced paraphrase)" },
                 concepts: [{
                     term: 'Zero-Point', definition: 'The non-zero energy state of the fundamental vacuum.'
                 }
@@ -270,17 +272,19 @@
                 name: 'Pilot Wave Theory',
                 param: 'GUIDANCE',
                 equation: 'v = (ħ/m) Im(∇lnΨ)',
+                equationLabel: 'The Guidance Equation',
                 physics: 'De Broglie-Bohm Mechanics',
-                description: 'Restores reality to the quantum world. While standard physics says particles are "everywhere at once" (superposition), Pilot Wave theory argues particles always have a definite position. They are steered by a "ghostly" pilot wave that feels the entire environment (like both slits) even if the particle only passes through one.',
+                description: 'Restores definite trajectories to the quantum world. Standard quantum mechanics does not say a particle is "everywhere at once" — it says position is not a definite property before measurement. Pilot Wave theory instead gives the particle a definite position at all times, steered by a wave that feels the whole environment (both slits) even though the particle goes through one.',
                 quote: { text: "It is a very simple and natural idea... the particle moves as guided by the wave.", author: "David Bohm" },
                 concepts: [
                     { term: 'Guidance Equation', definition: 'The law dictate how the wave\'s phase gradient steers the particle\'s velocity.' },
-                    { term: 'Determinstic Paths', definition: 'Particles follow definite, non-crossing trajectories—removing "randomness" from physics.' },
-                    { term: 'Ghostly Influence', definition: 'The wave explores all possible paths, while the particle only takes one.' }
+                    { term: 'Deterministic Paths', definition: 'Particles follow definite, non-crossing trajectories. Randomness is pushed into ignorance of the initial positions, not removed from the predictions.' },
+                    { term: 'Ghostly Influence', definition: 'The wave explores all possible paths, while the particle only takes one.' },
+                    { term: 'Explicit Non-Locality', definition: 'The guiding wave depends instantaneously on the configuration of every particle. Bell (1964) proved no local theory can reproduce quantum statistics.' }
                 ],
                 sliderConfig: { label: 'Guidance Factor', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'Particles aren\'t waves—they are definite objects being "pushed" by a wave that explores every possible path.',
-                relevance: 'Restores a common-sense reality where things exist even when you don\'t look at them—but at the cost of non-local "ghost" forces.',
+                relevance: 'Restores a reality where things have definite positions whether or not you look — at the cost of explicit non-locality. Bell\'s theorem shows ANY theory reproducing quantum predictions must be non-local, so this is not a defect unique to Bohm. It makes exactly the same experimental predictions as standard quantum mechanics.',
                 sources: [
                     'Bohm, D. (1952). A Suggested Interpretation of the Quantum Theory in Terms of "Hidden" Variables. Physical Review.',
                     'Bell, J.S. (1987). Speakable and Unspeakable in Quantum Mechanics.'
@@ -292,7 +296,8 @@
 
                 name: 'Neural Sync',
                 param: 'COHERENCE',
-                equation: 'Δw = η·pre·post',
+                equation: 'PLV = |⟨e^(iΔφ)⟩|',
+                equationLabel: 'Phase-Locking Value',
                 physics: 'Oscillatory Binding',
                 description: 'Consciousness as 3D phase-locked resonance. 40Hz temporal binding across cerebral regions.',
                 quote: { text: "What we call 'I' is just a door to the universe.", author: "Alan Watts" },
@@ -321,6 +326,7 @@
                 name: 'Social Resonance',
                 param: 'INFLUENCE',
                 equation: 'R0 > 1',
+                equationLabel: 'Basic Reproduction Number',
                 physics: 'Network Contagion',
                 description: 'Spherical influence fields spreading memetic information through the social manifold.',
                 quote: { text: "We are caught in an inescapable network of mutuality.", author: "Martin Luther King Jr." },
@@ -346,7 +352,7 @@
             ,
             'reality': {
 
-                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) ≥ Min', physics: 'Interface Theory',
+                name: 'Perception Filter', param: 'COGNITION', equation: 'I(X; Y) → 0 under fitness selection', physics: 'Interface Theory (contested)',
                 description: 'Our senses provide a simplified "desktop interface" optimized for survival, not truth. We perceive a fitness reconstruction of the substrate.',
                 quote: { text: "If the doors of perception were cleansed every thing would appear to man as it is, Infinite.", author: "William Blake" },
                 concepts: [{
@@ -987,8 +993,10 @@
                     // Add background vacuum fluctuations (The "Sea")
                     y += Math.sin(x * 0.02 + t * 2) * Math.cos(z * 0.02 + t * 2) * 10 * eqParam;
 
-                    // OBSERVER EFFECT: Superposition Drift
-                    const drift = rotationHandler ? (rotationHandler.inactivityFactor * 50) : 0;
+                    // Idle screensaver drift — a cosmetic animation while the
+                    // user isn't interacting, not a depiction of measurement
+                    // or wavefunction collapse.
+                    const drift = rotationHandler ? (rotationHandler.idleDrift * 50) : 0;
                     const dx = (Math.random() - 0.5) * drift;
                     const dy = (Math.random() - 0.5) * drift;
                     const dz = (Math.random() - 0.5) * drift;
@@ -1462,7 +1470,7 @@
             }
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

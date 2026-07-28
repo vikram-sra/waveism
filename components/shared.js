@@ -5,20 +5,37 @@
 
 // ============ NAVIGATION DATA ============
 // Scale: 10^x meters
+// Scale ladder ordered by an honest characteristic length where the topic
+// has one. Three modules were previously mislabeled badly enough to move:
+// quantum was pinned to the Planck length (that's uncertainty's derivation,
+// not quantum's double-slit/orbital content, which is atomic-scale);
+// blackhole was pinned to a galaxy diameter (10²¹m) instead of a Schwarzschild
+// radius (10³-10¹³m for stellar-to-supermassive). Topics with no
+// characteristic length (chaos, arrow, fabric) get a non-numeric marker
+// instead of an invented number — val is kept for ordering only.
 const NAVIGATION_ITEMS = [
-    { href: 'modules/quantum.html', label: 'QUANTUM', id: 'quantum', scale: '10⁻³⁵m', val: -35 },
-    { href: 'modules/uncertainty.html', label: 'UNCERTAINTY', id: 'uncertainty', scale: '10⁻³⁰m', val: -30 },
+    { href: 'modules/uncertainty.html', label: 'UNCERTAINTY', id: 'uncertainty', scale: '10⁻³⁵m', val: -35 },
     { href: 'modules/wave_theory.html', label: 'WAVEISM', id: 'wave_theory', scale: '10⁻¹⁵m', val: -15 },
+    { href: 'modules/quantum.html', label: 'QUANTUM', id: 'quantum', scale: '10⁻¹⁰m', val: -10 },
     { href: 'modules/resonance.html', label: 'RESONANCE', id: 'resonance', scale: '10⁻⁶m', val: -6 },
-    { href: 'modules/chaos.html', label: 'CHAOS', id: 'chaos', scale: '10⁰m', val: 0 },
-    { href: 'modules/arrow.html', label: 'ARROW', id: 'arrow', scale: '10⁵m', val: 5 },
-    { href: 'modules/fabric.html', label: 'FABRIC', id: 'fabric', scale: '10¹⁰m', val: 10 },
+    { href: 'modules/chaos.html', label: 'CHAOS', id: 'chaos', scale: 'scale-free', val: 0 },
+    { href: 'modules/arrow.html', label: 'ARROW', id: 'arrow', scale: 'scale-free', val: 5 },
+    { href: 'modules/fabric.html', label: 'FABRIC', id: 'fabric', scale: 'scale-free', val: 10 },
+    { href: 'modules/blackhole.html', label: 'BLACK HOLE', id: 'blackhole', scale: '10¹³m', val: 13 },
     { href: 'modules/wormhole.html', label: 'WORMHOLE', id: 'wormhole', scale: '10¹⁵m', val: 15 },
     { href: 'modules/spacetime.html', label: 'SPACETIME', id: 'spacetime', scale: '10¹⁸m', val: 18 },
-    { href: 'modules/blackhole.html', label: 'BLACK HOLE', id: 'blackhole', scale: '10²¹m', val: 21 },
     { href: 'modules/expansion.html', label: 'EXPANSION', id: 'expansion', scale: '10²⁴m', val: 24 },
     { href: 'modules/cosmic.html', label: 'COSMIC', id: 'cosmic', scale: '10²⁶m', val: 26 }
 ];
+
+// NAVIGATION_ITEMS[].href is written root-relative ('modules/foo.html'). From
+// inside /modules/ the 'modules/' prefix has to be stripped or the link resolves
+// to /modules/modules/foo.html. Every consumer of .href must go through this.
+function resolveModuleHref(href) {
+    return window.location.pathname.includes('/modules/')
+        ? href.replace('modules/', '')
+        : href;
+}
 
 // ============ RENDER NAVIGATION ============
 // ============ RENDER NAVIGATION (TUNING FORK) ============
@@ -26,8 +43,6 @@ function renderMainNav(activeId) {
     // Detect if we're in a module page or at root
     const currentPath = window.location.pathname;
     const isInModulesFolder = currentPath.includes('/modules/');
-
-    console.log('[NAV] Path:', currentPath, '| In modules?:', isInModulesFolder);
 
     const pathPrefix = isInModulesFolder ? '' : 'modules/';
     const homeHref = isInModulesFolder ? '../index.html' : 'index.html';
@@ -37,8 +52,7 @@ function renderMainNav(activeId) {
     const navHtml = NAVIGATION_ITEMS.map(item => {
         const activeClass = item.id === activeId ? ' active' : '';
         // Use just the filename if we're in modules/, otherwise use modules/filename
-        const href = isInModulesFolder ? item.href.replace('modules/', '') : item.href;
-        if (item.id === 'fabric') console.log('[NAV] Fabric:', item.href, '->', href);
+        const href = resolveModuleHref(item.href);
         return `
         <a href="${href}" class="main-nav-tab${activeClass}">
             <div class="nav-content">
@@ -402,20 +416,30 @@ function scrambleText(element, finalText, duration = 400) {
     element.dataset.leakInterval = interval;
 }
 
+// Statuses that map to a coloured dot in shared.css. Anything else is treated
+// as a literal value to display (e.g. status: '4.669' on the Feigenbaum fact),
+// which would otherwise be swallowed as an invalid CSS class and never shown.
+const FACT_DOT_STATUSES = ['yes', 'no', 'maybe', 'required', 'active', 'high'];
+
 function updateInfoPanel(data) {
     const nameEl = document.getElementById('theory-name');
     const yearEl = document.getElementById('theory-year');
     const equationEl = document.getElementById('equation');
+    const equationLabelEl = document.getElementById('equation-label');
     const factsEl = document.getElementById('theory-facts');
 
     if (nameEl && data.name) scrambleText(nameEl, data.name);
     if (yearEl && data.year) yearEl.textContent = data.year;
     if (equationEl && data.equation) scrambleText(equationEl, data.equation, 800);
+    if (equationLabelEl && data.equationLabel) equationLabelEl.innerText = data.equationLabel;
 
     if (factsEl && data.facts) {
-        factsEl.innerHTML = data.facts.map(fact =>
-            `<div class="fact"><span class="fact-dot ${fact.status}"></span> ${fact.text}</div>`
-        ).join('');
+        factsEl.innerHTML = data.facts.map(fact => {
+            const isDot = FACT_DOT_STATUSES.includes(fact.status);
+            const dot = `<span class="fact-dot ${isDot ? fact.status : 'maybe'}"></span>`;
+            const val = isDot || !fact.status ? '' : ` <span class="fact-value">${fact.status}</span>`;
+            return `<div class="fact">${dot} ${fact.text}${val}</div>`;
+        }).join('');
     }
 }
 
@@ -618,8 +642,18 @@ function updateSliderConfig(theoryData) {
     if (cfg.min !== undefined) slider.min = cfg.min;
     if (cfg.max !== undefined) slider.max = cfg.max;
     if (cfg.step !== undefined) slider.step = cfg.step;
-    if (cfg.default !== undefined) slider.value = cfg.default;
-    if (value && cfg.units) {
+
+    if (cfg.default !== undefined) {
+        slider.value = cfg.default;
+        // Fire the module's own 'input' handler so its local param variable picks up
+        // the new default. Without this the handle jumps but the simulation keeps
+        // running on the previous mode's value.
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // Written after the dispatch so the per-mode units/precision win over the
+    // slider's generic formatter.
+    if (value) {
         value.innerText = parseFloat(slider.value).toFixed(cfg.decimals || 0) + (cfg.units || '');
     }
 }
@@ -698,7 +732,9 @@ function initDragRotation(canvas, options = {}) {
         damping: 0.1,
         friction: 0.95,
         lastInteraction: Date.now(),
-        inactivityFactor: 0 // 0 = Sharp, 1 = Blurry/Superposition
+        idleDrift: 0 // Idle-screensaver amount, 0 = still, 1 = drifting. A UI
+        // idle animation, not a physics mechanism — a person not touching
+        // their mouse does not constitute a quantum measurement.
     };
 
     canvas.addEventListener('mousedown', (e) => {
@@ -766,14 +802,12 @@ function initDragRotation(canvas, options = {}) {
         state.rotationY += (state.targetRotationY - state.rotationY) * state.damping;
         state.rotationX += (state.targetRotationX - state.rotationX) * state.damping;
 
-        // Observer Effect: Inactivity Drift
+        // Idle screensaver drift (cosmetic UI animation only)
         const idleTime = Date.now() - state.lastInteraction;
         if (idleTime > 4000) {
-            // Drift into Superposition
-            state.inactivityFactor = Math.min(1, (idleTime - 4000) / 5000);
+            state.idleDrift = Math.min(1, (idleTime - 4000) / 5000);
         } else {
-            // Collapse to Reality
-            state.inactivityFactor = Math.max(0, state.inactivityFactor - 0.05);
+            state.idleDrift = Math.max(0, state.idleDrift - 0.05);
         }
     };
 
@@ -906,35 +940,6 @@ const ColorUtils = {
     }
 };
 
-// ============ ANIMATION LOOP ============
-function createAnimationLoop(updateFn, renderFn) {
-    let running = true;
-    let lastTime = 0;
-
-    function loop(timestamp) {
-        if (!running) return;
-
-        const deltaTime = timestamp - lastTime;
-        lastTime = timestamp;
-
-        updateFn(deltaTime / 1000);
-        renderFn();
-
-        requestAnimationFrame(loop);
-    }
-
-    requestAnimationFrame(loop);
-
-    return {
-        stop: () => { running = false; },
-        start: () => {
-            if (!running) {
-                running = true;
-                requestAnimationFrame(loop);
-            }
-        }
-    };
-}
 
 // ============ DRAGGABLE UI HELPER (POSITION) ============
 function makeUIElementDraggable(el, handle = null) {
@@ -1435,55 +1440,6 @@ function safeWebGLInit(initFunction) {
     }
 }
 
-// ============ CONTENT MODE TOGGLE (ELI5 / Expert) ============
-const CONTENT_MODES = ['eli5', 'standard', 'expert'];
-
-function getContentMode() {
-    return localStorage.getItem('waveism_content_mode') || 'standard';
-}
-
-function setContentMode(mode) {
-    if (!CONTENT_MODES.includes(mode)) mode = 'standard';
-
-    localStorage.setItem('waveism_content_mode', mode);
-
-    // Update body classes
-    document.body.classList.remove('eli5-mode', 'standard-mode', 'expert-mode');
-    document.body.classList.add(mode + '-mode');
-
-    // Update toggle buttons
-    document.querySelectorAll('.content-mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-    });
-
-    // Dispatch event for content updates
-    window.dispatchEvent(new CustomEvent('content-mode-change', { detail: { mode } }));
-
-    return mode;
-}
-
-function initContentModeToggle() {
-    // Check if already exists
-    if (document.querySelector('.content-mode-toggle')) return;
-
-    const toggle = document.createElement('div');
-    toggle.className = 'content-mode-toggle';
-    toggle.innerHTML = `
-        <button class="content-mode-btn" data-mode="eli5" title="Explain Like I'm 5">ELI5</button>
-        <button class="content-mode-btn" data-mode="standard" title="Standard Mode">STD</button>
-        <button class="content-mode-btn" data-mode="expert" title="Expert Level Detail">EXP</button>
-    `;
-    document.body.appendChild(toggle);
-
-    // Set initial mode
-    setContentMode(getContentMode());
-
-    // Add click handlers
-    toggle.querySelectorAll('.content-mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => setContentMode(btn.dataset.mode));
-    });
-}
-
 // ============ INTERACTIVE EQUATION BREAKDOWNS ============
 const EQUATION_TERMS = {
     // Common terms across modules
@@ -1944,7 +1900,7 @@ function initRelatedConcepts(currentPageId) {
         const item = NAVIGATION_ITEMS.find(n => n.id === conceptId);
         if (item) {
             const link = document.createElement('a');
-            link.href = item.href;
+            link.href = resolveModuleHref(item.href);
             link.className = 'related-concept-link';
             link.textContent = item.label;
             container.appendChild(link);
@@ -2150,27 +2106,10 @@ window.addEventListener('click', () => {
 }, { once: true });
 
 // ============ ENHANCED AUTO-INIT ============
-// Auto-Init on Load (for all pages)
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initOrbUI();
-        initInfoModal();
-        initAudioButton();
-        initOscilloscope();
-        initPageTransition();
-        initNavSlider();
-        initOnboardingHint();
-        initSlidersButton();
-        initShareButton();
-        initContextNote();
-
-        // Initialize StarField if container exists
-        const starContainer = document.getElementById('three-container') || document.getElementById('background-stars');
-        if (starContainer) initGlobalStarField(starContainer.id);
-
-        setTimeout(centerActiveNavItems, 100);
-    });
-} else {
+// Single init path for every page. shared.js is a blocking <script> in <head>,
+// so readyState is always 'loading' here — keeping two divergent lists meant
+// anything listed only in the 'else' branch never ran on any page.
+function initSharedUI() {
     initOrbUI();
     initInfoModal();
     initAudioButton();
@@ -2178,13 +2117,27 @@ if (document.readyState === 'loading') {
     initPageTransition();
     initNavSlider();
     initEquationInteractivity();
+    initKeyboardControls();
     initOnboardingHint();
     initSlidersButton();
     initShareButton();
     initContextNote();
+
+    // Derive the page id from the filename so related-concept links can be built.
+    const pageId = (window.location.pathname.split('/').pop() || 'index').replace('.html', '');
+    initRelatedConcepts(pageId);
+
+    // Initialize StarField if container exists
     const starContainer = document.getElementById('three-container') || document.getElementById('background-stars');
     if (starContainer) initGlobalStarField(starContainer.id);
+
     setTimeout(centerActiveNavItems, 100);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSharedUI);
+} else {
+    initSharedUI();
 }
 
 
@@ -2194,9 +2147,8 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         checkWebGLSupport,
         safeWebGLInit,
-        setContentMode,
-        getContentMode,
         initRelatedConcepts,
+        resolveModuleHref,
         EQUATION_TERMS
     };
 }

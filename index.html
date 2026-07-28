@@ -74,9 +74,9 @@
             font-display: block;
         }
     </style>
-    <link rel="stylesheet" href="components/shared.css?v=4">
+    <link rel="stylesheet" href="components/shared.css?v=5">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="components/shared.js?v=4"></script>
+    <script src="components/shared.js?v=5"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=JetBrains+Mono:wght@300;400;500&display=swap"
         rel="stylesheet">
@@ -771,16 +771,16 @@
     <script>
         const phases = [
             { id: 'intro', title: 'WAVEISM', question: 'What if the universe is not made of things, but of vibrations?', desc: 'An epistemic interface — from quantum to cosmic scale.', color: '#00ddff', scale: '∞', scaleSignificance: 'The Portal' },
-            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa', scale: '10⁻³⁵m', scaleSignificance: 'The Pixel Grid of Reality' },
-            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd', scale: '10⁻³⁰m', scaleSignificance: 'The Blur of Existence' },
+            { id: 'uncertainty', title: 'UNCERTAINTY', question: 'Is reality fundamentally blurry?', desc: 'The fundamental limit of precision in the vacuum.', color: '#9d4edd', scale: '10⁻³⁵m', scaleSignificance: 'The Planck Limit' },
             { id: 'wave_theory', title: 'WAVEISM', question: 'Is everything just a vibration?', desc: 'Unified framework of oscillatory reality.', color: '#7b2cbf', scale: '10⁻¹⁵m', scaleSignificance: 'The Vibration of Matter' },
+            { id: 'quantum', title: 'QUANTUM', question: 'Can you be in two places?', desc: 'Non-local field superposition and wave function collapse.', color: '#00ffaa', scale: '10⁻¹⁰m', scaleSignificance: 'The Atomic Scale' },
             { id: 'resonance', title: 'RESONANCE', question: 'Why does energy amplify?', desc: 'Coherent interference and entrainment protocols.', color: '#ff0055', scale: '10⁻⁶m', scaleSignificance: 'The Frequency of Life' },
-            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d', scale: '10⁰m', scaleSignificance: 'The Complexity of Now' },
-            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500', scale: '10⁵m', scaleSignificance: 'The Drift of Time' },
-            { id: 'fabric', title: 'FABRIC', question: 'What is empty space made of?', desc: 'The metric tensor substrate of reality.', color: '#00ddff', scale: '10¹⁰m', scaleSignificance: 'The Geometry of Space' },
+            { id: 'chaos', title: 'CHAOS', question: 'Can a butterfly cause a storm?', desc: 'Non-linear dynamics and strange attractors.', color: '#ff4d6d', scale: 'scale-free', scaleSignificance: 'The Complexity of Now' },
+            { id: 'arrow', title: 'ARROW', question: 'Why can\'t we reverse time?', desc: 'Entropy drift and the thermodynamic direction.', color: '#ff5500', scale: 'scale-free', scaleSignificance: 'The Drift of Time' },
+            { id: 'fabric', title: 'FABRIC', question: 'Is the future already written?', desc: 'Eternalism, the block universe, and the arrow of time.', color: '#00ddff', scale: 'scale-free', scaleSignificance: 'The Block Universe' },
+            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Event horizons, the ISCO, and the true singularity where curvature diverges.', color: '#ffaa00', scale: '10¹³m', scaleSignificance: 'A Supermassive Horizon' },
             { id: 'wormhole', title: 'WORMHOLE', question: 'Are there shortcuts in space?', desc: 'Topological bridges through the manifold.', color: '#4cc9f0', scale: '10¹⁵m', scaleSignificance: 'The Bridge of Causality' },
-            { id: 'spacetime', title: 'SPACETIME', question: 'Is the future already written?', desc: 'The 4D continuum of light cones and worldlines.', color: '#ff6b9d', scale: '10¹⁸m', scaleSignificance: 'The Block Universe' },
-            { id: 'blackhole', title: 'BLACK HOLE', question: 'What happens if you fall in?', desc: 'Infinite curvature and causal singularities.', color: '#ffaa00', scale: '10²¹m', scaleSignificance: 'The Edge of Physics' },
+            { id: 'spacetime', title: 'SPACETIME', question: 'What can you ever reach?', desc: 'Light cones, causality, and the 4D continuum of worldlines.', color: '#ff6b9d', scale: '10¹⁸m', scaleSignificance: 'The Causal Horizon' },
             { id: 'expansion', title: 'EXPANSION', question: 'Where is the universe going?', desc: 'Metric acceleration of the cosmic substrate.', color: '#b5179e', scale: '10²⁴m', scaleSignificance: 'The Cosmic Stretch' },
             { id: 'cosmic', title: 'COSMIC', question: 'What does the universe look like?', desc: 'Large-scale structure of galactic filaments.', color: '#0088ff', scale: '10²⁶m', scaleSignificance: 'The Web of Galaxies' },
             { id: 'create_wave', title: 'CREATE A WAVE', question: 'Can you trigger a ripple?', desc: 'Manual interaction with the cosmic medium.', color: '#ffffff', scale: '∞', scaleSignificance: 'The Observer\'s Touch' }
@@ -1152,48 +1152,6 @@
         }
         loop();
 
-        // PROCEDURAL SEA
-        function drawSea(c, w, h, t, color) {
-            const hLine = h * 0.5; // Dead Center Horizon
-
-            // Layered Depth (Multiple Wave Planes)
-            const layers = [
-                { offset: 0, speed: 1.0, opacity: 1, depth: 0, color: '#010105' },
-                { offset: 10, speed: 0.7, opacity: 0.3, depth: 40, color: color + '22' },
-                { offset: -5, speed: 1.3, opacity: 0.2, depth: -30, color: color + '11' }
-            ];
-
-            layers.forEach((layer, idx) => {
-                c.fillStyle = layer.color;
-                c.beginPath();
-                c.moveTo(0, h);
-                c.lineTo(0, hLine + layer.depth);
-
-                for (let x = 0; x <= w; x += 15) {
-                    const y = hLine + layer.depth +
-                        Math.sin(x * 0.004 + t * layer.speed) * 15 +
-                        Math.cos(x * 0.015 - t * 0.4 * layer.speed) * 8;
-                    c.lineTo(x, y);
-                }
-
-                c.lineTo(w, h);
-                c.fill();
-
-                if (idx === 0) { // Primary Neon Edge
-                    c.strokeStyle = color;
-                    c.lineWidth = 2;
-                    c.shadowBlur = 20; c.shadowColor = color;
-                    c.beginPath();
-                    for (let x = 0; x <= w; x += 15) {
-                        const y = hLine + Math.sin(x * 0.004 + t) * 15 + Math.cos(x * 0.015 - t * 0.4) * 8;
-                        x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
-                    }
-                    c.stroke();
-                    c.shadowBlur = 0;
-                }
-            });
-        }
-
         // TOTEM ARTIFACTS
         function drawTotem(c, w, h, t, id, color) {
             const cx = w / 2;
@@ -1318,10 +1276,19 @@
                 case 'chaos':
                     c.beginPath();
                     c.setLineDash([1, 2]);
-                    for (let i = 0; i < 120; i++) {
-                        const ang = t * 0.5 + i * 0.08;
-                        const r = s * Math.cos(3 * ang) * (0.8 + Math.sin(t) * 0.2);
-                        c.lineTo(r * Math.cos(ang), r * Math.sin(ang));
+                    // Clifford/De Jong strange attractor — a genuinely chaotic,
+                    // aperiodic, fractal trajectory. Previously this drew
+                    // r = cos(3θ), a closed periodic rose curve: the visual
+                    // opposite of a strange attractor.
+                    {
+                        const ca = -1.4 + Math.sin(t * 0.1) * 0.3, cb = 1.6, cc = 1.0, cd = 0.7;
+                        let cx = 0.1, cy = 0.1;
+                        for (let i = 0; i < 120; i++) {
+                            const nx = Math.sin(ca * cy) - Math.cos(cb * cx);
+                            const ny = Math.sin(cc * cx) - Math.cos(cd * cy);
+                            cx = nx; cy = ny;
+                            c.lineTo(cx * s * 0.45, cy * s * 0.45);
+                        }
                     }
                     c.stroke();
                     c.setLineDash([]);

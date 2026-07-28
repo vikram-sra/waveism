@@ -1,6 +1,9 @@
 /**
  * Hamiltonian Physics Engine for Epistemic Map
- * Energy-conserving graph dynamics with proper dimensional analysis
+ * Velocity-Verlet (symplectic) graph dynamics. Energy is genuinely conserved
+ * only when damping is disabled — with damping on (the default, so the graph
+ * layout actually settles) the system is deliberately dissipative, and
+ * getEnergyDrift() measures that intended loss, not integration error.
  */
 
 class Vector3 {
@@ -84,42 +87,16 @@ class HamiltonianNode {
         this.force = new Vector3();
     }
 
-    update(dt) {
-        if (this.isFixed) {
-            this.acceleration = new Vector3();
-            this.velocity = new Vector3();
-            return;
-        }
-
-        // Integral safety
+    // Integration itself now lives in HamiltonianSystem.update(), split into
+    // two phases so forces get recomputed at the NEW positions before the
+    // second half-kick (true velocity Verlet). Previously this method did
+    // both half-kicks using the SAME force sample (computed once per frame,
+    // before any node had moved) — a lagged, non-symplectic scheme despite
+    // the "Velocity Verlet" label.
+    sanitizePosition() {
         if (isNaN(this.position.x) || !isFinite(this.position.x)) this.position.x = Math.random() * 10 - 5;
         if (isNaN(this.position.y) || !isFinite(this.position.y)) this.position.y = Math.random() * 10 - 5;
         if (isNaN(this.position.z) || !isFinite(this.position.z)) this.position.z = Math.random() * 10 - 5;
-
-        // Velocity Verlet integration (symplectic, energy-conserving)
-        // v(t + dt/2) = v(t) + a(t) * dt/2
-        const halfDtAccel = this.acceleration.multiply(dt * 0.5);
-        let halfVel = this.velocity.add(halfDtAccel);
-
-        // x(t + dt) = x(t) + v(t + dt/2) * dt
-        this.position = this.position.add(halfVel.multiply(dt));
-
-        // a(t + dt) = F(t + dt) / m
-        this.acceleration = this.force.multiply(1 / this.mass);
-
-        // Safety clamp on acceleration
-        const accMag = this.acceleration.magnitude();
-        if (accMag > 10000) {
-            this.acceleration = this.acceleration.normalize().multiply(10000);
-        }
-
-        // v(t + dt) = v(t + dt/2) + a(t + dt) * dt/2
-        this.velocity = halfVel.add(this.acceleration.multiply(dt * 0.5));
-
-        // Final position safety
-        if (isNaN(this.position.x)) this.position.x = 0;
-        if (isNaN(this.position.y)) this.position.y = 0;
-        if (isNaN(this.position.z)) this.position.z = 0;
     }
 }
 
@@ -159,9 +136,9 @@ class HamiltonianSystem {
         this.epsilon = 1; // Softening parameter to prevent singularities
 
         // Simulation parameters
-        this.timestep = 1 / 60; // 60 Hz simulation
         this.maxVelocity = 500; // Stability cap
         this.equilibriumThreshold = 0.01; // Energy change tolerance
+        this.lastGravityStrength = 0.05; // set by applyAllForces each frame; matches updateEnergies' V_gravity
 
         // Energy tracking
         this.kineticEnergy = 0;
@@ -195,8 +172,18 @@ class HamiltonianSystem {
         return link;
     }
 
+    // Shared by computeCoulombForces and updateEnergies — the force must be
+    // the derivative of the SAME charge/coupling term used for the potential,
+    // or the "energy" readout doesn't correspond to the forces actually
+    // being integrated.
+    pairCharge(nodeA, nodeB) {
+        return (nodeA.r + nodeB.r) * (nodeA.information + nodeB.information) / 4;
+    }
+
     computeCoulombForces() {
-        // All-pairs repulsion: F = k * q1 * q2 / r^2
+        // All-pairs repulsion: F = k * charge / r^2, where "charge" is an
+        // effective coupling built from node size and information content
+        // (not a literal product of two independent charges).
         for (let i = 0; i < this.nodes.length; i++) {
             for (let j = i + 1; j < this.nodes.length; j++) {
                 const nodeA = this.nodes[i];
@@ -206,8 +193,7 @@ class HamiltonianSystem {
                 const distSq = delta.magnitude() ** 2 + this.epsilon;
                 const dist = Math.sqrt(distSq);
 
-                // Scale by "charge" (node size and information content)
-                const charge = (nodeA.r + nodeB.r) * (nodeA.information + nodeB.information) / 4;
+                const charge = this.pairCharge(nodeA, nodeB);
                 const forceMagnitude = (this.k_coulomb * charge) / distSq;
 
                 const forceDir = delta.normalize();
@@ -238,15 +224,18 @@ class HamiltonianSystem {
     }
 
     computeCentralGravity(strength = 0.01) {
-        // Weak harmonic potential centered at origin
-        // F = -k * r (proportional to distance, not 1/r^2)
+        // Harmonic potential centered at the origin: F = -k·r (linear in
+        // distance, V = ½k·r² — genuinely "weaker near center" since F→0 as
+        // r→0, with no extra scaling needed). Distance is capped at 300 so
+        // far-flung outliers get a bounded restoring force instead of one that
+        // keeps growing — previously the cap was multiplied into the strength
+        // AND then multiplied by r again, giving F ∝ r² instead of ∝ r.
         this.nodes.forEach(node => {
             const distFromCenter = node.position.magnitude();
             if (distFromCenter < 1) return;
 
-            // Stronger pull when far from center
-            const scaledStrength = strength * Math.min(1, distFromCenter / 300);
-            const force = node.position.multiply(-scaledStrength * node.mass);
+            const cappedDist = Math.min(distFromCenter, 300);
+            const force = node.position.normalize().multiply(-strength * node.mass * cappedDist);
             node.applyForce(force);
         });
     }
@@ -267,21 +256,42 @@ class HamiltonianSystem {
         });
     }
 
-    update(dt, params = {}) {
-        const { gravityStrength = 0.05, enableDamping = true } = params;
-
-        // Reset all forces
+    // Apply every force term to the (currently reset) per-node force accumulators.
+    applyAllForces(gravityStrength, enableDamping) {
+        this.lastGravityStrength = gravityStrength; // for updateEnergies' matching V_gravity
         this.nodes.forEach(node => node.resetForce());
-
-        // Apply all forces
         this.computeCoulombForces();
         this.computeSpringForces();
         this.computeCentralGravity(gravityStrength);
         this.computePlanarBias();
+        if (enableDamping) this.computeDamping();
+    }
 
-        if (enableDamping) {
-            this.computeDamping();
-        }
+    update(dt, params = {}) {
+        const { gravityStrength = 0.05, enableDamping = true } = params;
+
+        // True velocity Verlet: half-kick + drift using the acceleration
+        // already on hand, THEN recompute every force at the new positions,
+        // THEN take the second half-kick from that freshly-sampled force.
+        // Previously both half-kicks used the same force sample (taken once,
+        // before any node had moved this frame) — a lagged Euler step wearing
+        // a symplectic-integrator label.
+        this.nodes.forEach(node => {
+            if (node.isFixed) { node.velocity = new Vector3(); return; }
+            node.sanitizePosition();
+            node.velocity = node.velocity.add(node.acceleration.multiply(dt * 0.5));
+            node.position = node.position.add(node.velocity.multiply(dt));
+        });
+
+        this.applyAllForces(gravityStrength, enableDamping);
+
+        this.nodes.forEach(node => {
+            if (node.isFixed) { node.acceleration = new Vector3(); return; }
+            node.acceleration = node.force.multiply(1 / node.mass);
+            const accMag = node.acceleration.magnitude();
+            if (accMag > 10000) node.acceleration = node.acceleration.normalize().multiply(10000);
+            node.velocity = node.velocity.add(node.acceleration.multiply(dt * 0.5));
+        });
 
         // Velocity clamping for stability
         this.nodes.forEach(node => {
@@ -291,10 +301,6 @@ class HamiltonianSystem {
             }
         });
 
-        // Integrate equations of motion
-        this.nodes.forEach(node => node.update(dt));
-
-        // Compute energies
         this.updateEnergies();
     }
 
@@ -304,12 +310,17 @@ class HamiltonianSystem {
             return sum + 0.5 * node.mass * node.velocity.magnitude() ** 2;
         }, 0);
 
-        // Potential energy: V = V_coulomb + V_spring
+        // Potential energy: every conservative force term needs its matching
+        // potential here, with the SAME coefficients used to compute the
+        // force, or totalEnergy isn't the conserved quantity of the dynamics
+        // actually being integrated (previously V_gravity and V_planar were
+        // omitted entirely, and V_coulomb used a different charge formula
+        // than the force it's supposed to be the potential of).
         let V_coulomb = 0;
         for (let i = 0; i < this.nodes.length; i++) {
             for (let j = i + 1; j < this.nodes.length; j++) {
                 const dist = this.nodes[i].position.distanceTo(this.nodes[j].position);
-                const charge = (this.nodes[i].r + this.nodes[j].r) / 2;
+                const charge = this.pairCharge(this.nodes[i], this.nodes[j]);
                 V_coulomb += this.k_coulomb * charge / (dist + this.epsilon);
             }
         }
@@ -321,7 +332,20 @@ class HamiltonianSystem {
             V_spring += 0.5 * link.stiffness * displacement ** 2;
         });
 
-        this.potentialEnergy = V_coulomb + V_spring;
+        // V = ½k·r² for the capped-radius harmonic well in computeCentralGravity.
+        let V_gravity = 0;
+        this.nodes.forEach(node => {
+            const r = Math.min(node.position.magnitude(), 300);
+            V_gravity += 0.5 * this.lastGravityStrength * node.mass * r * r;
+        });
+
+        // V = ½k·z² for the z-axis harmonic pull in computePlanarBias.
+        let V_planar = 0;
+        this.nodes.forEach(node => {
+            V_planar += 0.5 * 0.02 * node.mass * node.position.z * node.position.z;
+        });
+
+        this.potentialEnergy = V_coulomb + V_spring + V_gravity + V_planar;
         this.totalEnergy = this.kineticEnergy + this.potentialEnergy;
 
         // Track energy history

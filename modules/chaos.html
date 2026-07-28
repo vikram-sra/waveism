@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -101,7 +101,7 @@
         <div class="theory-name" id="theory-name">The Lorenz Butterfly</div>
         <div class="theory-year" id="theory-year">Deterministic Chaos (1963)</div>
         <div class="equation-box">
-            <div class="equation-label">Attractor Topology</div>
+            <div class="equation-label" id="equation-label">Attractor Topology</div>
             <div class="equation" id="equation">dx/dt = σ(y - x)</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -146,14 +146,15 @@
             'sensitivity': {
                 name: 'Initial Sensitivity', year: 'Butterfly Effect',
                 equation: 'δx(t) ≈ e^(λt)δx(0)',
+                equationLabel: 'Lyapunov Divergence',
                 equationExpl: 'The Lyapunov divergence. It shows how initial errors grow exponentially in chaotic systems, making long-term prediction impossible.',
                 facts: [{ text: 'Exponential Drift', status: 'yes' }, { text: 'Ordered Collapse', status: 'yes' }],
-                description: 'A crystalline "Linear" system. Fundamentally unstable: a single perturbation introduces micro-errors that amplify exponentially into total entropy.',
+                description: 'A crystalline but NON-LINEAR system. Linearity cannot produce chaos — bounded exponential sensitivity requires non-linear coupling. A single perturbation seeds micro-errors that amplify exponentially until the ordered structure is unrecognisable.',
                 concepts: [
                     { term: 'Lyapunov Exponent', definition: 'The rate of trajectory divergence over time.' },
                     { term: 'Perturbation', definition: 'A slight deviation in the starting state.' }
                 ],
-                physics: 'Waveism: Reality is a balancing act. A single decoherent ripple can shatter the standing-wave manifold.',
+                physics: 'Waveism: Reality is a balancing act. A single ripple can shatter the standing-wave manifold. Note that chaos is fully deterministic — it is not randomness, and it destroys predictability rather than information.',
                 sliderConfig: { label: 'Initial δ', min: 0, max: 100, step: 1, default: 50, units: 'μm', decimals: 4 },
                 contextNote: 'A perfect crystal collapses — one tiny perturbation grows exponentially until order is destroyed.',
                 relevance: 'Why you can\'t predict the weather past 10 days. Tiny errors now become massive catastrophes later.',
@@ -164,10 +165,11 @@
             },
             'lorenz': {
                 name: 'Strange Attractor', year: 'Edward Lorenz',
-                equation: 'dx/dt = σ(y - x)',
-                equationExpl: 'The Lorenz Attractor equations. They represent a simplified model of atmospheric convection, leading to the famous butterfly-shaped strange attractor.',
+                equation: 'ẋ = σ(y−x),  ẏ = x(ρ−z)−y,  ż = xy−βz',
+                equationLabel: 'The Lorenz System',
+                equationExpl: 'The three Lorenz equations (σ=10, ρ=28, β=8/3), a stripped-down model of atmospheric convection. The chaos lives entirely in the two non-linear products xz and xy — drop them and the system becomes perfectly predictable.',
                 facts: [{ text: 'Deterministic', status: 'yes' }, { text: 'Non-Periodic', status: 'yes' }],
-                description: 'Deterministic unpredictability. The Attractor is a fractal manifold trapping trajectories in an infinite loop.',
+                description: 'Deterministic unpredictability. The attractor is a fractal set that confines every trajectory to a bounded region — but the path never closes and never repeats. It is bounded and aperiodic at the same time.',
                 concepts: [
                     { term: 'Butterfly Effect', definition: 'Infinitesimal perturbations cause macroscopic divergence.' },
                     { term: 'Fractal Dimension', definition: 'The non-integer geometry of chaotic sets.' }
@@ -183,10 +185,11 @@
             },
             'three-body': {
                 name: '3-Body Problem', year: 'Orbital Chaos',
-                equation: '∇²Φ = -4πGρ',
-                equationExpl: 'The Poisson equation for gravity. In the three-body problem, the overlapping potentials create non-linear motions that lead to chaotic orbits.',
+                equation: 'F = −G m₁m₂ r̂ / r²',
+                equationLabel: 'Newtonian Gravitation',
+                equationExpl: 'Newton\'s law of gravitation between point masses — which is what this simulation integrates. (Poisson\'s equation ∇²Φ = +4πGρ is the continuous-density form; note the PLUS sign, with g = −∇Φ.) With three bodies the mutual 1/r² pulls make the motion non-integrable and chaotic.',
                 facts: [{ text: 'Non-Integrable', status: 'yes' }, { text: 'Unstable', status: 'yes' }],
-                description: 'Unsolved astrodynamics. A 3rd body introduces non-linearities that lead to orbital ejection and system divergence.',
+                description: 'A third body introduces non-linearities that lead to orbital ejection and divergence. Not "unsolved" — Sundman gave a convergent series solution in 1912. What does not exist is a general closed form in elementary functions, and the series converges far too slowly to predict with.',
                 concepts: [
                     { term: 'KAM Theory', definition: 'The physics of near-integrable stability.' },
                     { term: 'Symplectic Flow', definition: 'Energy-conserving paths in phase space.' }
@@ -194,7 +197,7 @@
                 physics: 'Waveism: Gravitational bodies are resonant spikes whose worldlines tangle in the manifold.',
                 sliderConfig: { label: '3rd Body Mass', min: 0, max: 100, step: 1, default: 50, units: ' M', decimals: 2 },
                 contextNote: 'Three orbiting bodies — their mutual gravity creates unsolvable, chaotic trajectories.',
-                relevance: 'There is no formula for the future. Even simple systems like our solar system are fundamentally unstable over long timescales.',
+                relevance: 'No usable closed-form formula for the future. Even our own solar system is only marginally stable, with planetary orbits chaotic on timescales of a few million years.',
                 sources: [
                     'Poincaré, H. (1890). Sur le problème des trois corps et les équations de la dynamique.',
                     'Musielak, Z.E., & Quarles, B. (2014). The three-body problem. Reports on Progress in Physics.'
@@ -203,7 +206,8 @@
             'pendulum': {
                 name: 'Double Pendulum', year: 'Lagrangian Chaos',
                 equation: 'L = T - V',
-                equationExpl: 'The Lagrangian for mechanical systems. For a double pendulum, the coupling between the arms creates a high-dimensional phase space dominated by chaos.',
+                equationLabel: 'The Lagrangian',
+                equationExpl: 'The Lagrangian, L = kinetic minus potential energy. The double pendulum has just a 4-dimensional phase space, yet the coupling between the arms makes it chaotic — above a threshold energy. Swing it gently and the motion stays regular and quasi-periodic.',
                 facts: [{ text: 'Highly Unstable', status: 'yes' }, { text: 'Coupled Modes', status: 'yes' }],
                 description: 'Mechanical unpredictability. Coupled weights form non-linear feedback loops, creating motion that defies intuition.',
                 concepts: [
@@ -222,17 +226,19 @@
             'logistic': {
                 name: 'Logistic Map', year: 'Universal Chaos',
                 equation: 'x_(n+1) = r x_n(1 - x_n)',
+                equationLabel: 'The Logistic Map',
                 equationExpl: 'The Logistic Map. This recursive relation exhibits the universal path to chaos through period-doubling bifurcations as the parameter (r) increases.',
                 facts: [{ text: 'Feigenbaum δ', status: '4.669' }, { text: 'Universality', status: 'yes' }],
-                description: 'Mathematical proof of universal chaos. The path to turbulence follows a precise "Period Doubling" geometric ratio in all systems.',
+                description: 'The period-doubling route to chaos. Successive bifurcation intervals shrink by a fixed ratio δ = 4.669…, the same for every smooth unimodal map with a quadratic maximum — a large and surprising class, though not literally every system.',
                 concepts: [
-                    { term: 'Feigenbaum Constant', definition: 'The universal ratio governing the onset of chaos.' },
+                    { term: 'Feigenbaum Constant', definition: 'δ = 4.66920… — the limiting ratio between successive bifurcation intervals. It describes how the cascade converges, not the onset itself.' },
+                    { term: 'Accumulation Point', definition: 'The cascade piles up at r∞ = 3.5699456…, and chaos begins beyond it. Above r∞ windows of periodicity still reappear.' },
                     { term: 'Self-Similarity', definition: 'Infinite nested copies of the system structure.' }
                 ],
                 physics: 'Waveism: Geometric template for entropy production in high-energy manifolds.',
                 sliderConfig: { label: 'Grain Size', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'A simple equation that reveals the universal path to chaos through period-doubling.',
-                relevance: 'Universality: The same mathematical constant (Feigenbaum\'s 4.669...) governs dripping faucets, heart fibrillations, and population crashes.',
+                relevance: 'Universality: the same constant (4.669…) shows up in dripping faucets, convection rolls, and population models — any system whose dynamics reduce to a smooth map with a single quadratic hump.',
                 sources: [
                     'Feigenbaum, M.J. (1978). Quantitative universality for a class of nonlinear transformations. Journal of Statistical Physics.',
                     'May, R.M. (1976). Simple mathematical models with very complicated dynamics. Nature.'
@@ -372,6 +378,10 @@
                 initThreeBody();
             } else if (currentMode === 'pendulum') {
                 pendulumData = { a1: Math.PI / 2, a2: Math.PI / 2 + p1, v1: 0, v2: 0, trail: [] };
+            } else if (currentMode === 'logistic') {
+                // "Grain Size" was previously wired to nothing.
+                const cloud = activeGroup && activeGroup.children.find(c => c.type === 'Points');
+                if (cloud) cloud.material.size = 0.03 + p1 * 0.25;
             }
         }
 
@@ -481,7 +491,6 @@
                     if (p.trail.length > 1000) p.trail.shift();
                     lorenzData.lines[i].geometry.setFromPoints(p.trail);
                 });
-                const d = lorenzData.pts[0].trail[lorenzData.pts[0].trail.length - 1].distanceTo(lorenzData.pts[1].trail[lorenzData.pts[1].trail.length - 1]);
             } else if (currentMode === 'three-body') {
                 const G = 100.0;
                 for (let s = 0; s < 10; s++) {
@@ -530,9 +539,6 @@
                 pendulumData.trail.push(new THREE.Vector3(x2, y2, 0));
                 if (pendulumData.trail.length > 200) pendulumData.trail.shift();
                 activeGroup.getObjectByName("trail").geometry.setFromPoints(pendulumData.trail);
-                pendulumData.trail.push(new THREE.Vector3(x2, y2, 0));
-                if (pendulumData.trail.length > 200) pendulumData.trail.shift();
-                activeGroup.getObjectByName("trail").geometry.setFromPoints(pendulumData.trail);
             } else if (currentMode === 'sensitivity') {
                 const mesh = activeGroup.getObjectByName("unstable_mesh");
                 if (mesh) {
@@ -542,10 +548,15 @@
                     // "Collapse into a different form" implies permanent or semi-permanent change.
                     // Let's make it explode then re-form slowly.
 
+                    // δx(t) ≈ e^(λt)δx(0): growth compounds on itself, not a flat
+                    // per-frame increment — the whole point of a Lyapunov exponent
+                    // is that divergence is exponential in time, not linear.
+                    const lambda = 0.3 + p1 * 3.5;
                     if (isInteracting) {
-                        mesh.userData.chaosFactor += 0.05 * (p1 * 2); // p1 is fragility
+                        mesh.userData.chaosFactor = Math.max(0.0001, mesh.userData.chaosFactor) * Math.exp(lambda * dt);
+                        mesh.userData.chaosFactor = Math.min(2.5, mesh.userData.chaosFactor); // clamp for visibility
                     } else {
-                        mesh.userData.chaosFactor *= 0.98; // Heal slowly
+                        mesh.userData.chaosFactor *= 0.985; // Heal slowly
                     }
 
                     const chaos = mesh.userData.chaosFactor;
@@ -595,7 +606,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

@@ -3,17 +3,21 @@
  * Enables offline PWA support with intelligent caching strategies
  */
 
-const CACHE_VERSION = 'waveism-v1.3.0';
+const CACHE_VERSION = 'waveism-v1.4.0';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const DYNAMIC_CACHE = CACHE_VERSION + '-dynamic';
 
-// Core assets that should always be cached
+// Core assets that should always be cached.
+// Pages request shared.css/shared.js with a ?v= cache-buster; the lookups below
+// use { ignoreSearch: true } so those still resolve to these entries.
 const CORE_ASSETS = [
     './',
     './index.html',
     './manifest.json',
     './components/shared.css',
     './components/shared.js',
+    './favicon.png',
+    './icons/icon-180.png',
     './icons/icon-192.png',
     './icons/icon-512.png'
 ];
@@ -48,10 +52,12 @@ self.addEventListener('install', (event) => {
         caches.open(STATIC_CACHE)
             .then(cache => {
                 console.log('[SW] Caching core assets...');
-                // Cache core assets first
+                // Both lists are non-blocking: addAll() rejects atomically, so a
+                // single 404 would otherwise abort the whole install and leave
+                // the site with no offline cache at all.
                 return cache.addAll(CORE_ASSETS)
+                    .catch(err => console.warn('[SW] Some core assets failed to cache:', err))
                     .then(() => {
-                        // Try to cache page assets (non-blocking)
                         return cache.addAll(PAGE_ASSETS).catch(err => {
                             console.warn('[SW] Some page assets failed to cache:', err);
                         });
@@ -122,7 +128,7 @@ self.addEventListener('fetch', (event) => {
                 })
                 .catch(() => {
                     // Offline - try cache
-                    return caches.match(request)
+                    return caches.match(request, { ignoreSearch: true })
                         .then(cachedResponse => {
                             if (cachedResponse) {
                                 return cachedResponse;
@@ -133,9 +139,10 @@ self.addEventListener('fetch', (event) => {
                 })
         );
     } else {
-        // Cache First for static assets (JS, CSS, images, fonts)
+        // Cache First for static assets (JS, CSS, images, fonts).
+        // ignoreSearch so './components/shared.js' also serves '...?v=4'.
         event.respondWith(
-            caches.match(request)
+            caches.match(request, { ignoreSearch: true })
                 .then(cachedResponse => {
                     if (cachedResponse) {
                         return cachedResponse;

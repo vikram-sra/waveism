@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Fabric of Cosmos | Eternalism & Block Time</title>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -98,7 +98,7 @@
         <div class="theory-name" id="theory-name">Eternalist Block Universe</div>
         <div class="theory-year" id="theory-year">Minkowski Space-Time</div>
         <div class="equation-box">
-            <div class="equation-label">World-Line Metric</div>
+            <div class="equation-label" id="equation-label">World-Line Metric</div>
             <div class="equation" id="equation">ds² = -c²dt² + dx² + dy² + dz²</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -143,14 +143,15 @@
             'loaf': {
                 name: 'The 4D Loaf', year: 'Special Relativity',
                 equation: 'ds² = -c²dt² + dx²',
+                equationLabel: 'Minkowski Interval',
                 equationExpl: 'The 1D+1D Minkowski metric. Similar to a slice of bread in a loaf, your velocity determines the angle of your Now in the 4D spacetime continuum.',
                 facts: [{ text: 'Sliceable', status: 'yes' }, { text: 'Relative Now', status: 'yes' }],
-                description: 'Brian Greene\'s "Bread Loaf" analogy. The universe exists as a static block. Your velocity determines the angle at which you slice this block to define "Now." Movement through space is literally a rotation of your temporal axis.',
+                description: 'Brian Greene\'s "Bread Loaf" analogy. The universe is pictured as a static block; your velocity determines the angle at which you slice it to define "Now." A boost tilts that slice — though it is a HYPERBOLIC rotation through rapidity, not the ordinary circular kind, which is why you can never tilt your Now past the light cone.',
                 concepts: [
                     { term: 'Simultaneity', definition: 'The "Now" slice shifts based on orientation in the block.' },
                     { term: 'Eternalism', definition: 'All parts of the loaf are equally real at all times.' }
                 ],
-                physics: 'Lorentz transformations physically rotate your "plane of simultaneity" within the 4D manifold. There is no universal clock. This proves reality is a static geometric object, the perfect substrate for resonant waveforms.',
+                physics: 'Lorentz transformations tilt your plane of simultaneity within the 4D manifold, and there is no universal clock — both are settled physics. That the block is therefore all equally REAL (eternalism) is a philosophical reading of relativity, not a theorem it proves; the presentist reading of the same mathematics remains live.',
                 sliderConfig: { label: 'Lorentz Boost', min: -90, max: 90, step: 1, default: 0, units: 'c', decimals: 1 },
                 contextNote: 'Your velocity rotates your Now-slice through a static 4D block — there is no universal clock.',
                 relevance: 'Your motion literally rotates your definition of "Now". Simultaneous events for you are sequential for someone else.',
@@ -161,8 +162,9 @@
             },
             'river': {
                 name: 'The Frozen River', year: 'Static Manifold',
-                equation: '∇·J = 0 (Static Flux)',
-                equationExpl: 'The continuity equation for static flux. It represents the "Frozen River" view where the timeline is a pre-existing vector field with no dynamic flow.',
+                equation: '∂ρ/∂t + ∇·J = 0',
+                equationLabel: 'The Continuity Equation',
+                equationExpl: 'The continuity equation: local density changes only by flux in or out — nothing is created or destroyed. Its steady-state case, ∇·J = 0, is what a genuinely unchanging field would satisfy. Note this is a conservation law borrowed as a metaphor here, not a statement about the nature of time.',
                 facts: [{ text: 'Flow = Illusion', status: 'yes' }, { text: 'Immutable', status: 'yes' }],
                 description: 'Critique of the "Flow" metaphor. If time flows, it must flow *with respect* to something else (hypertime?), leading to infinite regress. The "Frozen River" model posits that spacetime is a static, pre-existing manifold.',
                 concepts: [
@@ -172,7 +174,7 @@
                 physics: 'General Relativity treats spacetime as a field equation solution. This static field is the non-local medium through which Waveism propagates.',
                 sliderConfig: { label: 'Flow Rate', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'If time flows, what does it flow with respect to? The river is frozen — only your cursor moves.',
-                relevance: 'Challenges the feeing that time "moves". Physics suggests the river is frozen; only your consciousness creates the flow.',
+                relevance: 'Challenges the feeling that time "moves". On the block reading the river is frozen and the sense of flow is perspectival — but this is an interpretation of relativity, and whether becoming is real remains an open question in philosophy of physics.',
                 sources: [
                     'Weyl, H. (1949). Philosophy of Mathematics and Natural Science.',
                     'McTaggart, J.E. (1908). The Unreality of Time.'
@@ -181,6 +183,7 @@
             'entropy': {
                 name: 'The Entropy Arrow', year: 'Second Law',
                 equation: 'S = k_B ln Ω',
+                equationLabel: 'Boltzmann Entropy',
                 equationExpl: 'The Boltzmann entropy formula. It links the macroscopic state of a system to the number of microstates (Ω), explaining why order naturally decays.',
                 facts: [{ text: 'Irreversible', status: 'yes' }, { text: 'Axiomatic Heat', status: 'yes' }],
                 description: 'Order decays into noise. The "future" is simply the direction of statistically higher entropy. Time\'s arrow is the dissipation of initial low-entropy tension into the vacuum.',
@@ -188,7 +191,7 @@
                     { term: 'Phase Space', definition: 'The map of all possible configurations of the system.' },
                     { term: 'Degradation', definition: 'The irreversible transition from order to statistical chaos.' }
                 ],
-                physics: 'Entropy is the decoherence of wave-functions. Time is the measurement of this phase-drift from order to noise.',
+                physics: 'Entropy counts the microstates consistent with a macrostate. Decoherence is one mechanism that drives a system toward higher-entropy mixtures, but it is not what entropy IS — the concept predates quantum mechanics entirely.',
                 sliderConfig: { label: 'Disorder (S)', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'Order decays — the future is simply the direction of higher entropy.',
                 relevance: 'The only physical difference between past and future is that the past was tidier. Time is just a measure of mess.',
@@ -200,7 +203,8 @@
             'expansion': {
                 name: 'Metric Expansion', year: 'Hubble-Lemaître',
                 equation: 'a(t) ∝ t^(2/3)',
-                equationExpl: 'The scale factor evolution for a matter-dominated universe. It describes how the physical distance between non-interacting points grows over time.',
+                equationLabel: 'Matter-Era Scale Factor',
+                equationExpl: 'The scale factor for a MATTER-dominated universe — the regime that held for most of cosmic history. It is decelerating. Our universe has been dark-energy dominated for the last ~5 billion years and now expands close to exponentially, a(t) ∝ e^(Ht).',
                 facts: [{ text: 'Fabric Stretching', status: 'yes' }, { text: 'Non-Local', status: 'yes' }],
                 description: 'Galaxies aren\'t moving *through* space; space itself is stretching between them. Hubble\'s Law quantifies the expansion of the metric field itself.',
                 concepts: [
@@ -421,9 +425,17 @@
                     if (points) {
                         const pos = points.geometry.attributes.position.array;
                         const orig = points.userData.originals;
-                        const decay = p1 * 5;
+                        // Accumulating random walk, not a fixed-amplitude re-jitter
+                        // around the start point — displacement genuinely grows
+                        // over time (irreversible diffusion) instead of being
+                        // static noise that never actually decays from order.
+                        if (!points.userData.disp) points.userData.disp = new Float32Array(pos.length);
+                        const disp = points.userData.disp;
+                        const rate = p1 * 0.4;
                         for (let i = 0; i < pos.length; i++) {
-                            pos[i] = orig[i] + (Math.random() - 0.5) * decay;
+                            disp[i] += (Math.random() - 0.5) * rate;
+                            disp[i] = Math.max(-6, Math.min(6, disp[i])); // saturate, don't reset
+                            pos[i] = orig[i] + disp[i];
                         }
                         points.geometry.attributes.position.needsUpdate = true;
                     }
@@ -443,7 +455,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

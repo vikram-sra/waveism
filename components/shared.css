@@ -693,6 +693,27 @@ body:not(.ui-open) .context-note {
     background: #ffaa00;
 }
 
+.fact-dot.required {
+    background: #ff8800;
+}
+
+.fact-dot.active {
+    background: #00ffff;
+}
+
+.fact-dot.high {
+    background: #ff4466;
+}
+
+/* Numeric/literal fact statuses (e.g. Feigenbaum δ = 4.669) rendered as a value
+   chip rather than being dropped as an invalid CSS class. */
+.fact-value {
+    font-family: var(--font-mono, monospace);
+    color: rgba(0, 255, 255, 0.9);
+    opacity: 0.85;
+    margin-left: 0.35em;
+}
+
 /* ============ CHRONOS CONTROL DECK (POPUP) ============ */
 .params-panel {
     position: absolute;
@@ -1357,68 +1378,6 @@ body:not(.ui-open) canvas {
 }
 
 /* ============ CONTENT MODE TOGGLE (ELI5 / Expert) ============ */
-.content-mode-toggle {
-    position: fixed;
-    top: 85px;
-    right: 60px;
-    display: flex;
-    gap: 2px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(0, 255, 255, 0.2);
-    border-radius: 4px;
-    padding: 2px;
-    z-index: 105;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.content-mode-btn {
-    background: transparent;
-    border: none;
-    color: rgba(0, 255, 255, 0.4);
-    padding: 6px 10px;
-    font-size: 0.55rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-radius: 3px;
-    letter-spacing: 0.05em;
-}
-
-.content-mode-btn:hover {
-    color: rgba(0, 255, 255, 0.8);
-    background: rgba(0, 255, 255, 0.05);
-}
-
-.content-mode-btn.active {
-    background: rgba(0, 255, 255, 0.15);
-    color: #00ffff;
-}
-
-/* ELI5 Mode - Simplify visuals */
-body.eli5-mode .equation {
-    font-size: 0.7rem;
-    opacity: 0.7;
-}
-
-body.eli5-mode .info-section p {
-    font-size: 0.9rem;
-    line-height: 1.8;
-}
-
-/* Expert Mode - Dense information */
-body.expert-mode .equation {
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-}
-
-body.expert-mode .info-section p {
-    font-size: 0.75rem;
-    line-height: 1.4;
-}
-
-body.expert-mode .theory-facts {
-    font-size: 0.55rem;
-}
-
 /* ============ INTERACTIVE EQUATION TERMS ============ */
 .equation .term {
     cursor: help;

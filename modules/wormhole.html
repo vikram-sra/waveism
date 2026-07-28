@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wormholes | Metric Bridges</title>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -93,8 +93,8 @@
         <div class="theory-name" id="theory-name">Morris-Thorne Bridge</div>
         <div class="theory-year" id="theory-year">Traversable Lorentzian Wormhole (1988)</div>
         <div class="equation-box">
-            <div class="equation-label">The Metric</div>
-            <div class="equation" id="equation">ds² = -e²Φ dt² + dl² + r²dΩ²</div>
+            <div class="equation-label" id="equation-label">The Metric</div>
+            <div class="equation" id="equation">ds² = −e^(2Φ(l)) c²dt² + dl² + r(l)²dΩ²</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
     </div>
@@ -138,6 +138,7 @@
             'morris-thorne': {
                 name: 'Morris-Thorne Metric', year: 'Morris & Thorne, 1988',
                 equation: 'z(r) = ±b₀ ln(r/b₀ + √(r²/b₀² − 1))',
+                equationLabel: 'Embedding Profile',
                 equationExpl: 'The embedding formula for a traversable wormhole. It describes the geometric shape of the bridge connecting two distant regions of spacetime.',
                 facts: [{ text: 'Traversable', status: 'yes' }, { text: 'Exotic Matter', status: 'required' }],
                 description: 'The standard model for a shortcut through spacetime. Unlike Schwarzschild holes, this metric is designed to be traversable, meaning an observer can pass through the throat in finite proper time without being crushed by tidal forces.',
@@ -149,7 +150,7 @@
                 physics: 'In Waveism, a wormhole is a "Phase Tunnel"—a localized shortcut in the cosmic substrate where the wave-function maps one spatial coordinate directly onto another across the manifold.',
                 sliderConfig: { label: 'Throat r₀', min: 1, max: 100, step: 1, default: 30, units: ' r₀', decimals: 0 },
                 contextNote: 'A traversable shortcut through spacetime — requiring exotic matter to keep the throat open.',
-                relevance: 'The only theoretically valid way to travel faster than light without breaking causality (maybe).',
+                relevance: 'A shortcut through topology, not a fast trip through space — travel inside the throat is never locally faster than light. And it is not causality-safe: Morris, Thorne & Yurtsever showed the same year that a traversable wormhole can generically be turned into a time machine.',
                 sources: [
                     'Morris, M.S., & Thorne, K.S. (1988). Wormholes in spacetime and their use for interstellar travel.',
                     'Visser, M. (1995). Lorentzian Wormholes: From Einstein to Hawking.'
@@ -158,11 +159,12 @@
             'ellis': {
                 name: 'Ellis Drainhole', year: 'Homer Ellis, 1973',
                 equation: 'z(r) = a acosh(r/a)',
+                equationLabel: 'Ellis Embedding',
                 equationExpl: 'The Ellis-Bronnikov metric. It represents a catenoid bridge supported by a scalar field, creating a smooth "drainhole" in the manifold.',
                 facts: [{ text: 'Massless Bridge', status: 'yes' }, { text: 'Scalar-Tensor', status: 'yes' }],
                 description: 'First described as a "drainhole" in space, this solution represents a catenoid-shaped bridge connecting two sheets of space. It arises in theories where a scalar field interacts with gravity.',
                 concepts: [
-                    { term: 'Catenoid Geometry', definition: 'The minimal surface area formed by stretching a manifold between two points.' },
+                    { term: 'Catenoid Geometry', definition: 'The minimal surface spanning two coaxial circular rings — the shape a soap film takes between them.' },
                     { term: 'Phantom Matter', definition: 'A theoretical substance with negative kinetic energy used to support the drainhole.' }
                 ],
                 physics: 'The Ellis bridge represents a "Static Harmonic Node" in the vacuum. It is a stable, non-collapsing topological defect in the universal field.',
@@ -176,7 +178,8 @@
             },
             'visser': {
                 name: 'Visser Thin-Shell', year: 'Matt Visser, 1989',
-                equation: 'S_μν = Thin-Shell Stress',
+                equation: 'S_μν = −(1/8πG)([K_μν] − h_μν[K])',
+                equationLabel: 'Lanczos Junction Condition',
                 equationExpl: 'The Visser thin-shell condition. It uses a surface of exotic matter at the junction of two spacetimes to minimize the required negative energy.',
                 facts: [{ text: 'Low Exotic Matter', status: 'yes' }, { text: 'Cut-and-Paste', status: 'yes' }],
                 description: 'A more economically "realistic" wormhole formed by taking two flat spacetimes and sewing them together at a thin spherical shell. This minimizes the volume of exotic matter needed to support the bridge.',
@@ -195,21 +198,24 @@
             },
             'alcubierre': {
                 name: 'Alcubierre Warp Drive', year: 'Miguel Alcubierre, 1994',
-                equation: 'v_s(t) = d|x_s|/dt',
+                equation: 'v_s(t) = dx_s(t)/dt',
+                equationLabel: 'Warp Bubble Velocity',
                 equationExpl: 'The Alcubierre velocity relation. It describes the speed of a warp bubble generated by contracting space in front and expanding it behind.',
-                facts: [{ text: 'Apparent FTL', status: 'yes' }, { text: 'Space Expansion', status: 'yes' }],
+                facts: [{ text: 'Apparent FTL', status: 'yes' }, { text: 'Space Expansion', status: 'yes' }, { text: 'Exotic Matter', status: 'required' }, { text: 'Causality Safe', status: 'no' }],
                 description: 'While not a wormhole, it uses similar metric-warping physics. It contracts space in front and expands it behind, allowing a ship to travel faster than light relative to distant stars while remaining stationary in its local "bubble".',
                 concepts: [
                     { term: 'Warp Bubble', definition: 'The region of distorted spacetime that surrounds and protects the traveler.' },
-                    { term: 'Tension Metric', definition: 'The extreme metric pressure required to "push" and "pull" space at FTL speeds.' }
+                    { term: 'Tension Metric', definition: 'The extreme metric distortion required to "push" and "pull" space at FTL speeds.' },
+                    { term: 'Negative Energy', definition: 'Like the wormholes in this module, the Alcubierre metric requires a large negative energy density — it violates the null and weak energy conditions. It also permits closed timelike curves.' }
                 ],
                 physics: 'Warp travel is "Metric Surfing"—creating a wave-pulse in the vacuum and riding its crest across the universe.',
                 sliderConfig: { label: 'Warp Velocity', min: 1, max: 100, step: 1, default: 50, units: 'c', decimals: 1 },
                 contextNote: 'Contract space ahead, expand it behind — the ship stays still while the universe moves around it.',
-                relevance: 'Star Trek physics made real(ish). The ship doesn\'t move; it surfs a wave of twisted space, bypassing the speed of light limit.',
+                relevance: 'A valid solution of the field equations, but one that must be fed exotic matter with negative energy density — no known substance qualifies. The ship never moves faster than light locally; the bubble does the travelling.',
                 sources: [
                     'Alcubierre, M. (1994). The warp drive: hyper-fast travel within general relativity.',
-                    'White, H. (2013). Warp Field Mechanics 101.'
+                    'Pfenning, M.J., & Ford, L.H. (1997). The unphysical nature of Warp Drive. Classical and Quantum Gravity.',
+                    'Morris, M.S., Thorne, K.S., & Yurtsever, U. (1988). Wormholes, Time Machines, and the Weak Energy Condition.'
                 ]
             }
         };
@@ -313,8 +319,11 @@
                             vec3 pos = position;
                             float d = length(pos);
                             if (d > 0.0) {
+                                // Gravitational deflection falls off as 1/b (impact
+                                // parameter), not 1/d² — theta = 4GM/(c^2 b) is the
+                                // module's own equation, quoted elsewhere on this site.
                                 float strength = uTension * 22.0;
-                                float warp = (uThroatRadius * uThroatRadius) / (d * d);
+                                float warp = uThroatRadius / d;
                                 pos = pos + normalize(pos) * warp * strength;
                             }
                             vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
@@ -347,7 +356,10 @@
                 const points = [];
                 for (let i = -gridRes; i <= gridRes; i++) {
                     const l = (i / gridRes) * radius;
-                    const r = p1 + (l * l) / (radius * 0.5);
+                    // r(l) = sqrt(l² + b₀²) — the actual inverse of the embedding
+                    // z(r) equations shown on this panel. Asymptotically flat
+                    // (r → |l| far from the throat), unlike a parabola.
+                    const r = Math.sqrt(l * l + p1 * p1);
                     points.push(new THREE.Vector2(r, l));
                 }
                 const geo = new THREE.LatheGeometry(points, 32);
@@ -417,8 +429,9 @@
                 mesh.name = "bridge";
                 activeGroup.add(mesh);
 
-                const shellGeo = new THREE.BoxGeometry(p1 * 3, 2, p1 * 3);
-                const shellMat = new THREE.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0.4 });
+                // Thin SPHERICAL shell (Visser's construction), not a flat slab.
+                const shellGeo = new THREE.SphereGeometry(p1 * 1.6, 24, 24);
+                const shellMat = new THREE.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0.25, wireframe: true });
                 const shell = new THREE.Mesh(shellGeo, shellMat);
                 shell.name = "visser_shell";
                 activeGroup.add(shell);
@@ -465,15 +478,22 @@
             const lensingStars = activeGroup.getObjectByName("lensing_stars");
             if (lensingStars && lensingStars.material.uniforms) {
                 lensingStars.material.uniforms.uThroatRadius.value = p1;
-                lensingStars.material.uniforms.uTension.value = timeScale;
+                // Lensing strength depends on the throat's mass-energy, not on
+                // simulation playback speed — was wrongly wired to timeScale.
+                lensingStars.material.uniforms.uTension.value = 1.0;
             }
 
             if (currentMode === 'alcubierre') {
                 const ring = activeGroup.getObjectByName("warp_ring");
                 if (ring) {
-                    ring.position.z = Math.sin(time * 2) * 5;
-                    ring.scale.setScalar(1 + Math.sin(time * 5) * 0.05);
+                    // p1 is "Warp Velocity (c)" — was previously never read.
+                    const v = p1 / 100;
+                    ring.position.z = Math.sin(time * 2 * (0.3 + v)) * 5;
+                    ring.scale.setScalar(1 + Math.sin(time * 5) * 0.05 * (0.3 + v));
+                    ring.material.emissiveIntensity = 0.5 + v * 1.5;
                 }
+                const ship = activeGroup.children.find(c => c.geometry && c.geometry.type === 'SphereGeometry');
+                if (ship) ship.material.opacity = 0.05 + (p1 / 100) * 0.25;
             }
         }
 
@@ -501,7 +521,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

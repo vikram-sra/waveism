@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -104,8 +104,8 @@
         <div class="theory-name" id="theory-name">Minkowski Light Cone</div>
         <div class="theory-year" id="theory-year">The Geometry of Causality (1908)</div>
         <div class="equation-box">
-            <div class="equation-label">The Invariant Interval</div>
-            <div class="equation" id="equation">ds² = c²dt² - dx² - dy² - dz²</div>
+            <div class="equation-label" id="equation-label">The Invariant Interval</div>
+            <div class="equation" id="equation">ds² = -c²dt² + dx² + dy² + dz²</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
     </div>
@@ -148,8 +148,9 @@
         const theories = {
             'block-universe': {
                 name: 'Block Universe', year: 'Eternalism Protocol',
-                equation: 'M⁴ = R³ × T',
-                equationExpl: 'The 4D Minkowski manifold is the Cartesian product of 3D Euclidean space and 1D time. It implies space and time are fundamentally unified.',
+                equation: 'M⁴ = (ℝ⁴, η_μν),  η = diag(−1, 1, 1, 1)',
+                equationLabel: 'Minkowski Manifold',
+                equationExpl: 'Minkowski spacetime is ℝ⁴ equipped with the metric η_μν. Splitting it into "space × time" is a choice of coordinates, not a property of the manifold — what actually unifies the two is the indefinite metric, whose minus sign on the time term keeps time from being just a fourth spatial direction.',
                 facts: [{ text: 'Formal Past', status: 'yes' }, { text: 'Static Future', status: 'yes' }],
                 description: 'The 4D "Meatloaf". Space and time exist as a singular, immutable solid. Your "Now" is a cross-sectional slice traversing the continuum.',
                 concepts: [
@@ -168,15 +169,16 @@
             'light-cone': {
                 name: 'Light Cone Topology', year: 'Minkowski Geometry',
                 equation: 'ds² = 0',
+                equationLabel: 'The Null Interval',
                 equationExpl: 'The interval ds² is zero for any path traveling at the speed of light. This defines the absolute causal boundary of the universe.',
                 facts: [{ text: 'Absolute Future', status: 'yes' }, { text: 'Causal Limit', status: 'yes' }],
-                description: 'Causality boundaries. Light defines a 45° manifold. Outside lies "Absolute Elsewhere"—regions biologically unreachable from the origin.',
+                description: 'Causality boundaries. In units where c = 1 light traces a 45° cone. Outside it lies the "Absolute Elsewhere" — regions causally unreachable from the origin, which no signal can reach and none can arrive from.',
                 concepts: [
                     { term: 'Causal Horizon', definition: 'The limit where signal propagation is blocked by light speed.' },
                     { term: 'Null Geodesic', definition: 'The trajectory of photons along the surface of the cone.' }
                 ],
                 physics: 'Waveism: Coherence boundary of the cosmic signal. Represents the maximum info-velocity in the vacuum.',
-                sliderConfig: { label: 'Cone Angle', min: 0, max: 100, step: 1, default: 50, units: '°', decimals: 0 },
+                sliderConfig: { label: 'Time Slice', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 2 },
                 contextNote: 'Light defines the absolute causal boundary — nothing outside the cone can ever reach you.',
                 relevance: 'This cone defines your entire potential future. Anything outside it is physically impossible for you to influence.',
                 sources: [
@@ -186,7 +188,8 @@
             },
             'gravity': {
                 name: 'Einstein Geometry', year: 'Metric Warping',
-                equation: 'G_μν = 8πT_μν',
+                equation: 'G_μν + Λg_μν = (8πG/c⁴) T_μν',
+                equationLabel: 'Einstein Field Equations',
                 equationExpl: 'The Einstein Field Equation states that the curvature of spacetime (G) is directly proportional to the density of mass and energy (T).',
                 facts: [{ text: 'Curvature', status: 'yes' }, { text: 'Inertial Flow', status: 'yes' }],
                 description: 'Spacetime curvature. Mass-energy density distorts the 4D manifold. Gravity is just the straightest possible path through a bent substrate.',
@@ -206,7 +209,8 @@
             'dilation': {
                 name: 'Lorentz Dilation', year: 'Temporal Distortion',
                 equation: 'dt = γ dτ',
-                equationExpl: 'Proper time (dτ) is stretched by the Lorentz factor (γ) when viewed from a relatively moving frame. Moving clocks beat slower.',
+                equationLabel: 'Time Dilation',
+                equationExpl: 'Coordinate time (dt) in the observer\'s frame is the LONGER interval: dt = γdτ with γ ≥ 1. The moving clock\'s own proper time dτ is the smaller quantity — which is exactly what "moving clocks run slow" means.',
                 facts: [{ text: 'Time Stretch', status: 'yes' }, { text: 'Invariant c', status: 'yes' }],
                 description: 'Relative dimensionality. High velocity stretches the temporal interval to maintain the absolute invariance of c.',
                 concepts: [
@@ -216,7 +220,7 @@
                 physics: 'Waveism: Doppler-shift of internal oscillator frequency. Moving clocks beat slower relative to substrate.',
                 sliderConfig: { label: 'Velocity (β)', min: 0, max: 100, step: 1, default: 50, units: 'c', decimals: 2 },
                 contextNote: 'Moving clocks tick slower — high velocity stretches time to keep light speed invariant.',
-                relevance: 'GPS satellites must adjust their clocks for this effect, or your map location would drift by kilometers every day.',
+                relevance: 'GPS depends on this — but on both relativistic effects together. Velocity dilation slows the satellite clocks by about 7 µs/day while the weaker gravity up there speeds them up by about 45 µs/day; the net +38 µs/day is what must be corrected, or positions drift by ~10 km/day.',
                 sources: [
                     'Hafele, J.C., & Keating, R.E. (1972). Around-the-World Atomic Clocks.',
                     'Einstein, A. (1905). On the Electrodynamics of Moving Bodies.'
@@ -225,6 +229,7 @@
             'twin': {
                 name: 'Twin Paradox', year: 'Asymmetry Protocol',
                 equation: 'Δτ_1 ≠ Δτ_2',
+                equationLabel: 'Proper Time Difference',
                 equationExpl: 'The proper time elapsed along two different worldlines between the same two events is not equal if one path involves acceleration.',
                 facts: [{ text: 'Frame Breaking', status: 'yes' }, { text: 'Metric Drift', status: 'yes' }],
                 description: 'The traveler accelerates, physically shortening their metric trajectory. Returning results in a tangible phase-offset in age.',
@@ -243,8 +248,9 @@
             },
             'time-spiral': {
                 name: 'Temporal Spiral', year: 'Cyclical Drift',
-                equation: 't(θ) = z / (2πb)',
-                equationExpl: 'A helical worldline where time progresses linearly with altitude (z) while rotating (θ), allowing for cyclical periodicity.',
+                equation: '(x, y, z) = (R cos θ, R sin θ, bθ),  t ∝ θ',
+                equationLabel: 'Helical Parameterisation',
+                equationExpl: 'A helix parameterised by the turn angle θ: it advances a fixed pitch b per radian while circling at radius R. Time here is the linear coordinate along the axis. This is a visual metaphor for recurrence, not a solution of the field equations.',
                 facts: [{ text: 'Cyclicality', status: 'yes' }, { text: 'Entropy Drift', status: 'yes' }],
                 description: 'Time as a 3D helix. Periodicity allows events to repeat in self-similar cycles while drifting forward linearly.',
                 concepts: [
@@ -254,9 +260,9 @@
                 physics: 'Waveism: The "Twist" of the vacuum. Energy recycled through cycles during forward drift.',
                 sliderConfig: { label: 'Helix Pitch', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'Time as a helix — cyclical repetition layered on linear forward drift.',
-                relevance: 'A visual metaphor for how cycles (days, years) compound into linear history.',
+                relevance: 'A visual metaphor for how cycles (days, years) compound into linear history. Standard relativity has no such helical time structure — the genuine closed-timelike-curve solutions listed below look nothing like this.',
                 sources: [
-                    'Gödel, K. (1949). An Example of a New Type of Cosmological Solution.',
+                    'Gödel, K. (1949). An Example of a New Type of Cosmological Solution — a rotating universe containing closed timelike curves.',
                     'Novikov, I.D. (1992). Time Machine and Time Travel.'
                 ]
             },
@@ -282,6 +288,7 @@
             'causal-net': {
                 name: 'Causal Network', year: 'Events & Nodes',
                 equation: 'E = {v, e}',
+                equationLabel: 'The Causal Graph',
                 equationExpl: 'History as a set of events (v) and their connections (e), forming a directed acyclic graph that defines the topology of causality.',
                 facts: [{ text: 'Connectivity', status: 'yes' }, { text: 'Information Flow', status: 'yes' }],
                 description: 'Spacetime as a graph. Discrete events linked by light-speed signaling, forming a "web" of causality that underpins the continuum.',
@@ -301,7 +308,8 @@
             'event-horizon': {
                 name: 'Event Horizon', year: 'The Final Frontier',
                 equation: 'R_s = 2GM/c²',
-                equationExpl: 'The Schwarzschild radius defines the spherical boundary where the escape velocity exceeds the speed of light.',
+                equationLabel: 'Schwarzschild Radius',
+                equationExpl: 'The Schwarzschild radius defines the spherical boundary where the escape velocity equals the speed of light. Only inside it does escape become impossible.',
                 facts: [{ text: 'No Exit', status: 'yes' }, { text: 'Time Freeze', status: 'yes' }],
                 description: 'The boundary of no return. Beyond this shell, all light-cones tip inward, ensuring every path leads to the singularity.',
                 concepts: [
@@ -309,7 +317,7 @@
                     { term: 'Temporal Tipping', definition: 'The rotation of spacetime axes where time becomes space.' }
                 ],
                 physics: 'Waveism: The critical damping point where the medium stops propagating signals outward.',
-                sliderConfig: { label: 'Schwarzschild R', min: 0, max: 100, step: 1, default: 50, units: ' km', decimals: 0 },
+                sliderConfig: { label: 'Mass', min: 0, max: 100, step: 1, default: 50, units: ' M☉', decimals: 0 },
                 contextNote: 'Beyond this shell all light cones tip inward — every path leads to the singularity.',
                 relevance: 'The ultimate edge of the known universe. Crossing this line removes you from the causal history of the outside world.',
                 sources: [
@@ -405,6 +413,7 @@
             else if (currentMode === 'dilation') valEl.innerText = "β: " + p1.toFixed(2) + "c";
             else if (currentMode === 'twin') valEl.innerText = "Max β: " + p1.toFixed(2) + "c";
             else if (currentMode === 'einstein-sr') valEl.innerText = "β: " + p1.toFixed(2) + "c";
+            else if (currentMode === 'event-horizon') valEl.innerText = (p1 * 50).toFixed(0) + " M☉";
         }
 
         function switchMode(mode) {
@@ -710,9 +719,9 @@
                 halo.name = "lensing_halo";
                 bhGroup.add(halo);
 
-                // 2b. Photon Sphere (Inner Light Trapping)
+                // 2b. Photon Sphere (Inner Light Trapping) — exactly 1.5 × r_s
                 const photonSphere = new THREE.Mesh(
-                    new THREE.TorusGeometry(5, 0.05, 16, 100),
+                    new THREE.TorusGeometry(4.5, 0.05, 16, 100),
                     new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending })
                 );
                 photonSphere.rotation.x = Math.PI / 2;
@@ -1120,28 +1129,43 @@
                     // We simulate travel on X, so it flattens.
                     const stretch = 1 / gamma;
                     traveler.scale.x = stretch;
-                    // Oscillate on Z to show 'speed' presence
-                    traveler.position.z = Math.sin(time * 10 * beta) * beta;
+                    // Wobble along the SAME axis as the contraction (X) — motion
+                    // and the contraction it causes must share a direction.
+                    traveler.position.x = Math.sin(time * 10 * beta) * beta;
                 }
             } else if (currentMode === 'twin') {
-                const beta = p1;
-                const gamma = 1 / Math.sqrt(Math.max(0.001, 1 - beta * beta));
+                const beta = p1; // peak speed (traveler is at rest at turnaround)
                 const cRest = activeGroup.getObjectByName("observer_hand");
                 const cMov = activeGroup.getObjectByName("traveller_hand");
                 const traveler = activeGroup.getObjectByName("traveller");
                 const observer = activeGroup.getObjectByName("observer");
 
+                // Instantaneous speed for x = dist·sin(time) is v(t) = beta·cos(time)
+                // (max at t=0, zero at the turnaround) — NOT the constant peak beta.
+                const betaInst = beta * Math.cos(time);
+                const gammaInst = 1 / Math.sqrt(Math.max(0.001, 1 - betaInst * betaInst));
+
                 if (cRest) {
                     cRest.rotation.z = -time * 2;
                 }
+                if (!activeGroup.userData.travelerProperTime) activeGroup.userData.travelerProperTime = 0;
+                // Traveler's clock accumulates proper time dτ = dt/γ(t) — it runs
+                // at full rate at the turnaround (v=0) and slowest at peak speed,
+                // instead of a fixed γ applied for the whole trip regardless of
+                // where the traveler actually is in its speed cycle.
+                activeGroup.userData.travelerProperTime += dt / gammaInst;
                 if (cMov) {
-                    cMov.rotation.z = -time * 2 / gamma;
+                    cMov.rotation.z = -activeGroup.userData.travelerProperTime * 2;
                 }
                 if (traveler && observer) {
                     const dist = 15;
                     const travel = Math.sin(time) * dist;
                     traveler.position.x = travel;
-                    traveler.scale.x = (beta > 0) ? (1 / (1 + (beta * Math.abs(Math.cos(time))))) : 1;
+                    // Lorentz contraction along the direction of motion (x):
+                    // length' = length × sqrt(1 - v²/c²), using the SAME
+                    // instantaneous speed as the clock above — was previously an
+                    // unrelated formula that saturated at 0.5 instead of → 0.
+                    traveler.scale.x = Math.sqrt(Math.max(0.001, 1 - betaInst * betaInst));
                 }
             } else if (currentMode === 'einstein-sr') {
                 const beta = p1;
@@ -1177,7 +1201,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

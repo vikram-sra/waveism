@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -82,7 +82,7 @@
         <div class="param-group">
             <div class="param-label" id="param1-label">Metric Warp</div>
             <div class="param-value" id="param1-value">1.0</div>
-            <input type="range" class="param-slider" id="param1-slider" min="10" max="250" value="100">
+            <input type="range" class="param-slider" id="param1-slider" min="0" max="100" value="50">
         </div>
         <div class="param-group">
             <div class="param-label">Simulation Rate</div>
@@ -100,7 +100,7 @@
         <div class="theory-name" id="theory-name">Helical Worldlines</div>
         <div class="theory-year" id="theory-year">Minkowski Spacetime (1908)</div>
         <div class="equation-box">
-            <div class="equation-label">The Invariant Interval</div>
+            <div class="equation-label" id="equation-label">The Invariant Interval</div>
             <div class="equation" id="equation">ds² = -c²dt² + dx² + dy² + dz²</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -144,8 +144,9 @@
         const theories = {
             'worldline': {
                 name: 'Helical Worldlines', year: 'Hermann Minkowski, 1908',
-                equation: 'x(τ) = (R cos ωτ, R sin ωτ, vτ)',
-                equationExpl: 'The parametric equation of a helical worldline. It describes an object orbiting in space while moving linearly through the vertical temporal dimension.',
+                equation: 'x^μ(τ) = (γcτ, R cos ωτ, R sin ωτ, 0)',
+                equationLabel: 'Helical Worldline',
+                equationExpl: 'The parametric worldline of an orbiting object. The temporal component is γcτ — a length, like the three spatial ones. That is what makes the 4-velocity have constant magnitude c, as stated below; a component of vτ would break it.',
                 facts: [{ text: 'Proper Time', status: 'yes' }, { text: '4D Cylinder', status: 'yes' }],
                 description: 'The geometric interpretation of orbits. In 3D space, a planet circles a sun. In 4D spacetime, the same planet traces a helical "worldline" through the vertical temporal dimension. All objects move through spacetime at the constant speed of light c.',
                 concepts: [
@@ -154,7 +155,7 @@
                     { term: 'Invariant Interval', definition: 'The "distance" in spacetime that remains constant regardless of the observer\'s frame.' }
                 ],
                 physics: 'In Waveism, a worldline is the "Phase-Trace" of a signal. Every object is a wave-packet moving through the substrate; its path is the coherent history of its constructive interference.',
-                sliderConfig: { label: 'Metric Warp', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
+                sliderConfig: { label: 'Orbital Radius (R)', min: 0, max: 100, step: 1, default: 50, units: '', decimals: 0 },
                 contextNote: 'In 4D spacetime, a planet’s orbit becomes a helix — all objects move at the speed of light through the manifold.',
                 relevance: 'You are a 4D worm stretching through time. Your life is a static geometric shape in the block universe.',
                 sources: [
@@ -165,7 +166,8 @@
             'emc2': {
                 name: 'Mass-Energy Symmetry', year: 'Wave-Knot Protocol',
                 equation: 'E² = (pc)² + (m₀c²)²',
-                equationExpl: 'The full relativistic energy-momentum relation. It shows that energy is a combination of mass-energy (m₀c²) and the kinetic energy of momentum (pc).',
+                equationLabel: 'Energy-Momentum Relation',
+                equationExpl: 'The full relativistic energy-momentum relation. Note the two terms add in QUADRATURE, not linearly, and pc is a momentum term — not the kinetic energy. Kinetic energy is what is left over after the rest energy: T = E − m₀c². Only in the ultrarelativistic limit, where pc ≫ m₀c², does E approach pc.',
                 facts: [{ text: 'Trapped Energy', status: 'yes' }, { text: 'Exchange', status: 'yes' }],
                 description: 'Mass as energy trapped in localized resonance. Mass-energy symmetry allows conversion between radiant flux and localized states.',
                 concepts: [
@@ -183,7 +185,8 @@
             },
             'gravity': {
                 name: 'Metric Warping', year: 'Einstein Manifold',
-                equation: 'G_μν = 8πT_μν',
+                equation: 'G_μν + Λg_μν = (8πG/c⁴) T_μν',
+                equationLabel: 'Einstein Field Equations',
                 equationExpl: 'The Einstein Field Equation states that the geometry of spacetime (G) is curved by the presence of all mass, energy, and momentum (T).',
                 facts: [{ text: 'Dynamic Stage', status: 'yes' }, { text: 'Geodesic Flow', status: 'yes' }],
                 description: 'Gravity as curvature. Massive objects deform the metric, dictating the "straightest" paths for all system agents.',
@@ -203,6 +206,7 @@
             'funnel': {
                 name: 'Cosmic Funnel', year: 'Expansion Era',
                 equation: 'ȧ/a = H(t)',
+                equationLabel: 'The Hubble Parameter',
                 equationExpl: "The Hubble expansion rate. It measures the relative growth of the universe's scale factor (a) over time, describing its cosmic history.",
                 facts: [{ text: 'Metric Stretch', status: 'yes' }, { text: 'Scalar Field', status: 'yes' }],
                 description: 'Holographic history of the manifold. Expansion from high-energy singularity to the era of dark energy acceleration.',
@@ -222,17 +226,19 @@
             'singularity': {
                 name: 'Event Horizon', year: 'Schwarzschild Limit',
                 equation: 'R_s = 2GM/c²',
+                equationLabel: 'Schwarzschild Radius',
                 equationExpl: 'The Schwarzschild radius defines the point of no return where the escape velocity exactly equals the speed of light.',
-                facts: [{ text: 'Infinite Curve', status: 'yes' }, { text: 'Time Freeze', status: 'yes' }],
-                description: 'The ultimate cosmic resonance. A region where curvature is so extreme that the metric field effectively disconnects from the surrounding worldlines.',
+                facts: [{ text: 'One-Way Surface', status: 'yes' }, { text: 'Finite Curvature Here', status: 'yes' }, { text: 'Infinite Curvature Here', status: 'no' }],
+                description: 'The horizon is a one-way causal boundary, not a wall and not the singularity. Curvature at R_s is finite and falls as 1/M² — crossing the horizon of a supermassive black hole is locally uneventful. The genuine divergence is at r = 0, far inside.',
                 concepts: [
-                    { term: 'Spaghettification', definition: 'Extreme tidal forces stretching objects into worldline filaments.' },
+                    { term: 'Curvature Invariant', definition: 'K = 48G²M²/(c⁴r⁶). Finite everywhere on the horizon; it diverges only as r → 0.' },
+                    { term: 'Spaghettification', definition: 'Tidal stretching, which grows as 1/r³. For a stellar-mass hole it becomes lethal outside the horizon; for a supermassive one it is imperceptible at crossing and only bites deep inside.' },
                     { term: 'Lensing', definition: 'The bending of information-carrying waves around the gravitational well.' }
                 ],
-                physics: 'Waveism: A singularity is a point of destructive interference in the metric field where all phase-information is localized and lost.',
+                physics: 'Waveism: the horizon is the surface past which no phase-information can propagate back out.',
                 sliderConfig: { label: 'Curvature κ', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
-                contextNote: 'Total spacetime breakdown — the metric disconnects where curvature diverges to infinity.',
-                relevance: 'The breakdown of physics. At this point, our variables become infinite and our theories useless.',
+                contextNote: 'A one-way causal surface — locally unremarkable to cross, impossible to recross.',
+                relevance: 'Where our theories actually break down is the singularity at r = 0, not here. The horizon itself is well-described by general relativity.',
                 sources: [
                     'Penrose, R., & Hawking, S.W. (1970). The Singularities of Gravitational Collapse and Cosmology.',
                     'Geroch, R. (1968). What is a Singularity in General Relativity?'
@@ -328,10 +334,24 @@
             activeGroup.position.y = 10;
 
             if (mode === 'worldline') {
-                const geo = new THREE.CylinderGeometry(50, 50, 300, 32, 1, true);
-                const mat = new THREE.MeshPhongMaterial({ color: 0x0088ff, wireframe: true, transparent: true, opacity: 0.1 });
-                const cylinder = new THREE.Mesh(geo, mat);
-                activeGroup.add(cylinder);
+                // A light cone's defining feature is its 45° flare (radius grows
+                // with distance from "now") — a constant-radius cylinder has no
+                // flare at all and depicts a causal region that never grows with
+                // time. radius === height gives exactly 45° in c=1 units, mirroring
+                // the light-cone construction in modules/spacetime.html.
+                const h = 150;
+                const futureGeo = new THREE.ConeGeometry(h, h, 32, 1, true);
+                const futureMat = new THREE.MeshPhongMaterial({ color: 0x0088ff, wireframe: true, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+                const futureCone = new THREE.Mesh(futureGeo, futureMat);
+                futureCone.position.y = h / 2;
+                activeGroup.add(futureCone);
+
+                const pastCone = futureCone.clone();
+                pastCone.material = futureMat.clone();
+                pastCone.material.color.setHex(0xffaa00);
+                pastCone.position.y = -h / 2;
+                pastCone.rotation.x = Math.PI;
+                activeGroup.add(pastCone);
 
                 const curve = new THREE.CatmullRomCurve3([]);
                 const helixGeo = new THREE.BufferGeometry().setFromPoints(new Array(200).fill(new THREE.Vector3()));
@@ -541,7 +561,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

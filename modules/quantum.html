@@ -14,8 +14,8 @@
             background: #000 !important;
         }
     </style>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -133,7 +133,7 @@
             </label>
         </div>
         <div class="param-group">
-            <div class="param-label">Decherence Rate</div>
+            <div class="param-label">Simulation Speed</div>
             <div class="param-value" id="speed-value">1.0×</div>
             <input type="range" class="param-slider" id="speed-slider" min="0" max="300" value="100">
         </div>
@@ -198,10 +198,11 @@
                 facts: [{ text: 'Morphological', status: 'yes' }, { text: 'Interactive', status: 'yes' }],
                 description: 'Visual metaphor for superposition. The object exists as both a localized entity (Face) and a distributed field (Landscape), choosing a form only upon interaction.',
                 concepts: [
-                    { term: 'Collapse', definition: 'The reduction of possibilities into a concrete reality upon measurement.' },
-                    { term: 'Complementarity', definition: 'Duality of nature that cannot be observed simultaneously.' }
+                    { term: 'Collapse', definition: 'The reduction of a superposition to one definite outcome when the system interacts with a measuring device.' },
+                    { term: 'Decoherence', definition: 'Entanglement with the environment destroys the interference between branches. This is a physical process — it needs an environment, not an observer.' },
+                    { term: 'Complementarity', definition: 'Pairs of properties that cannot both be sharply defined at once.' }
                 ],
-                physics: 'Waveism: Reality is a probability cloud that solidifies only when questioned.',
+                physics: 'Waveism: reality is a probability cloud that resolves when the system couples to something else.',
                 sliderConfig: { label: 'State Mixture (α)', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'The object exists as both forms simultaneously — choosing only upon interaction.',
                 relevance: 'Every decision you make effectively collapses a mental superposition of possibilities into a single experienced reality.',
@@ -216,15 +217,15 @@
                 equationLabel: 'Interference Intensity',
                 equationExpl: 'The intensity at angle θ depends on the path difference between waves from both slits. When δ = 2πd sin(θ)/λ is a multiple of 2π, constructive interference occurs.',
                 facts: [{ text: 'Superposition', status: 'yes' }, { text: 'Pattern Persistence', status: 'yes' }],
-                description: 'The prototypical quantum test. Particles travel through two slits and interfere with themselves, creating a deterministic distribution pattern even if sent one at a time.',
+                description: 'The prototypical quantum test. Particles travel through two slits and interfere with themselves. Each particle lands at a random spot; the fringes are the statistical pattern that builds up over many detections, even when they are sent one at a time.',
                 concepts: [
                     { term: 'Probability Amplitude', definition: 'A complex number (ψ) whose squared magnitude gives probability.' },
                     { term: 'Fringe Spacing', definition: 'The distance between maxima, governed by wavelength and slit separation.' }
                 ],
                 physics: 'Waveism: Phase-coherence test. The substrate maintains parallel states until a decoherence event forces a reset.',
                 sliderConfig: { label: 'Wavelength (λ)', min: 0, max: 100, step: 1, default: 50, units: ' nm', decimals: 1 },
-                contextNote: 'Particles interfere with themselves — creating deterministic patterns even sent one at a time.',
-                relevance: 'Demonstrates that the act of observation physically alters the history of the particle.',
+                contextNote: 'Particles interfere with themselves — each hit is random, the fringes emerge statistically.',
+                relevance: 'Demonstrates that acquiring which-path information — by any physical means — destroys the interference pattern. Nothing is done to the particle\'s past; the interference simply cannot survive being entangled with a detector.',
                 sources: [
                     'Feynman, R.P. (1965). The Feynman Lectures on Physics, Vol III.',
                     'Young, T. (1804). Experiments and Calculations relative to Physical Optics.'
@@ -253,8 +254,8 @@
             'strings': {
                 name: 'Superstring Manifolds', year: 'Harmonic Elements',
                 equation: 'S = -T ∫ d²σ √(-h)',
-                equationLabel: 'Polyakov Action',
-                equationExpl: 'The fundamental action describing the dynamics of a relativistic string moving through spacetime.',
+                equationLabel: 'Nambu-Goto Action',
+                equationExpl: 'The Nambu-Goto action: the proper area swept out by the string\'s worldsheet, where h is the determinant of the induced worldsheet metric. (The classically equivalent Polyakov action introduces an independent worldsheet metric instead.)',
                 facts: [{ text: '10 Dimensions', status: 'yes' }, { text: 'Calabi-Yau', status: 'yes' }],
                 description: 'Point-particles as vibrating strings. Different vibration modes correspond to electrons, photons, and gravitons.',
                 concepts: [
@@ -266,35 +267,38 @@
                 contextNote: 'Point-particles as vibrating strings — different modes produce electrons, photons, gravitons.',
                 relevance: 'Suggests that all matter and forces are just different notes played on the same fundamental cosmic string.',
                 sources: [
+                    'Goto, T. (1971). Relativistic quantum mechanics of one-dimensional mechanical continuum. Progress of Theoretical Physics.',
                     'Polyakov, A.M. (1981). Quantum geometry of bosonic strings. Physics Letters B.',
                     'Witten, E. (1995). String theory dynamics in various dimensions. Nuclear Physics B.'
                 ]
             },
             'crystal': {
                 name: 'Time Crystals', year: 'Temporal Order',
-                equation: '⟨ψ(t+T)⟩ = ⟨ψ(t)⟩',
-                equationLabel: 'Floquet Periodicity',
-                equationExpl: 'Discrete time-translation symmetry. The state of the system returns to itself after a specific time period T, breaking continuous temporal symmetry.',
-                facts: [{ text: 'Broken T-Symmetry', status: 'yes' }, { text: 'Non-equilibrium', status: 'yes' }],
-                description: 'A phase of matter breaking time-translation symmetry. Pattern repetition occurs through time rather than space, even at lowest energy states.',
+                equation: '⟨O(t + 2T)⟩ = ⟨O(t)⟩ ≠ ⟨O(t + T)⟩',
+                equationLabel: 'Subharmonic Response',
+                equationExpl: 'A discrete time crystal is driven with period T but responds at 2T (or a higher multiple). Because it does NOT repeat at the drive period, it breaks the discrete time-translation symmetry of its own drive — that mismatch is the whole effect.',
+                facts: [{ text: 'Broken Discrete Time-Translation', status: 'yes' }, { text: 'Requires Driving', status: 'yes' }, { text: 'Equilibrium Ground State', status: 'no' }],
+                description: 'A driven phase of matter that responds at a fraction of the drive frequency. The repeating pattern is in time rather than space, and it is rigid: it survives imperfections in the drive.',
                 concepts: [
-                    { term: 'Floquet Protocol', definition: 'Periodic drive leading to stable non-equilibrium phases.' },
-                    { term: 'Temporal Rigidity', definition: 'Resistance to noise, maintaining rhythmic oscillation.' }
+                    { term: 'Floquet Protocol', definition: 'Periodic driving that produces stable non-equilibrium phases.' },
+                    { term: 'Period Doubling', definition: 'The system returns to itself only after two drive cycles, not one.' },
+                    { term: 'Temporal Rigidity', definition: 'The subharmonic locks on and resists noise and detuning of the drive.' }
                 ],
-                physics: 'Waveism: Time crystals prove time is a phase-dimension capable of crystallization.',
+                physics: 'Waveism: a rhythm the substrate sustains at half the beat it is struck with.',
                 sliderConfig: { label: 'Drive Frequency (ω)', min: 1, max: 100, step: 1, default: 30, units: ' Hz', decimals: 0 },
-                contextNote: 'Matter that repeats through time, not space — breaking continuous temporal symmetry.',
-                relevance: 'A new phase of matter that ticks forever without energy loss, challenging the Second Law of Thermodynamics.',
+                contextNote: 'Driven at period T, it repeats only every 2T — breaking the drive\'s own time-translation symmetry.',
+                relevance: 'A genuinely new phase of matter. It is not perpetual motion: the drive supplies energy continuously, and the Watanabe-Oshikawa theorem rules out time crystals in an equilibrium ground state.',
                 sources: [
                     'Wilczek, F. (2012). Quantum Time Crystals. Physical Review Letters.',
+                    'Watanabe, H., & Oshikawa, M. (2015). Absence of Quantum Time Crystals. Physical Review Letters.',
                     'Zhang, J. et al. (2017). Observation of a discrete time crystal. Nature.'
                 ]
             },
             'gedanken': {
                 name: "Schrödinger's Cat", year: 'Measurement Problem',
-                equation: '|Ψ⟩ = 1/√2 (|L⟩ + |D⟩)',
+                equation: '|Ψ⟩ = (|undecayed⟩⊗|alive⟩ + |decayed⟩⊗|dead⟩)/√2',
                 equationLabel: 'Entangled State',
-                equationExpl: 'A maximally entangled state between a quantum trigger and a macroscopic object (cat). Illustrates the challenge of objective reality.',
+                equationExpl: 'The cat is entangled with the atom, not merely in a superposition of its own. The state cannot be written as a product of an atom state and a cat state — that inseparability is what makes the thought experiment bite.',
                 facts: [{ text: 'Macroscopic', status: 'yes' }, { text: 'Entangled', status: 'yes' }],
                 description: 'Paradox illustrating interpretation limits. A cat is simultaneously alive and dead until the system is observed.',
                 concepts: [
@@ -334,19 +338,21 @@
                 name: 'Quantum Entanglement', year: 'EPR Paradox',
                 equation: '|Ψ⟩ = (|00⟩ + |11⟩)/√2',
                 equationLabel: 'Bell State',
-                equationExpl: 'Two particles are in a single, inseparable quantum state where measuring one instantly defines the state of the other.',
-                facts: [{ text: 'Non-locality', status: 'yes' }, { text: 'Phase Lock', status: 'yes' }],
-                description: 'Instantaneous correlation between distant particles. Einstein’s "Spooky Action"—the state of one defines the state of the other globally.',
+                equationExpl: 'Two particles share a single inseparable state. Each outcome on its own is a coin flip — the correlation between them only becomes visible once the two result lists are compared over a classical channel.',
+                facts: [{ text: 'Bell Correlations', status: 'yes' }, { text: 'Random Locally', status: 'yes' }, { text: 'Sends Information', status: 'no' }],
+                description: 'Correlations between distant particles stronger than any local hidden-variable theory allows — Einstein\'s "spooky action". Measuring one tells you what the other will give, but each individual result is random.',
                 concepts: [
-                    { term: 'Bell State', definition: 'Maximally entangled quantum states.' },
-                    { term: 'Non-locality', definition: 'Instantaneous synchronization across spatial separation.' }
+                    { term: 'Bell State', definition: 'Maximally entangled two-qubit states.' },
+                    { term: 'Non-locality', definition: 'Correlations that cannot be reproduced by any local hidden-variable model (Bell, 1964).' },
+                    { term: 'No-Communication Theorem', definition: 'A measurement here leaves the statistics there completely unchanged, so entanglement alone cannot send a signal.' }
                 ],
-                physics: 'Waveism: Space is not a separator but a medium; entangled points are phase-locked across the manifold.',
+                physics: 'Waveism: entangled points share one state across the manifold — a correlation, not a channel.',
                 sliderConfig: { label: 'Correlation Strength', min: 0, max: 100, step: 1, default: 100, units: '%', decimals: 0 },
-                contextNote: 'Measuring one instantly defines the other — Einstein’s "spooky action at a distance."',
-                relevance: 'Implies that at a fundamental level, separation in space is an illusion; the universe is interconnected.',
+                contextNote: 'Perfectly correlated, individually random — and no way to signal with it.',
+                relevance: 'Shows that quantum systems resist being carved into independent parts. It does not permit faster-than-light communication: the no-communication theorem forbids it.',
                 sources: [
                     'Einstein, A., Podolsky, B., & Rosen, N. (1935). Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?',
+                    'Bell, J.S. (1964). On the Einstein Podolsky Rosen Paradox. Physics.',
                     'Aspect, A. et al. (1982). Experimental Test of Bell\'s Inequalities using Time-Varying Analyzers.'
                 ]
             },
@@ -364,7 +370,7 @@
                 physics: 'Waveism: Matter is local geometry. Replicating the geometry elsewhere recreates the object.',
                 sliderConfig: { label: 'Channel Fidelity', min: 0, max: 100, step: 1, default: 90, units: '%', decimals: 0 },
                 contextNote: 'State transfer via entanglement — the original is destroyed, re-appearing at the destination.',
-                relevance: 'The ultimate secure communication channel—and the theoretical basis for a "Star Trek" transporter.',
+                relevance: 'The basis for quantum networking. Note the protocol still needs two classical bits sent the ordinary way, so the whole thing remains capped at the speed of light.',
                 sources: [
                     'Bennett, C.H. et al. (1993). Teleporting an unknown quantum state via dual classical and Einstein-Podolsky-Rosen channels.',
                     'Bouwmeester, D. et al. (1997). Experimental quantum teleportation. Nature.'
@@ -378,13 +384,14 @@
                 facts: [{ text: 'Evolution Freeze', status: 'yes' }, { text: 'Watched Pot', status: 'yes' }],
                 description: 'System arrest via frequent observation. Measuring the state repeatedly collapses it back to initial conditions, preventing transition.',
                 concepts: [
-                    { term: 'Unitary Drift', definition: 'The smooth change of a system over time.' },
-                    { term: 'Measurement Bias', definition: 'The physical pressure exerted by the act of observation.' }
+                    { term: 'Unitary Drift', definition: 'The smooth change of a system over time between measurements.' },
+                    { term: 'Quadratic Short-Time Decay', definition: 'The survival probability falls as t², not exponentially, at very short times. Because t² has zero slope at t = 0, resetting the clock often enough keeps the system where it started.' },
+                    { term: 'Projection', definition: 'A measurement projects the state back onto the initial state — no force is applied and nothing pushes on the particle.' }
                 ],
-                physics: 'Waveism: Observation as an active force. Repeated collapse prevents the phase-shift of the substrate.',
+                physics: 'Waveism: repeated projection re-seeds the substrate before it can drift out of phase.',
                 sliderConfig: { label: 'Measurement Rate (f)', min: 0, max: 100, step: 1, default: 80, units: ' Hz', decimals: 0 },
-                contextNote: 'Frequent measurement freezes evolution — a watched quantum pot truly never boils.',
-                relevance: 'Suggests that the act of monitoring a system can arrest its change—awareness stabilizes reality.',
+                contextNote: 'Measure often enough and the state never gets a chance to drift — a watched quantum pot never boils.',
+                relevance: 'A purely mechanical consequence of how often a system is coupled to a measuring device. It requires no observer, no awareness, and exerts no force — any sufficiently frequent physical interaction produces it.',
                 sources: [
                     'Misra, B., & Sudarshan, E.C.G. (1977). The Zeno’s paradox in quantum theory. Journal of Mathematical Physics.',
                     'Itano, W.M. et al. (1990). Quantum Zeno effect. Physical Review A.'
@@ -415,8 +422,11 @@
             createStarField(scene); // Add global starfield
 
             initParamSlider('param1-slider', 'param1-value', {
-                onChange: v => { p1 = v / 100; updateParamDisplay(); },
-                formatter: v => v.toFixed(2)
+                // p1 holds the RAW slider value. Per-mode ranges come from each
+                // theory's sliderConfig (e.g. n = 1..10 for orbitals), so a
+                // global /100 here would corrupt every mode but double-slit.
+                onChange: v => { p1 = v; updateParamDisplay(); onParamChanged(); },
+                formatter: v => v
             });
             initParamSlider('speed-slider', 'speed-value', {
                 onChange: v => timeScale = v / 100,
@@ -493,64 +503,179 @@
             return sprite;
         }
 
+        // Label text is owned by updateSliderConfig (from each theory's
+        // sliderConfig) — this only formats the value with that mode's units.
         function updateParamDisplay() {
             const valEl = document.getElementById('param1-value');
-            const labelEl = document.getElementById('param1-label');
+            const cfg = (theories[currentMode] && theories[currentMode].sliderConfig) || {};
+            if (valEl) valEl.innerText = Number(p1).toFixed(cfg.decimals || 0) + (cfg.units || '');
+        }
 
-            if (currentMode === 'orbitals') {
-                labelEl.innerText = "Energy Level (n)";
-                valEl.innerText = p1;
-            } else if (currentMode === 'strings') {
-                labelEl.innerText = "Harmonic Mode";
-                valEl.innerText = p1;
-            } else if (currentMode === 'crystal') {
-                labelEl.innerText = "Frequency";
-                valEl.innerText = p1;
-            } else if (currentMode === 'double-slit') {
-                labelEl.innerText = "Wavelength (λ)";
-                valEl.innerText = (p1 * 10).toFixed(1);
-            } else {
-                labelEl.innerText = "Energy Level (n)";
-                valEl.innerText = p1;
+        // ---- Double-slit optics (scene units) ----
+        // Slit separation d = 30 (centres at ±15), slit width a = 10,
+        // wall-to-screen distance L = 230. Small-angle Fraunhofer pattern:
+        //   unobserved: I(x) ∝ cos²(πdx/λL) · sinc²(πax/λL)   (fringes × envelope)
+        //   observed:   I(x) ∝ sinc²(πa(x−x₁)/λL) + sinc²(πa(x−x₂)/λL)  (intensities add)
+        const SLIT_D = 30, SLIT_A = 10, SCREEN_L = 230, SCREEN_HALF = 120;
+
+        function slitWavelength() { return p1 * 0.1 + 2; } // slider 0..100 → λ = 2..12
+
+        function sinc2(u) {
+            if (Math.abs(u) < 1e-6) return 1;
+            const s = Math.sin(u) / u;
+            return s * s;
+        }
+
+        function screenIntensity(x, observed, wavelength) {
+            const lamL = wavelength * SCREEN_L;
+            if (observed) {
+                // Which-path known: the two single-slit INTENSITIES add — no fringes.
+                return sinc2(Math.PI * SLIT_A * (x - SLIT_D / 2) / lamL) +
+                       sinc2(Math.PI * SLIT_A * (x + SLIT_D / 2) / lamL);
             }
+            // Amplitudes add: two-slit fringes under the single-slit envelope.
+            const fr = Math.cos(Math.PI * SLIT_D * x / lamL);
+            return 2 * fr * fr * sinc2(Math.PI * SLIT_A * x / lamL);
+        }
+
+        // Rejection-sample a landing position from the actual screen distribution.
+        function sampleScreenX(observed, wavelength) {
+            for (let tries = 0; tries < 64; tries++) {
+                const x = (Math.random() * 2 - 1) * SCREEN_HALF;
+                if (Math.random() * 2 <= screenIntensity(x, observed, wavelength)) return x;
+            }
+            return (Math.random() * 2 - 1) * SCREEN_HALF; // fallback, never hot path
         }
 
         function resetPhoton(i, pPos) {
             const data = window.photonData;
             if (!data) return;
-            
+
             pPos[i * 3 + 2] = -200 - Math.random() * 100; // Reset Z
             pPos[i * 3 + 1] = 10 + (Math.random() - 0.5) * 10; // Y
-            
+
             data.startX[i] = (Math.random() - 0.5) * 40;
-            data.slitX[i] = Math.random() > 0.5 ? 15 : -15; // Choose slit
+            data.slitX[i] = Math.random() > 0.5 ? SLIT_D / 2 : -SLIT_D / 2; // Choose slit
             data.speed[i] = 3.5 + Math.random() * 1.5; // Custom speed
-            
-            const slitDist = 30;
-            const wavelength = p1 * 10 + 2;
-            const screenZ = 150;
-            const wallZ = -80;
-            const L = screenZ - wallZ;
-            
-            if (window.observerActive) {
-                // Classical: land in two bands centered at the chosen slit
-                data.targetX[i] = data.slitX[i] + (Math.random() - 0.5) * 20;
-            } else {
-                // Quantum: choose an interference fringe
-                const fringes = [-3, -2, -1, 0, 1, 2, 3];
-                const weights = [0.05, 0.25, 0.7, 1.0, 0.7, 0.25, 0.05];
-                
-                let rVal = Math.random() * 3.0;
-                let fringe = 0;
-                let sum = 0;
-                for (let j = 0; j < fringes.length; j++) {
-                    sum += weights[j];
-                    if (rVal <= sum) {
-                        fringe = fringes[j];
-                        break;
-                    }
-                }
-                data.targetX[i] = fringe * (L * wavelength / slitDist) + (Math.random() - 0.5) * 8;
+
+            // Each landing spot is drawn from |ψ|² — individually random,
+            // statistically building the fringe (or two-hump) pattern.
+            data.targetX[i] = sampleScreenX(window.observerActive, slitWavelength());
+        }
+
+        // ---- Hydrogen orbital sampling ----
+        // Samples 3D points from |ψ_nlm|² = |R_nl(r)|²·|Y_lm(θ,φ)|² exactly:
+        // r from the radial distribution P(r) ∝ r²R², θ from P(θ) ∝ sinθ|Y_l0|²,
+        // both via tabulated inverse-CDF; φ uniform (m = 0 states are φ-symmetric).
+        // Node count check: n−l−1 radial nodes, l angular nodal cones.
+
+        // Generalized Laguerre polynomial L_k^{(α)}(x) by the standard recurrence.
+        function laguerre(k, alpha, x) {
+            let lm2 = 1, lm1 = 1 + alpha - x;
+            if (k === 0) return lm2;
+            if (k === 1) return lm1;
+            for (let i = 2; i <= k; i++) {
+                const l = ((2 * i - 1 + alpha - x) * lm1 - (i - 1 + alpha) * lm2) / i;
+                lm2 = lm1; lm1 = l;
+            }
+            return lm1;
+        }
+
+        // Legendre polynomial P_l(x) (∝ Y_l0 up to normalisation, which the
+        // CDF construction makes irrelevant).
+        function legendre(l, x) {
+            let pm2 = 1, pm1 = x;
+            if (l === 0) return pm2;
+            if (l === 1) return pm1;
+            for (let i = 2; i <= l; i++) {
+                const p = ((2 * i - 1) * x * pm1 - (i - 1) * pm2) / i;
+                pm2 = pm1; pm1 = p;
+            }
+            return pm1;
+        }
+
+        // Un-normalised radial function: R_nl(r) ∝ e^{−ρ/2} ρ^l L_{n−l−1}^{2l+1}(ρ), ρ = 2r/(n·a0)
+        function hydrogenR(n, l, r, a0) {
+            const rho = 2 * r / (n * a0);
+            return Math.exp(-rho / 2) * Math.pow(rho, l) * laguerre(n - l - 1, 2 * l + 1, rho);
+        }
+
+        // Build an inverse-CDF lookup from a tabulated non-negative density.
+        function inverseCdf(densityAt, xMax, bins) {
+            const cdf = new Float64Array(bins + 1);
+            for (let i = 0; i < bins; i++) {
+                const x = (i + 0.5) / bins * xMax;
+                cdf[i + 1] = cdf[i] + Math.max(0, densityAt(x));
+            }
+            const total = cdf[bins] || 1;
+            return function (u) {
+                const target = u * total;
+                let lo = 0, hi = bins;
+                while (lo < hi) { const mid = (lo + hi) >> 1; if (cdf[mid + 1] < target) lo = mid + 1; else hi = mid; }
+                const seg = cdf[lo + 1] - cdf[lo] || 1;
+                return (lo + (target - cdf[lo]) / seg) / bins * xMax;
+            };
+        }
+
+        function fillOrbitalCloud(cloud, n) {
+            const l = Math.min(n - 1, 2); // 1s, 2p, 3d, then n≥4 adds radial nodes to the d shape
+            const a0 = 1.0;               // Bohr radius in scene units — cloud size grows ~n²
+            const rMax = Math.min(260, n * n * a0 * 8);
+
+            const sampleR = inverseCdf(r => { const R = hydrogenR(n, l, r, a0); return r * r * R * R; }, rMax, 512);
+            const sampleCos = inverseCdf(c => { // density over u ∈ [0, 2] mapping cosθ = u − 1
+                const cos = c - 1; const Y = legendre(l, cos); return Y * Y;
+            }, 2, 256);
+
+            const pos = cloud.geometry.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const r = sampleR(Math.random());
+                const cosT = sampleCos(Math.random()) - 1;
+                const sinT = Math.sqrt(Math.max(0, 1 - cosT * cosT));
+                const phi = Math.random() * Math.PI * 2;
+                pos.setXYZ(i,
+                    r * sinT * Math.cos(phi),
+                    r * cosT,                  // polar axis vertical so nodal cones read clearly
+                    r * sinT * Math.sin(phi));
+            }
+            pos.needsUpdate = true;
+            cloud.userData.n = n;
+            cloud.userData.l = l;
+        }
+
+        // ---- Tunneling (WKB) ----
+        // Slider p1 is the barrier width L in nm (1..100). Transmission through a
+        // rectangular barrier in the WKB limit: T ≈ e^(−2κL). κ = 0.025/nm gives
+        // T from ~95% (thin) down to ~0.7% (thick) — visibly exponential.
+        const TUNNEL_KAPPA = 0.025;
+
+        function tunnelBarrierHalfWidth() { return Math.max(1, p1 * 0.3) / 2; } // nm → scene units
+        function tunnelTransmission() { return Math.exp(-2 * TUNNEL_KAPPA * p1); }
+
+        function updateTunnelBarrier() {
+            const barrier = activeGroup && activeGroup.getObjectByName("barrier");
+            if (!barrier) return;
+            barrier.scale.x = tunnelBarrierHalfWidth() * 2;
+
+            // Refresh the T readout label
+            const old = activeGroup.getObjectByName("tunnel_label");
+            if (old) activeGroup.remove(old);
+            const label = createLabel(
+                "T = e^(−2κL) ≈ " + (tunnelTransmission() * 100).toFixed(1) + "%", "#ff0055");
+            label.position.set(0, 50, 0);
+            label.name = "tunnel_label";
+            activeGroup.add(label);
+        }
+
+        // Regenerate slider-dependent geometry when p1 changes.
+        function onParamChanged() {
+            if (!activeGroup) return;
+            if (currentMode === 'orbitals') {
+                const cloud = activeGroup.getObjectByName("orbital_cloud");
+                const n = Math.max(1, Math.round(p1));
+                if (cloud && cloud.userData.n !== n) fillOrbitalCloud(cloud, n);
+            } else if (currentMode === 'tunneling') {
+                updateTunnelBarrier();
             }
         }
 
@@ -570,7 +695,7 @@
                 const shaderMat = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
-                        uWavelength: { value: p1 * 10 + 2 },
+                        uWavelength: { value: slitWavelength() },
                         uSlitDist: { value: 30.0 },
                         uObserved: { value: window.observerActive ? 1.0 : 0.0 }
                     },
@@ -599,9 +724,12 @@
                                 float w2 = sin(2.0 * 3.14159265 * (d2 / uWavelength) - uTime * 10.0);
 
                                 if (uObserved > 0.5) {
-                                    float intensity = sqrt(w1 * w1 + w2 * w2);
-                                    zDisp = intensity * sin(2.0 * 3.14159265 * ((d1 + d2) / (2.0 * uWavelength)) - uTime * 10.0) * 2.8;
+                                    // Which-path known: INTENSITIES add (w1² + w2²).
+                                    // No cross-term, so the d1−d2 fringe pattern is gone.
+                                    zDisp = (w1 * w1 + w2 * w2) * 2.0;
                                 } else {
+                                    // Amplitudes add: the (w1 + w2)² cross-term is
+                                    // what carries the interference fringes.
                                     zDisp = (w1 + w2) * 2.0;
                                 }
                             }
@@ -635,9 +763,11 @@
                 // WALL WITH SLITS
                 const wallGroup = new THREE.Group();
                 const wallMat = new THREE.MeshPhongMaterial({ color: 0x111111, side: THREE.DoubleSide });
-                const w1 = new THREE.Mesh(new THREE.BoxGeometry(100, 60, 4), wallMat); w1.position.x = -65;
+                // Gaps span 10..20 and −20..−10: slit centres ±15 (d = 30), width a = 10,
+                // matching the shader's uSlitDist and the sampling constants above.
+                const w1 = new THREE.Mesh(new THREE.BoxGeometry(100, 60, 4), wallMat); w1.position.x = -70;
                 const w2 = new THREE.Mesh(new THREE.BoxGeometry(20, 60, 4), wallMat); w2.position.x = 0;
-                const w3 = new THREE.Mesh(new THREE.BoxGeometry(100, 60, 4), wallMat); w3.position.x = 65;
+                const w3 = new THREE.Mesh(new THREE.BoxGeometry(100, 60, 4), wallMat); w3.position.x = 70;
                 wallGroup.add(w1, w2, w3);
                 wallGroup.position.z = -80;
                 wallGroup.position.y = 10;
@@ -671,12 +801,14 @@
                     emissive: 0x00ffaa,
                     emissiveIntensity: 0.2
                 });
+                // Detectors sit AT the slits (centres ±15) — they must sample
+                // the path, so they live where the paths are.
                 const detLeft = new THREE.Mesh(detGeo, detMat.clone());
-                detLeft.position.set(-30, 10, -80);
+                detLeft.position.set(-15, 10, -80);
                 detLeft.name = "det_left";
-                
+
                 const detRight = new THREE.Mesh(detGeo, detMat.clone());
-                detRight.position.set(30, 10, -80);
+                detRight.position.set(15, 10, -80);
                 detRight.name = "det_right";
                 
                 activeGroup.add(detLeft, detRight);
@@ -767,18 +899,21 @@
                 activeGroup.add(createLabel("OBSERVE ME", "#00ffaa").translateY(80));
             }
             else if (mode === 'orbitals') {
-                const pCount = 5000;
-                const pPos = new Float32Array(pCount * 3);
-                for (let i = 0; i < pCount; i++) {
-                    const x = Math.random() * 2 - 1; const y = Math.random() * 2 - 1; const z = Math.random() * 2 - 1;
-                    const r = Math.sqrt(x * x + y * y + z * z);
-                    pPos[i * 3] = x * 50 / r; pPos[i * 3 + 1] = y * 50 / r; pPos[i * 3 + 2] = z * 50 / r;
-                }
+                // Probability cloud sampled from the actual hydrogen |ψ_nlm|² —
+                // NOT a shell at fixed radius. Radial nodes (n−l−1) and angular
+                // nodal cones (l) appear because the density really vanishes there.
+                const pCount = 6000;
                 const pGeo = new THREE.BufferGeometry();
-                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                pGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pCount * 3), 3));
                 const cloud = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 1.5, color: 0x00ffaa, transparent: true, opacity: 0.6 }));
                 cloud.name = "orbital_cloud";
                 activeGroup.add(cloud);
+                fillOrbitalCloud(cloud, Math.max(1, Math.round(p1)) || 3);
+
+                // Nucleus for scale
+                const nucleus = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: 0xffaa00 }));
+                activeGroup.add(nucleus);
             }
             else if (mode === 'strings') {
                 for (let i = 0; i < 10; i++) {
@@ -826,7 +961,8 @@
                 activeGroup.add(label);
             }
             else if (mode === 'tunneling') {
-                const barrier = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 60), new THREE.MeshPhongMaterial({ color: 0xff0055, transparent: true, opacity: 0.5 }));
+                // Unit-width box, scaled in x by the slider via updateTunnelBarrier()
+                const barrier = new THREE.Mesh(new THREE.BoxGeometry(1, 60, 60), new THREE.MeshPhongMaterial({ color: 0xff0055, transparent: true, opacity: 0.5 }));
                 barrier.name = "barrier";
                 activeGroup.add(barrier);
 
@@ -834,7 +970,7 @@
                 const pPos = new Float32Array(pCount * 3);
                 const pCol = new Float32Array(pCount * 3);
                 for (let i = 0; i < pCount; i++) {
-                    pPos[i * 3] = -100 + Math.random() * 150;
+                    pPos[i * 3] = -100 + Math.random() * 90; // start left of the barrier
                     pPos[i * 3 + 1] = (Math.random() - 0.5) * 40;
                     pPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
                     pCol[i * 3] = 0; pCol[i * 3 + 1] = 1; pCol[i * 3 + 2] = 1;
@@ -844,11 +980,12 @@
                 pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
                 const parts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 1.5, vertexColors: true }));
                 parts.name = "tunnel_particles";
+                // dir: +1 moving right, −1 reflected; decided: barrier verdict taken
+                parts.userData.dir = new Float32Array(pCount).fill(1);
+                parts.userData.decided = new Uint8Array(pCount);
                 activeGroup.add(parts);
 
-                const label = createLabel("Tunneling", "#ff0055");
-                label.position.set(0, 50, 0);
-                activeGroup.add(label);
+                updateTunnelBarrier();
             }
             else if (mode === 'entanglement') {
                 const sGeo = new THREE.SphereGeometry(15, 32, 32);
@@ -897,14 +1034,7 @@
 
             scene.add(activeGroup);
             updateTheoryHeader(theories[mode].name, theories[mode].description);
-            updateInfoPanel(theories[mode]);
-
-            // Update Equation Label
-            const eqnLabel = document.getElementById('equation-label');
-            if (eqnLabel) {
-                eqnLabel.innerText = theories[mode].equationLabel || "The Schrödinger Equation";
-            }
-
+            updateInfoPanel(theories[mode]); // also sets #equation-label from equationLabel
             updateInfoModalContent(theories[mode]);
             updateSliderConfig(theories[mode]);
             updateContextNote(theories[mode].contextNote);
@@ -917,8 +1047,7 @@
 
             if (currentMode === 'double-slit') {
                 const plane = activeGroup.getObjectByName("wave_plane");
-                const slitDist = 30; // 15 each side
-                const wavelength = p1 * 10 + 2;
+                const wavelength = slitWavelength();
 
                 // 1. Update wave plane shader uniforms (GPU wave propagation & collapse)
                 if (plane && plane.material.uniforms) {
@@ -960,25 +1089,13 @@
                 // 3. Update Intensity Graph on Screen
                 const intensity = activeGroup.getObjectByName("intensity_graph");
                 if (intensity) {
+                    // Same screenIntensity() the photons are sampled from, so the
+                    // curve is exactly the distribution the hits accumulate into.
                     const pos = intensity.geometry.attributes.position;
-                    const screenZ = 150;
-                    const wallZ = -80;
-                    const L = screenZ - wallZ;
                     for (let i = 0; i < pos.count; i++) {
                         const px = pos.getX(i);
-                        if (window.observerActive) {
-                            // Two localized classical bands
-                            const val1 = Math.exp(-((px - slitDist / 2) ** 2) / 600);
-                            const val2 = Math.exp(-((px + slitDist / 2) ** 2) / 600);
-                            const val = (val1 + val2) * 0.85;
-                            pos.setY(i, val * 30);
-                        } else {
-                            // Quantum interference graph
-                            const theta = Math.atan(px / L);
-                            const delta = (2 * Math.PI / wavelength) * slitDist * Math.sin(theta);
-                            const val = Math.pow(Math.cos(delta / 2), 2) * Math.exp(-(px ** 2) / 6000);
-                            pos.setY(i, val * 30);
-                        }
+                        const val = screenIntensity(px, window.observerActive, wavelength);
+                        pos.setY(i, val * 15);
                     }
                     pos.needsUpdate = true;
                 }
@@ -1014,7 +1131,6 @@
                     }
                     pos.needsUpdate = true;
                 }
-            }
             } else if (currentMode === 'superposition') {
                 const points = activeGroup.getObjectByName("morph_points");
                 if (points) {
@@ -1027,7 +1143,9 @@
                     // Wait, user said "Two things at once UNTIL observed". So default should be a confusing mix, 
                     // and clicking snaps it to ONE.
 
-                    const targetState = isObserved ? 1 : 0; // 1 = Sphere, 0 = Landscape
+                    // Idle: hold the mixture the α-slider sets (a blend of both
+                    // forms). Interaction (drag) = observation → collapse to one.
+                    const targetState = isObserved ? 1 : p1 / 100;
                     // Smooth transition
                     if (!points.userData.morphFactor) points.userData.morphFactor = 0;
                     points.userData.morphFactor += (targetState - points.userData.morphFactor) * 0.05;
@@ -1062,15 +1180,10 @@
             } else if (currentMode === 'orbitals') {
                 const cloud = activeGroup.getObjectByName("orbital_cloud");
                 if (cloud) {
-                    const pos = cloud.geometry.attributes.position;
-                    const n = parseInt(p1);
-                    for (let i = 0; i < pos.count; i++) {
-                        const x = pos.getX(i); const y = pos.getY(i); const z = pos.getZ(i);
-                        const r = Math.sqrt(x * x + y * y + z * z);
-                        const s = 1 + Math.sin(time * 2 + r * 0.1) * 0.02 * n;
-                        // Just subtle pulse
-                    }
-                    cloud.rotation.y += dt * 0.1;
+                    // Cloud shape is regenerated by onParamChanged() when n moves;
+                    // here it just slowly rotates. Stationary states don't pulse —
+                    // |ψ|² of an energy eigenstate is constant in time.
+                    cloud.rotation.y += dt * 0.15;
                 }
             } else if (currentMode === 'strings') {
                 activeGroup.children.forEach((s, idx) => {
@@ -1080,9 +1193,14 @@
                     }
                 });
             } else if (currentMode === 'crystal') {
+                // Subharmonic response: the drive runs at ω (slider), the crystal
+                // locks to ω/2 — the period-doubled beat that defines a discrete
+                // time crystal. The faint fast wobble is the drive itself.
+                const drive = time * (p1 / 20);
                 activeGroup.children.forEach(m => {
-                    const phase = time * (p1 / 2) + m.userData.phaseOffset;
-                    const scale = 1 + Math.sin(phase) * 0.5;
+                    if (!m.userData || m.userData.phaseOffset === undefined) return;
+                    const phase = drive / 2 + m.userData.phaseOffset; // response at ω/2
+                    const scale = 1 + Math.sin(phase) * 0.5 + Math.sin(drive + m.userData.phaseOffset) * 0.06;
                     m.scale.setScalar(scale);
                     m.rotation.y += dt;
                 });
@@ -1092,24 +1210,70 @@
                 const box = activeGroup.getObjectByName('containment');
                 if (box) { box.rotation.y += dt; }
                 if (alive && dead) {
-                    const t = (Math.sin(time * 2) + 1) / 2;
-                    alive.visible = true; dead.visible = true;
-                    alive.material.opacity = t;
-                    dead.material.opacity = 1 - t;
+                    // Superposed: BOTH branches at equal amplitude (the state does
+                    // not slosh back and forth in time). Decoherence then collapses
+                    // it stochastically — the slider sets the rate, so higher
+                    // decoherence = shorter-lived superpositions.
+                    const st = activeGroup.userData;
+                    if (st.collapsed === undefined) { st.collapsed = false; st.outcome = 0; st.timer = 0; }
+                    st.timer += dt;
+
+                    if (!st.collapsed) {
+                        const rate = 0.05 + (p1 / 100) * 1.2; // collapses per unit time
+                        if (Math.random() < rate * dt) {
+                            st.collapsed = true;
+                            st.outcome = Math.random() < 0.5 ? 1 : 0; // 50/50, genuinely random
+                            st.timer = 0;
+                        }
+                        alive.visible = true; dead.visible = true;
+                        const flicker = 0.5 + Math.sin(time * 7) * 0.04;
+                        alive.material.opacity = flicker;
+                        dead.material.opacity = 1 - flicker;
+                    } else {
+                        alive.material.opacity = st.outcome ? 1 : 0;
+                        dead.material.opacity = st.outcome ? 0 : 1;
+                        if (st.timer > 2.5) { st.collapsed = false; st.timer = 0; } // re-prepare
+                    }
                 }
             } else if (currentMode === 'tunneling') {
                 const parts = activeGroup.getObjectByName('tunnel_particles');
                 if (parts) {
                     const pos = parts.geometry.attributes.position.array;
                     const col = parts.geometry.attributes.color.array;
+                    const dir = parts.userData.dir;
+                    const decided = parts.userData.decided;
+                    const half = tunnelBarrierHalfWidth();
+                    const T = tunnelTransmission();
+
                     for (let i = 0; i < pos.length / 3; i++) {
-                        let x = pos[i * 3];
-                        x += 2 * timeScale;
-                        if (x > 100) x = -100;
+                        let x = pos[i * 3] + 2 * timeScale * dir[i];
+
+                        // Verdict at the barrier face: transmit with probability
+                        // T = e^(−2κL), otherwise reflect. This is the WKB result
+                        // the panel's equation states — most particles bounce.
+                        if (!decided[i] && dir[i] > 0 && x >= -half) {
+                            decided[i] = 1;
+                            if (Math.random() >= T) dir[i] = -1; // reflected
+                        }
+
+                        // Recycle: transmitted exit right, reflected exit left
+                        if (x > 100 || x < -110) {
+                            x = -100 - Math.random() * 10;
+                            dir[i] = 1;
+                            decided[i] = 0;
+                        }
                         pos[i * 3] = x;
-                        // Color logic (red in barrier)
-                        if (x > -5 && x < 5) { col[i * 3] = 1; col[i * 3 + 1] = 0; col[i * 3 + 2] = 0; }
-                        else { col[i * 3] = 0; col[i * 3 + 1] = 1; col[i * 3 + 2] = 1; }
+
+                        const inBarrier = x > -half && x < half;
+                        if (inBarrier) { // evanescent region
+                            col[i * 3] = 1; col[i * 3 + 1] = 0; col[i * 3 + 2] = 0.33;
+                        } else if (dir[i] < 0) { // reflected
+                            col[i * 3] = 1; col[i * 3 + 1] = 0.67; col[i * 3 + 2] = 0;
+                        } else if (x > half) { // transmitted
+                            col[i * 3] = 0; col[i * 3 + 1] = 1; col[i * 3 + 2] = 0.33;
+                        } else { // incident
+                            col[i * 3] = 0; col[i * 3 + 1] = 1; col[i * 3 + 2] = 1;
+                        }
                     }
                     parts.geometry.attributes.position.needsUpdate = true;
                     parts.geometry.attributes.color.needsUpdate = true;
@@ -1119,9 +1283,25 @@
                 const B = activeGroup.getObjectByName('ent_B');
                 if (A && B) {
                     A.rotation.y += dt; B.rotation.y -= dt;
-                    const cVal = (Math.sin(time * 3) + 1) / 2;
-                    A.material.emissive.setHSL(0.6, 1, cVal * 0.5);
-                    B.material.emissive.setHSL(0.6, 1, cVal * 0.5);
+
+                    // Repeated measurement events. Each outcome on A is a fresh
+                    // coin flip (individually random); B matches it with
+                    // probability set by the correlation slider. What entanglement
+                    // provides is the CORRELATION, not synchronised oscillation.
+                    const st = activeGroup.userData;
+                    if (st.next === undefined) { st.next = 0; st.a = 0; st.b = 0; st.flash = 0; }
+                    if (time > st.next) {
+                        st.a = Math.random() < 0.5 ? 1 : 0;
+                        const match = Math.random() < p1 / 100;
+                        st.b = match ? st.a : 1 - st.a;
+                        st.flash = time;
+                        st.next = time + 1.6;
+                    }
+                    const age = time - st.flash;
+                    const glow = Math.max(0.08, 0.6 - age * 0.4);
+                    // hue: cyan for |0⟩, magenta for |1⟩
+                    A.material.emissive.setHSL(st.a ? 0.85 : 0.5, 1, glow);
+                    B.material.emissive.setHSL(st.b ? 0.85 : 0.5, 1, glow);
                 }
             } else if (currentMode === 'teleportation') {
                 const p = activeGroup.getObjectByName('tele_payload');
@@ -1135,12 +1315,17 @@
             } else if (currentMode === 'zeno') {
                 const atom = activeGroup.getObjectByName('zeno_atom');
                 const eye = activeGroup.getObjectByName('zeno_eye');
-                const watching = (time % 1.5) < 0.2;
+                // Measurement rate from the slider: higher f → shorter interval
+                // between projections → less time to drift → the state is frozen.
+                // Drag the slider to 0 and the decay completes unhindered.
+                const interval = 3.0 / (0.3 + p1 / 12);
+                const phase = time % interval;
+                const watching = phase < Math.min(0.15, interval * 0.2);
                 if (eye) { eye.scale.setScalar(watching ? 40 : 30); eye.material.opacity = watching ? 1 : 0.3; }
                 if (atom) {
                     if (watching) { atom.material.color.setHex(0x00ff00); atom.scale.setScalar(1); }
                     else {
-                        const prog = ((time % 1.5) - 0.2) / 1.3;
+                        const prog = Math.min(1, phase / 3.0); // decay progress since last projection
                         atom.material.color.setHSL(0.3 - prog * 0.3, 1, 0.5);
                         atom.scale.setScalar(1 + prog * 0.5);
                     }
@@ -1173,9 +1358,7 @@
         }
 
 
-        window.onload = function () {
-            init();
-        };
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

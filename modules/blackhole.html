@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Black Hole | Event Horizon Manifold</title>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -92,7 +92,7 @@
 
     <div class="manifold-glow"></div>
     <div id="lensing-distortion"></div>
-    <div class="singularity-readout" id="readout">ρ → ∞ | r → rₛ</div>
+    <div class="singularity-readout" id="readout">ρ → ∞ | r → 0</div>
 
 
 
@@ -128,7 +128,7 @@
         <div class="theory-name" id="theory-name">Schwarzschild Solution</div>
         <div class="theory-year" id="theory-year">The Geometry of Compression (1916)</div>
         <div class="equation-box">
-            <div class="equation-label">The Schwarzschild Metric</div>
+            <div class="equation-label" id="equation-label">The Schwarzschild Metric</div>
             <div class="equation" id="equation">ds² = -(1-rₛ/r)dt² + (1-rₛ/r)⁻¹dr²</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -173,12 +173,13 @@
             'schwarzschild': {
                 name: 'Schwarzschild Singularity', year: 'Karl Schwarzschild, 1916',
                 equation: 'rₛ = 2GM/c²',
+                equationLabel: 'Schwarzschild Radius',
                 equationExpl: 'The Schwarzschild radius defines the point of no return for a non-rotating mass. It is directly proportional to the mass M of the black hole.',
                 facts: [{ text: 'Stationary', status: 'yes' }, { text: 'Perfect Sphere', status: 'yes' }],
                 description: 'The prototypical black hole. It describes the gravitational field outside a non-rotating, spherical mass. At the event horizon, space and time essentially swap roles; every future worldline leads inevitably to the singularity.',
                 concepts: [
                     { term: 'Event Horizon', definition: 'The "point of no return" where the escape velocity exactly equals c.' },
-                    { term: 'Coordinate Singularity', definition: 'The horizon is a mathematical artifact of specific coordinates, whereas the center is a physical geometric breakdown.' },
+                    { term: 'Coordinate Singularity', definition: 'It is the BLOW-UP of the Schwarzschild metric components at rₛ that is a coordinate artifact — it vanishes in Kruskal coordinates. The horizon itself is real: a coordinate-independent null surface with a one-way causal structure, a temperature, and an area that can never decrease. The divergence at r = 0 is the physical one.' },
                     { term: 'Photon Sphere', definition: 'A region at 1.5 rₛ where light orbits the black hole in a circle.' }
                 ],
                 physics: 'In Waveism, a Black Hole is a phase-singularity. The wave-coherence of spacetime diverges to infinity, creating a permanent hole in the cosmic interference pattern.',
@@ -193,6 +194,7 @@
             'kerr': {
                 name: 'Kerr Rotating Metric', year: 'Roy Kerr, 1963',
                 equation: 'Δ = r² - 2Mr + a²',
+                equationLabel: 'Kerr Discriminant',
                 equationExpl: 'The horizon condition for a rotating black hole. The parameter "a" represents the angular momentum, which twists and shrinks the event horizon.',
                 facts: [{ text: 'Frame-Dragging', status: 'yes' }, { text: 'Ergosphere', status: 'yes' }],
                 description: 'The most realistic model for astrophysical black holes. Because the hole rotates, it twists the surrounding spacetime fabric into a vortex—a process known as the Lense-Thirring effect.',
@@ -213,6 +215,7 @@
             'accretion': {
                 name: 'Relativistic Accretion', year: 'Keplerian Friction',
                 equation: 'L = η Ṁ c²',
+                equationLabel: 'Accretion Luminosity',
                 equationExpl: 'Mass accretion luminosity. Efficiency (η) represents how much rest-mass energy is converted to light as matter spirals into the abyss.',
                 facts: [{ text: 'X-Ray Intense', status: 'yes' }, { text: 'Plasma Flow', status: 'yes' }],
                 description: 'A brilliant disk of superheated plasma spiraling into the abyss. Friction converts gravitational potential energy into radiation with up to 42% efficiency—dwarfing nuclear fusion.',
@@ -232,6 +235,7 @@
             'lensing': {
                 name: 'Einstein Rings & Shadow', year: 'Nucl. Deflection',
                 equation: 'θ ≈ 4GM/c²b',
+                equationLabel: 'Deflection Angle',
                 equationExpl: 'The Einstein deflection angle. Mass warps spacetime such that light rays are bent, creating visual rings and focusing effects.',
                 facts: [{ text: 'Self-Lensing', status: 'yes' }, { text: 'Geodesic Bend', status: 'yes' }],
                 description: 'The intense gravity redirects light rays. We see the back of the accretion disk "lifted" over the hole, and distant stars warped into rings. The "Shadow" is the absence of any light rays that have fallen past the horizon.',
@@ -251,6 +255,7 @@
             'hawking': {
                 name: 'Hawking Evaporation', year: 'Stephen Hawking, 1974',
                 equation: 'T_H = ℏc³ / (8πGMk)',
+                equationLabel: 'Hawking Temperature',
                 equationExpl: 'The Hawking temperature implies black holes are not perfectly black but emit thermal radiation, eventually radiating away their entire mass.',
                 facts: [{ text: 'Quantum Decay', status: 'yes' }, { text: 'Virtual Pairs', status: 'yes' }],
                 description: 'A quantum breakdown at the horizon. Virtual particle pairs are separated; one falls in, the other escapes. Over aeons, the black hole loses mass and eventually explodes in a final burst of gamma rays.',
@@ -261,7 +266,7 @@
                 physics: 'Hawking radiation is the leakage of wave-energy from the trapped singularity. It represents the thermodynamic limit of the Waveism vacuum.',
                 sliderConfig: { label: 'Decay Rate', min: 1, max: 100, step: 1, default: 30, units: '%', decimals: 0 },
                 contextNote: 'Quantum mechanics at the horizon — virtual particle pairs split, and the hole slowly evaporates.',
-                relevance: 'Black holes aren\'t truly black. They glow and eventually explode, proving quantum mechanics and gravity must utilize the same math.',
+                relevance: 'A theoretical prediction, never observed: a 10 M☉ hole radiates at ~6×10⁻⁹ K, far colder than the 2.7 K CMB, so real astrophysical black holes absorb far more than they emit and grow rather than evaporate. Far from proving quantum mechanics and gravity agree, it exposes the tension between them — the information paradox.',
                 sources: [
                     'Hawking, S.W. (1974). Black hole explosions?',
                     'Bekenstein, J.D. (1973). Black holes and entropy.'
@@ -331,7 +336,11 @@
             const cfg = theories[currentMode] && theories[currentMode].sliderConfig;
             if (cfg) {
                 const raw = parseFloat(document.getElementById('param1-slider').value);
-                valEl.innerText = raw.toFixed(cfg.decimals || 0) + (cfg.units || '');
+                // Spin parameter a/M is dimensionless, bounded [0,1] for a
+                // physical (non-naked-singularity) Kerr hole. The slider itself
+                // runs 0-100 for fine control; show the normalized value.
+                const display = (currentMode === 'kerr') ? raw / 100 : raw;
+                valEl.innerText = display.toFixed(cfg.decimals || 0) + (cfg.units || '');
             }
         }
 
@@ -365,21 +374,26 @@
                 const pos = new Float32Array(pCount * 3);
                 const colors = new Float32Array(pCount * 3);
 
+                // Inner edge at the ISCO (3 rs = 6GM/c²), not the photon sphere
+                // (1.5 rs) — nothing can hold a stable circular orbit between
+                // those two radii, so particles never populate that gap.
+                const iscoR = rs * 3;
                 for (let i = 0; i < pCount; i++) {
                     const angle = Math.random() * Math.PI * 2;
-                    const r = rs * 1.5 + Math.pow(Math.random(), 2) * rs * 8;
+                    const r = iscoR + Math.pow(Math.random(), 2) * rs * 8;
 
                     pos[i * 3] = r * Math.cos(angle);
                     pos[i * 3 + 1] = (Math.random() - 0.5) * (r * 0.1);
                     pos[i * 3 + 2] = r * Math.sin(angle);
 
-                    const isReceding = pos[i * 3] > 0;
-                    const temp = 1 - (r - rs * 1.5) / (rs * 8);
-
+                    // Placeholder color — recomputed every frame in updateSim from
+                    // the CURRENT position, since relativistic beaming is fixed in
+                    // the observer's frame, not attached to a co-rotating particle.
                     colors[i * 3] = 1.0;
-                    colors[i * 3 + 1] = isReceding ? temp * 0.3 : temp * 0.8;
-                    colors[i * 3 + 2] = isReceding ? 0 : temp * 0.4;
+                    colors[i * 3 + 1] = 0.5;
+                    colors[i * 3 + 2] = 0.2;
                 }
+                particles.userData.iscoR = iscoR;
                 particles.setAttribute('position', new THREE.BufferAttribute(pos, 3));
                 particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
@@ -471,6 +485,14 @@
             const dt = 0.01 * timeScale;
             time += dt;
 
+            if (currentMode === 'schwarzschild') {
+                // r_s = 2GM/c² — the horizon (and everything self-similar to it:
+                // the glow, the potential-well rings) scales linearly with mass.
+                // Was previously fixed regardless of the "Mass (M☉)" slider.
+                const rsTarget = 5 + p1 * 40;
+                activeGroup.scale.setScalar(rsTarget / 15);
+            }
+
             if (currentMode === 'kerr') {
                 const ergo = activeGroup.getObjectByName("ergo");
                 if (ergo) {
@@ -485,6 +507,8 @@
                 const disk = activeGroup.getObjectByName("disk");
                 if (disk) {
                     const pos = disk.geometry.attributes.position;
+                    const col = disk.geometry.attributes.color;
+                    const iscoR = disk.geometry.userData.iscoR || rs * 3;
                     for (let i = 0; i < pos.count; i++) {
                         let x = pos.getX(i);
                         let z = pos.getZ(i);
@@ -494,7 +518,10 @@
                         // GRAVITATIONAL TIME DILATION: sqrt(1 - rs/r)
                         // Particles near the horizon slow down relative to the observer
                         const dilationFactor = Math.sqrt(Math.max(0.01, 1 - rs / r));
-                        theta += (1 / (r * 0.1)) * dt * 2 * dilationFactor;
+                        // KEPLERIAN ANGULAR VELOCITY: Ω = sqrt(GM/r³) ∝ r^-1.5
+                        // (not the ∝ 1/r "constant orbital speed" this used to be)
+                        const omega = 250 / Math.pow(r, 1.5);
+                        theta += omega * dt * dilationFactor;
 
                         let nx = r * Math.cos(theta);
                         let nz = r * Math.sin(theta);
@@ -507,8 +534,19 @@
 
                         pos.setXY(i, nx, ny);
                         pos.setZ(i, nz);
+
+                        // RELATIVISTIC BEAMING: recomputed every frame from the
+                        // CURRENT approaching/receding side (observer looks along
+                        // -z), so the bright/blue side stays fixed in the
+                        // observer's frame instead of co-rotating with the gas.
+                        const isApproaching = nz < 0;
+                        const temp = 1 - (r - iscoR) / (rs * 8);
+                        col.setX(i, 1.0);
+                        col.setY(i, isApproaching ? temp * 0.9 : temp * 0.3);
+                        col.setZ(i, isApproaching ? temp * 0.6 : 0);
                     }
                     pos.needsUpdate = true;
+                    col.needsUpdate = true;
                 }
 
                 if (currentMode === 'lensing') {
@@ -568,7 +606,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 

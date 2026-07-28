@@ -42,7 +42,7 @@ const PHYSICS_ONTOLOGY = {
             color: '#ff00ff',
             information: 1.5,
             desc: "Operator-valued distributions on spacetime. Particles are excitations of these fields.",
-            equation: "[ψ̂(x), ψ̂†(y)] = δ³(x-y)",
+            equation: "[Φ̂(x), Π̂(y)]|_t = iℏδ³(x−y)",
             field: "Φ̂(x)"
         },
         {
@@ -53,7 +53,7 @@ const PHYSICS_ONTOLOGY = {
             layer: 1,
             color: '#00ff00',
             information: 1.3,
-            desc: "Coherent states and expectation values. The classical limit (ℏ → 0).",
+            desc: "Coherent states and expectation values. The classical regime: action large compared to ℏ (S ≫ ℏ), with decoherence suppressing interference.",
             equation: "⟨ψ̂⟩ = Φ_classical",
             field: "φ(x,t)"
         },
@@ -79,8 +79,8 @@ const PHYSICS_ONTOLOGY = {
             layer: 3,
             color: '#ff6600',
             information: 1.2,
-            desc: "Statistical measure of disorder. The arrow of time emerges from entropy increase.",
-            equation: "S = -k_B Tr(ρ ln ρ)",
+            desc: "Statistical measure of missing information. The arrow of time tracks the growth of COARSE-GRAINED entropy in isolated systems (fine-grained von Neumann entropy is constant under unitary evolution).",
+            equation: "S = k_B ln Ω",
             field: "S[ρ]"
         },
         {
@@ -91,8 +91,8 @@ const PHYSICS_ONTOLOGY = {
             layer: 3,
             color: '#ff4466',
             information: 1.6,
-            desc: "Time is not fundamental—it emerges from thermodynamic gradients and decoherence.",
-            equation: "dS/dt ≥ 0",
+            desc: "The ARROW of time emerges from entropy increase. Whether time itself is emergent (thermal time, Page-Wootters) is an open research conjecture, not established physics.",
+            equation: "dS/dt ≥ 0 (isolated system)",
             field: "t_thermal"
         },
         {
@@ -117,7 +117,7 @@ const PHYSICS_ONTOLOGY = {
             layer: 4,
             color: '#00ddff',
             information: 1.3,
-            desc: "Self-organized criticality in neural networks. Oscillatory binding at ~40Hz (gamma).",
+            desc: "Neural population dynamics. Criticality and gamma-band binding (~40Hz) are proposed organising principles — both actively debated.",
             equation: "∂ρ/∂t = D∇²ρ + R(ρ)",
             field: "ρ_neural(x,t)"
         },
@@ -155,8 +155,8 @@ const PHYSICS_ONTOLOGY = {
             layer: 6,
             color: '#8888ff',
             information: 1.5,
-            desc: "Interface theory: we perceive fitness payoffs, not objective reality.",
-            equation: "I(X;Y) ≥ Fitness",
+            desc: "Interface theory (Hoffman, contested): selection tunes perception to fitness payoffs, DRIVING DOWN its mutual information with objective structure.",
+            equation: "I(X;Y) → 0 under FBT",
             field: "Ψ_perceived"
         },
         {
@@ -167,8 +167,8 @@ const PHYSICS_ONTOLOGY = {
             layer: 6,
             color: '#ff66ff',
             information: 1.7,
-            desc: "Integrated information (Φ). The 'hard problem'—why does it feel like something?",
-            equation: "Φ = IIT measure",
+            desc: "The 'hard problem'—why does it feel like something? IIT proposes integrated information Φ as the measure; the theory is prominent but heavily contested.",
+            equation: "Φ: integrated information",
             field: "Φ(system)"
         },
 
@@ -231,7 +231,7 @@ const PHYSICS_ONTOLOGY = {
         {
             source: "QUANTUM_FIELD",
             target: "CLASSICAL_FIELD",
-            label: "ℏ → 0",
+            label: "S ≫ ℏ",
             type: "coarse_graining",
             informationFlow: 0.8,
             restLength: 100
@@ -375,16 +375,12 @@ const PHYSICS_ONTOLOGY = {
             restLength: 90
         },
 
-        // Feedback loops (carefully chosen to avoid breaking DAG at macro level)
-        {
-            source: "PERCEPTION",
-            target: "SPACETIME",
-            label: "Measurement",
-            type: "observer_effect",
-            informationFlow: 0.1,
-            restLength: 200,
-            style: "dashed" // Visual indicator of feedback
-        }
+        // NOTE: no feedback edges. A PERCEPTION → SPACETIME "observer effect"
+        // edge used to close a cycle here, which both broke the DAG structure
+        // this file advertises and encoded the consciousness-causes-collapse
+        // misconception: perception does not act causally on the metric.
+        // Measurement is physical interaction, modelled by the QFT → DECOHERENCE
+        // edge above.
     ]
 };
 

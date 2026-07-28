@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arrow of Time | The Irreversibility Engine</title>
-    <link rel="stylesheet" href="../components/shared.css?v=4">
-    <script src="../components/shared.js?v=4"></script>
+    <link rel="stylesheet" href="../components/shared.css?v=5">
+    <script src="../components/shared.js?v=5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         #three-container {
@@ -102,7 +102,7 @@
         <div class="theory-name" id="theory-name">Statistical Irreversibility</div>
         <div class="theory-year" id="theory-year">The Second Law of Thermodynamics</div>
         <div class="equation-box">
-            <div class="equation-label">Boltzmann Formula</div>
+            <div class="equation-label" id="equation-label">Boltzmann Formula</div>
             <div class="equation" id="equation">S = k_B ln Ω</div>
         </div>
         <div class="theory-facts" id="theory-facts"></div>
@@ -148,6 +148,7 @@
             'entropy': {
                 name: 'Entropy & The Arrow', year: 'Boltzmann / Clausius',
                 equation: 'ΔS_univ ≥ 0',
+                equationLabel: 'The Second Law',
                 equationExpl: 'The Second Law of Thermodynamics. It states that the total entropy of an isolated system can never decrease over time, defining the thermodynamic arrow.',
                 facts: [{ text: 'Increasing', status: 'yes' }, { text: 'Probabilistic', status: 'yes' }],
                 description: 'The movement from low-entropy order to high-entropy disorder. Time\'s arrow is not a fundamental law, but a statistical inevitability. There are simply more ways for a system to be messy than organized.',
@@ -155,7 +156,7 @@
                     { term: 'Microstates (Ω)', definition: 'The hidden configurations that result in a macrostate.' },
                     { term: 'Past Hypothesis', definition: 'The initial state was uniquely ordered (Low Entropy).' }
                 ],
-                physics: 'Entropy is the decoherence of wave-functions into statistical noise. In the context of Waveism, it is the drift from phase-coherence to destructive interference/randomness.',
+                physics: 'Entropy counts the microstates compatible with what you can see about a system; it is defined classically and quantum-mechanically alike, and is not the same thing as decoherence. In Waveism terms it is the drift from phase-coherence toward randomness — decoherence is one route there, not a definition.',
                 sliderConfig: { label: 'System Agitation', min: 0, max: 100, step: 1, default: 50, units: '% Disorder', decimals: 0 },
                 contextNote: 'Particles drift from order to disorder — double-tap to inject energy and reverse the arrow.',
                 relevance: 'Explains why you can break an egg but never un-break it. The future is simply the direction of more mess.',
@@ -166,10 +167,11 @@
             },
             'block': {
                 name: 'Static Temporal Block', year: 'Minkowski Space',
-                equation: 'M⁴ = {t, x, y, z}',
-                equationExpl: 'The 4D Minkowski manifold. In the block universe, time is simply the fourth dimension, and the "past", "present", and "future" are all equally real and fixed.',
+                equation: 'ds² = −c²dt² + dx² + dy² + dz²',
+                equationLabel: 'Minkowski Manifold',
+                equationExpl: 'The Minkowski interval. Time enters with the OPPOSITE sign to the three spatial terms — that minus sign is why time is not simply a fourth spatial direction, even though past, present and future are all equally real in this picture.',
                 facts: [{ text: 'Static', status: 'yes' }, { text: 'Eternal', status: 'yes' }],
-                description: 'The 4D perspective where time is a spatial dimension. Every event that has happened or will happen exists simultaneously in the manifold. The "arrow" is a biological illusion of perspective.',
+                description: 'The 4D perspective in which every event that has happened or will happen exists in the manifold. Time is a dimension, but not a spatial one: its opposite metric sign is what preserves causal order and keeps worldlines from turning around in it. The "arrow" is then a matter of perspective plus entropy, not of the geometry itself.',
                 concepts: [
                     { term: 'Simultaneity', definition: 'The "Now" is a slice determined by the observer\'s speed.' },
                     { term: 'Immutable Past', definition: 'The worldline is a fixed geometric object in the block.' }
@@ -186,12 +188,13 @@
             'demon': {
                 name: "Maxwell's Demon", year: 'Information Paradox',
                 equation: 'ΔS_erase ≥ k_B ln 2',
+                equationLabel: 'Landauer Limit',
                 equationExpl: 'Landauer\'s Principle. It proves that erasing one bit of information dissipates a minimum of k_B ln 2 entropy into the environment. This resolves the Maxwell Demon paradox: the demon must erase its memory to continue sorting, and this erasure generates more entropy than the sorting saves.',
                 facts: [{ text: 'Information Cost', status: 'high' }, { text: 'Sorting Power', status: 'yes' }],
                 description: 'A thought experiment where a demon sorts fast and slow molecules to reverse entropy. The paradox is resolved by Information Theory: the demon creates more entropy erasing its memory than it saves by sorting.',
                 concepts: [
                     { term: 'Landauer Limit', definition: 'The energetic cost of erasing one bit of information.' },
-                    { term: 'Entropy/Information', definition: 'Information is the negative of entropy (Negentropy).' }
+                    { term: 'Entropy/Information', definition: 'Shannon information and thermodynamic entropy share a form, and Landauer\'s bound is the bridge between them: erasing a bit costs k_B ln 2. They are not simply each other\'s negative.' }
                 ],
                 physics: 'The demon proves that knowing the state of a system (low entropy) requires the consumption of energy. Information is physical.',
                 sliderConfig: { label: 'Sorting Efficiency', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
@@ -205,9 +208,10 @@
             'subjective': {
                 name: 'The Specious Now', year: 'Biological Time',
                 equation: 'T_subj = f(Metabolism)',
+                equationLabel: 'Subjective Time Rate',
                 equationExpl: 'A model of subjective time perception. It suggests that our internal sense of "duration" is a function of our biological and metabolic state.',
                 facts: [{ text: 'Non-Linear', status: 'yes' }, { text: 'Metabolic', status: 'yes' }],
-                description: 'Subjective time is determined by the rate of information processing. During moments of high intensity, your brain samples events at a higher frequency, making time appear to "slow down."',
+                description: 'Subjective duration tracks how densely an interval is encoded in memory. In frightening moments people REMEMBER time as having slowed — Eagleman\'s free-fall experiments found no increase in actual temporal resolution during the event, so the effect is retrospective rather than a faster internal sampling rate.',
                 concepts: [
                     { term: 'Metabolic Clock', definition: 'Our internal oscillators are chemical and biological.' },
                     { term: 'Now-Buffer', definition: 'The short delay between experience and conscious perception.' }
@@ -215,7 +219,7 @@
                 physics: 'The subjective arrow is the biological alignment with the thermodynamic arrow. We perceive the increase of entropy as the "passage" of time.',
                 sliderConfig: { label: 'Processing Rate', min: 0, max: 100, step: 1, default: 50, units: '%', decimals: 0 },
                 contextNote: 'Your brain samples reality at variable rates — intensity makes time appear to slow down.',
-                relevance: 'Why time flies when you\'re having fun (or in danger). Your brain\'s "frame rate" changes based on arousal and novelty.',
+                relevance: 'Why time seems to stretch in danger and vanish when absorbed. It is a memory-density effect — novelty and arousal lay down richer records, which we read back as a longer interval. The brain has no literal "frame rate" that speeds up.',
                 sources: [
                     'James, W. (1890). The Principles of Psychology.',
                     'Eagleman, D.M. (2008). Human time perception and its illusions.'
@@ -272,18 +276,20 @@
                 drag.autoRotate = !drag.autoRotate;
             });
 
-            // ENTROPY REVERSAL: Double-tap injects "energy" to reverse the arrow
+            // ENTROPY REVERSAL: Loschmidt's construction — the microscopic
+            // dynamics ARE time-reversible, so negating every velocity is the
+            // dynamically valid way to run the film backward. (Teleporting
+            // particles back to their start position isn't a physical process
+            // at all — reversing velocity is.) What makes reversal practically
+            // impossible for a real gas is that this requires flawlessly
+            // negating the velocity of every one of ~10²³ particles at once;
+            // this toy model can do it exactly, a real gas never can.
             renderer.domElement.addEventListener('dblclick', (e) => {
                 if (currentMode === 'entropy') {
                     const points = entropyParticles.getObjectByName("particles");
                     if (points) {
-                        const pos = points.geometry.attributes.position.array;
-                        const init = points.userData.initial;
-                        // Snap all particles back to initial ordered state
-                        for (let i = 0; i < pos.length; i++) {
-                            pos[i] = init[i];
-                        }
-                        points.geometry.attributes.position.needsUpdate = true;
+                        const vel = points.userData.vel;
+                        for (let i = 0; i < vel.length; i++) vel[i] *= -1;
                     }
                 }
             });
@@ -441,16 +447,19 @@
                         const agitation = Math.max(0.1, p1 * 5);
 
                         for (let i = 0; i < pos.length; i += 3) {
-                            // Chaotic Motion
+                            // Chaotic Motion — genuine diffusion from the tiny
+                            // seed cluster to fill the whole cage. The dynamics
+                            // (elastic reflection, no friction) are themselves
+                            // time-reversible; the arrow of time here is purely
+                            // statistical — a colossally more likely macrostate
+                            // (spread out) than the one it started in (clustered).
+                            // Previously this teleported ("looped") on x and never
+                            // actually spread — an oscillation, not diffusion.
                             pos[i] += vel[i] * agitation * 0.01;
                             pos[i + 1] += vel[i + 1] * agitation * 0.01;
                             pos[i + 2] += vel[i + 2] * agitation * 0.01;
 
-                            // Time Flow Drift (Arrow)
-                            pos[i] += 0.005 * timeScale; // Drift Right (Time)
-
-                            // Bounce/Wrap
-                            if (pos[i] > 3) pos[i] = -3; // Loop time
+                            if (Math.abs(pos[i]) > 3) vel[i] *= -1;
                             if (Math.abs(pos[i + 1]) > 3) vel[i + 1] *= -1;
                             if (Math.abs(pos[i + 2]) > 3) vel[i + 2] *= -1;
                         }
@@ -475,7 +484,7 @@
             renderer.render(scene, camera);
         }
 
-        window.onload = init;
+        window.onload = () => safeWebGLInit(init);
     </script>
 </body>
 
